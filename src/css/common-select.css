@@ -1,0 +1,170 @@
+.common-select-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.common-select-label {
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #0D0D0D;
+  font-size: 14px;
+  width: 100%;
+  margin-left: 1.5%;
+}
+
+.common-select-label.required::after {
+  content: '*';
+  color: red;
+  margin-left: 4px;
+}
+
+/* Original select styles preserved for backward compatibility */
+.common-select {
+  /* padding: 2.25% 2.75%; */
+  padding: 1.15% 1.5%;
+  border: 1px solid #D9D9D9;
+  font-size: 14px;
+  color: #6D6D6D;
+  font-weight: 400;
+  border-radius: 0.5rem;
+  background-color: transparent;
+  transition: border-color 0.3s ease;
+  cursor: pointer;
+}
+
+/* Custom select styles */
+.common-select.custom-select {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.common-select .selected-option {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.common-select .arrow-icon {
+  width: 12px;
+  height: 12px;
+  /* background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); */
+  background-image: url("/down-arrow-icon.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: transform 0.3s ease;
+}
+
+.common-select .arrow-icon.open {
+  transform: rotate(180deg);
+}
+
+/* Custom options container */
+.custom-options-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  margin-top: 5px;
+  border: 2px solid #DEDEDE;
+  padding: 1.5% 0%;
+}
+.custom-options-container-container{
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Custom option styles */
+.custom-option {
+  padding: 10px 15px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0% 1.5%;
+  border-radius: 0.5rem;
+  font-size: 1vw;
+}
+
+.custom-option:hover {
+  background-color: #F6F2FF;
+}
+
+.custom-option.selected {
+  background-color: #F6F2FF;
+  font-weight: 500;
+  border: 2px solid #4918B2;
+}
+
+.option-tick {
+  align-self: center;
+}
+
+.common-select:focus,
+.common-select.custom-select:focus {
+  outline: none;
+  border: 1px solid #c2c2c2;
+  box-shadow: 0 0 5px #c2c2c274;
+}
+
+.common-select.error {
+  border: 1px solid red;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.common-select.disabled {
+  background-color: #f4f4f4;
+  cursor: not-allowed;
+  color: #6B6B6B;
+}
+
+/* Hidden native select for form submission */
+.hidden-select {
+  display: none;
+}
+
+.common-select option {
+  padding: 10px;
+  color: #131313;
+}
+
+.common-select-wrapper .common-select-placeholder {
+  font-weight: 400;
+  color: #464646;
+}
+
+.common-select-wrapper .extra-css {
+  margin-left: 3%;
+}
+
+.common-select-search-input{
+  margin: 0% 1.8%;
+  padding: 1% 1.5%;
+  font-size: 1.2vw;
+  margin-bottom: 0.5%;
+  border-radius: 0.5rem;
+  border: 1px solid #E6E6E6;
+  color:#737373;
+  width: calc(100% - 4%);
+  box-sizing: border-box;
+}
+.no-options-message{
+  margin-left: 2%;
+  
+}

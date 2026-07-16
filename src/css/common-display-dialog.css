@@ -1,0 +1,62 @@
+.common-display-dialog-straight-text-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  color: #6D6D6D;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0%;
+}
+
+.common-display-dialog-straight-text-container span {
+  font-weight: 700;
+  color: #0D0D0D;
+  margin-right: 1%;
+}
+
+.dialog-title {
+  font-weight: 600;
+  font-size: 20px;
+  color: #0D0D0D
+}
+
+.common-display-dialog-seperate-line-text-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  color: #6D6D6D;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0%;
+  row-gap: 1.5vh;
+}
+
+.common-display-dialog-seperate-line-text-container h1 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0D0D0D;
+  margin: 0%;
+}
+
+.common-display-dialog-seperate-line-text-container p {
+  color: #6D6D6D;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0%;
+}
+
+.common-display-dialog-toggle-switch-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  margin: 0%;
+}
+
+.common-display-dialog-toggle-switch-container span {
+  font-weight: 600;
+  color: #090909;
+  font-size: 16px;
+}

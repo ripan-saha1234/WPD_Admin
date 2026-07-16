@@ -1,0 +1,121 @@
+.authentication-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('/login-image.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  position: absolute;
+}
+
+.authentication-container-content{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 640px;
+  max-width: 640px;
+  height: 450px;
+  background-color: #000000CC;
+  border-radius: 1rem;
+  padding: 2%;
+  row-gap: 2.5vh;
+}
+
+.authentication-container-content img{
+  width: 254px;
+  height: auto;
+}
+
+.authentication-container-content h1{
+  font-size: 32px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0%;
+  text-align: center;
+}
+.authentication-container-content-input{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  row-gap: 0.5rem;
+  margin-bottom: 2%;
+}
+.authentication-container-content-input label{
+  font-size: 14px;
+  font-weight: 400;
+  color: #FFFFFF;
+  margin: 0%;
+  text-align: left;
+  margin-left: 3%;
+}
+.authentication-container-content-input input{
+  border-radius: 0.8rem;
+  border: 1px solid #FFFFFF;
+  background-color: transparent;
+  color: #FFFFFF;
+  padding: 1rem;
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+}
+
+.authentication-container-content-button{
+  width: 100%;
+  height: 64px;
+  border-radius: 0.5rem;
+  background-color: #0690fd;
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.3s ease;
+  margin-top: 2%;
+}
+
+.authentication-container-content-button:hover:not(:disabled){
+  transform: scale(1.005);
+  transition: transform 0.3s ease-in-out;
+}
+
+.authentication-container-content-button:disabled{
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.authentication-error-message{
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #FF4444;
+  color: #FFFFFF;
+  border-radius: 0.5rem;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.authentication-input-error{
+  color: #FF4444;
+  font-size: 12px;
+  margin-top: 0.25rem;
+  margin-left: 3%;
+  display: block;
+}
+
+.authentication-input-error-border{
+  border-color: #FF4444 !important;
+}
+
+.authentication-container-content form{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 0;
+}

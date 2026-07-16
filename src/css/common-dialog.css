@@ -1,0 +1,201 @@
+.special-grid2 .add-school-checkbox {
+  border-radius: 0.2rem;
+  color: #000080;
+}
+
+.full-width-field .MuiOutlinedInput-root {
+  padding: 10px 12px;
+}
+
+.half-width-field .MuiOutlinedInput-root {
+  padding: 10px 12px;
+}
+
+.dialog-title {
+  font-weight: 600;
+  font-size: 20px;
+  color:#0D0D0D
+}
+
+.extra-input-css-for-dialog {
+  padding: 1.5% 2.65%;
+}
+
+.extra-input-css-for-dialog-label {
+  margin-left: 2.5%;
+}
+
+.special-grid .extra-select-css {
+  padding: 3.1% 5.25%;
+}
+
+.common-dialog-toggle-switch-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 2%;
+}
+
+.common-dialog-toggle-switch-container p {
+  margin: 0;
+  color: #131313;
+  font-weight: 500;
+  font-size: 1vw;
+  text-wrap: nowrap;
+}
+
+.common-dialog-radio2-section-title {
+  color: #131313;
+  font-weight: 500;
+  font-size: 0.9vw;
+}
+
+.common-dialog-radio2-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 12%;
+  margin: 2% 0%;
+}
+
+.common-dialog-icon-section-container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  column-gap: 4%;
+  margin-left: 2%;
+}
+
+.common-dialog-icon-section-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+.common-dialog-icon-section-item-image {
+  width: 5vw;
+  aspect-ratio: 1/1;
+  border-radius: 5rem;
+  background-color: #DED8E63D;
+  padding: 4%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.common-dialog-icon-section-item-image img {
+  width: 40%;
+}
+
+.common-dialog-icon-section-item p {
+  font-size: 1vw;
+  color: #131313;
+}
+
+.common-dialog-copy-link-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #DED8E63D;
+  border-radius: 5rem;
+  /* width: 100%; */
+  padding: 1.5% 2.1%;
+  align-items: center;
+  position: relative;
+}
+
+.common-dialog-copy-link-container p {
+  margin: 0%;
+  color: #464646;
+}
+
+.common-dialog-copy-link-container img {
+  cursor: pointer;
+}
+
+.common-dialog-copy-link-text {
+  font-size: 0.9vw;
+  font-weight: 500;
+  color: white;
+  position: absolute;
+  top: 0%;
+  border-radius: 5rem;
+  padding: 0.5% 1%;
+  right: 5%;
+  background-color: rgba(0, 0, 0, 0.45);
+}
+
+.common-dialog-download-file-container {
+  display: flex;
+  flex-direction: row;
+  column-gap: 5%;
+  align-items: center;
+  margin: 2% 0%;
+  margin-left: 4%;
+}
+
+.common-dialog-download-file-container p {
+  text-wrap: nowrap;
+  color: #131313;
+  margin: 0%;
+}
+
+
+/* .common-dialog-checkboc-selector{
+  display: flex;
+  flex-direction: column;
+  border: 2px dashed #0000801F;
+  width: 9vw;
+  height: 18vh;
+  border-radius: 1rem;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  row-gap: 2vh;
+  cursor: pointer;
+}
+.common-dialog-checkboc-selector img{
+  width: 3vw;
+}
+.common-dialog-checkboc-selector h2{
+  font-size: 1vw;
+  font-weight: 600;
+  color: #000080;
+  margin: 0%;
+  text-align: center;
+} */
+
+.common-dialog-checkboc-selector {
+  display: flex;
+  flex-direction: column;
+  border: 2px dashed rgba(0, 0, 128, 0.12);
+  width: 125px;
+  height: 115px;
+  border-radius: 16px;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  row-gap: 20px;
+  cursor: pointer;
+}
+
+.common-dialog-checkboc-selector img {
+  width: 48px;
+}
+
+.common-dialog-checkboc-selector h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000080;
+  margin: 0;
+  text-align: center;
+}
+
+.common-dialog-image-picture-extra-css {
+  padding: 4% 5%;
+}
+
+.common-dialog-text-delete-extra-css {
+  padding: 2% 3%;
+}

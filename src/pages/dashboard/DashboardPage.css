@@ -1,0 +1,57 @@
+.dashboard-starter {
+  display: flex;
+  flex-direction: column;
+  row-gap: 2rem;
+}
+
+.dashboard-starter-welcome h3 {
+  margin: 0 0 0.5rem;
+  font-size: 22px;
+  font-weight: 600;
+  color: #0d0d0d;
+}
+
+.dashboard-starter-welcome p {
+  margin: 0;
+  color: #5e5e5e;
+  line-height: 1.5;
+}
+
+.dashboard-starter-welcome code,
+.dashboard-starter-card code {
+  background: #f4f4f4;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+}
+
+.dashboard-starter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.dashboard-starter-card {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+}
+
+.dashboard-starter-card h4 {
+  margin: 0 0 0.5rem;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.dashboard-starter-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #5e5e5e;
+  line-height: 1.45;
+}
+
+.dashboard-starter-actions {
+  display: flex;
+  gap: 1rem;
+}

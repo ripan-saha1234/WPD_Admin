@@ -1,0 +1,415 @@
+.common-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.common-input-label {
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #0D0D0D;
+  font-size: 14px;
+  margin-left: 1.5%;
+}
+
+.common-input-label.required::after {
+  content: '*';
+  color: red;
+  margin-left: 0px;
+}
+
+.common-input {
+  padding: 1.2% 1.5%;
+  border: 1px solid #D9D9D9;
+  border-radius: 0.5rem;
+  background-color: transparent;
+  font-size: 14px;
+  color: #6D6D6D;
+  font-weight: 400;
+  transition: border-color 0.3s ease;
+  font-family: 'League Spartan';
+}
+
+.common-input::placeholder {
+  font-family: 'League Spartan';
+  color: #6D6D6D;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.common-input:focus {
+  outline: none;
+  border: 1px solid #c2c2c2;
+  box-shadow: 0 0 5px #c2c2c274;
+}
+
+.common-input.error {
+  border: 1px solid red;
+}
+
+/* Fix for browser autofill styling */
+.common-input:-webkit-autofill,
+.common-input:-webkit-autofill:hover,
+.common-input:-webkit-autofill:focus,
+.common-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: #6D6D6D !important;
+  transition: background-color 5000s ease-in-out 0s;
+  background-color: white !important;
+}
+
+/* For Firefox */
+.common-input:-moz-autofill {
+  background-color: white !important;
+  color: #6D6D6D !important;
+}
+
+/* For Edge/IE */
+.common-input:-ms-input-placeholder {
+  color: #6D6D6D !important;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+  margin-left: 2%;
+}
+
+.common-input-message {
+  color: #0D0D0D;
+  font-size: 12px;
+  margin-top: 5px;
+  margin-left: 4%;
+}
+
+/* Reduce size of calendar and clock icons for date and time inputs */
+.common-input[type="date"]::-webkit-calendar-picker-indicator,
+.common-input[type="time"]::-webkit-calendar-picker-indicator,
+.common-input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  width: 10px;
+  height: 10px;
+  cursor: pointer;
+}
+
+/* For Firefox */
+.common-input[type="date"]::-moz-calendar-picker-indicator,
+.common-input[type="time"]::-moz-calendar-picker-indicator,
+.common-input[type="datetime-local"]::-moz-calendar-picker-indicator {
+  width: 10px;
+  height: 10px;
+  cursor: pointer;
+}
+
+.common-input:disabled {
+  background-color: #f4f4f4;
+  cursor: not-allowed;
+}
+
+.common-input-textarea {
+  border-radius: 0.5rem;
+}
+
+/* Fix for browser autofill styling on textarea */
+.common-input-textarea:-webkit-autofill,
+.common-input-textarea:-webkit-autofill:hover,
+.common-input-textarea:-webkit-autofill:focus,
+.common-input-textarea:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: #6D6D6D !important;
+  transition: background-color 5000s ease-in-out 0s;
+  background-color: white !important;
+}
+
+.common-input-textarea:-moz-autofill {
+  background-color: white !important;
+  color: #6D6D6D !important;
+}
+
+.common-input-upload-container {
+  width: 100%;
+}
+
+.common-input-file-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0D0D0D;
+  margin-bottom: 10px;
+  margin-left: 2%;
+}
+
+.common-input-required-asterisk {
+  color: #ff9980;
+}
+
+.common-input-custom-file-input {
+  position: relative;
+  width: 100%;
+  height: 7.5vh;
+  border-radius: 0.5rem;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 0 24px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.common-input-file-placeholder {
+  color: #6D6D6D;
+  font-size: 14px;
+}
+
+.common-input-file-name {
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.common-input-upload-button {
+  height: 5vh;
+  padding: 0 2.7%;
+  border: none;
+  background-color: #6600CC;
+  color: white;
+  font-size: 14px;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  position: absolute;
+  right: 1%;
+}
+
+.common-input-hidden-file-input {
+  position: absolute;
+  width: calc(100% - 110px);
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+
+.common-input-file-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+
+.common-input-beside-layout {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px;
+  align-items: center;
+}
+
+.common-input-beside-layout .common-input-custom-file-input {
+  flex: 4.5;
+}
+
+.common-input-beside-layout .common-input-image-previews {
+  flex: 1;
+  margin-top: 0;
+}
+
+
+.common-input-image-previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.common-input-image-preview-container {
+  position: relative;
+  width: 10vw;
+  height: 100px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.common-input-image-preview-medium .common-input-image-preview-container {
+  width: 40%;
+  height: 200px;
+}
+
+
+.common-input-image-preview-large .common-input-image-preview-container {
+  width: 100%;
+  height: 300px;
+}
+
+.common-input-image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.common-input-image-remove-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  color: #131313;
+  border: none;
+  border-radius: 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  line-height: 1;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.265);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.common-input-image-remove-btn:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+}
+
+.common-input-image-remove-btn:hover .common-input-image-remove-icon {
+  color: white;
+  filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(87deg) brightness(103%) contrast(103%);
+}
+
+.common-input-view-image-text {
+  display: flex;
+  font-size: 1vw;
+  color: #13131370;
+  text-decoration: underline;
+  margin-left: 8%;
+  cursor: pointer;
+}
+
+.common-input-wrapper .common-input-extra-css {
+  margin-left: 3%;
+}
+
+.common-input-wrapper .common-input-extra-css-file {
+  margin-left: 4.375%;
+}
+
+
+.common-input-phone-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: 0.5rem;
+  background-color: transparent;
+  overflow: hidden;
+  column-gap: 1%;
+  border: 1px solid #D9D9D9;
+}
+
+.common-input-country-code-wrapper {
+  display: flex;
+  align-items: center;
+  min-width: 60px;
+}
+
+.common-input-country-code-select {
+  background-color: transparent;
+  border: none;
+  font-size: 14px;
+  color: #6D6D6D;
+  font-weight: 500;
+  font-family: 'League Spartan';
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0rem center;
+  background-size: 1em;
+  padding-right: 0.8rem;
+  padding-left: 1rem;
+}
+
+.common-input-country-code-select:focus {
+  outline: none;
+}
+
+.common-input-country-code-divider {
+  width: 1px;
+  height: 1.8vw;
+  background-color: #ccc;
+  margin: 0 10px;
+}
+
+.common-input-phone {
+  flex: 1;
+  border: none;
+  background-color: transparent;
+  margin-left: -5%;
+}
+
+.common-input-phone:focus {
+  outline: none;
+  box-shadow: none;
+  border: none;
+}
+
+/* Fix for browser autofill styling on phone input */
+.common-input-phone:-webkit-autofill,
+.common-input-phone:-webkit-autofill:hover,
+.common-input-phone:-webkit-autofill:focus,
+.common-input-phone:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: #6D6D6D !important;
+  transition: background-color 5000s ease-in-out 0s;
+  background-color: white !important;
+}
+
+.common-input-phone:-moz-autofill {
+  background-color: white !important;
+  color: #6D6D6D !important;
+}
+
+
+.common-input-phone-container:focus-within {
+  outline: none;
+  border: 1px solid #c1c1c1;
+  box-shadow: 0 0 5px #c1c1c17b;
+}
+
+
+.common-input-phone-container.error {
+  border: 1px solid red;
+}
+
+.common-input-csv-display-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 9vw;
+  aspect-ratio: 1/1;
+}
+
+.common-input-csv-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 80%;
+  object-fit: contain;
+}
+
+.common-input-csv-preview img {
+  width: 100%;
+}
