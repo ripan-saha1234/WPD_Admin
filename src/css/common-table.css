@@ -18,8 +18,8 @@
 }
 
 .table1 thead {
-  background-color: #332D2D;
-  color: #FFFFFF;
+  background-color: #E9EDF7;
+  color: #182033;
   height: 54px;
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
@@ -40,15 +40,14 @@
 }
 
 .table1 th {
-  color: #FFFFFF;
-  font-weight: 400;
+  color: #182033;
+  font-weight: 600;
   padding: 1.5% 1.5%;
   text-wrap: nowrap;
   font-size: 14px;
 }
 
-.table1-action-header {
-  padding-right: 0.5%;
+.table1 th.table1-action-header {
   text-align: center;
 }
 
@@ -76,7 +75,7 @@
 .table1-action-dropdown {
   position: absolute;
   top: 100%;
-  left: -40%;
+  left: 20%;
   transform: translateX(-50%);
   margin-top: 4px;
   background-color: white;
@@ -113,7 +112,7 @@
 }
 
 .table1 tbody tr:nth-child(even) {
-  background-color: #F6F7F9;
+  background-color: #FFFFFF;
 }
 
 .table1 tbody tr:nth-child(odd) {

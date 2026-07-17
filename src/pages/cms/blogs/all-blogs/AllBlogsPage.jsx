@@ -1,31 +1,76 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { globalContext } from '../../../../context/context';
-import { getBlogs, deleteBlog } from '../../../../services/blogService';
 import { usePageHeader } from '../../../../hooks/usePageHeader';
 import BlogCard from './BlogCard';
 import './BlogCard.css';
-import '../shared/BlogForm.css';
 
-function normalizeBlogs(list) {
-  return (list || []).map((blog) => ({
-    ...blog,
-    categoryName: blog.blog_category?.name || blog.categoryName || 'Blog',
-    created_at: blog.created_at || blog.createdAt || '—',
-  }));
-}
+const SAMPLE_BLOGS = [
+  {
+    id: '1',
+    title: 'The Role of IT in Modern Businesses',
+    category: 'Tech Blog',
+    date: '12/6/2024',
+    excerpt:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt...',
+    thumbnail:
+      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    id: '2',
+    title: 'The Role of IT in Modern Businesses',
+    category: 'Cloud Computing',
+    date: '12/6/2024',
+    excerpt:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt...',
+    thumbnail:
+      'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    id: '3',
+    title: 'The Role of IT in Modern Businesses',
+    category: 'AI & ML',
+    date: '12/6/2024',
+    excerpt:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt...',
+    thumbnail:
+      'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    id: '4',
+    title: 'The Role of IT in Modern Businesses',
+    category: 'Tech Blog',
+    date: '12/6/2024',
+    excerpt:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt...',
+    thumbnail:
+      'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=800&q=80',
+  },
+];
 
 function AllBlogsPage() {
-  const { showToast } = useContext(globalContext);
   const navigate = useNavigate();
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+  const breadcrumbs = useMemo(
+    () => [
+      { title: 'CMS', link: '/cms' },
+      { title: 'Blog', link: '/cms/blogs' },
+    ],
+    []
+  );
 
   const headerButtons = useMemo(
     () => [
       {
         type: 'button',
-        text: 'Add Blog',
+        text: 'Blog Categories',
+        onClick: () => navigate('/cms/blogs/blog-categories'),
+        backgroundColor: '#FFFFFF',
+        textColor: '#0690fd',
+        borderColor: '#0690fd',
+      },
+      {
+        type: 'button',
+        text: 'Create a Blog',
         onClick: () => navigate('/cms/blogs/add-blogs'),
         backgroundColor: '#0690fd',
         textColor: '#FFFFFF',
@@ -35,72 +80,17 @@ function AllBlogsPage() {
     [navigate]
   );
 
-  const breadcrumbs = useMemo(
-    () => [
-      { title: 'CMS', link: '/cms/blogs' },
-      { title: 'Blogs', link: '/cms/blogs' },
-    ],
-    []
-  );
-
   usePageHeader({
-    title: 'All Blogs',
+    title: 'Blog',
     breadcrumbs,
     buttons: headerButtons,
   });
 
-  const loadBlogs = useCallback(async () => {
-    setLoading(true);
-    const { data } = await getBlogs();
-    if (data?.success) {
-      const list = Array.isArray(data.data) ? data.data : data.data?.data || [];
-      setBlogs(normalizeBlogs(list));
-    } else {
-      showToast(data?.message || 'Failed to load blogs', 'error');
-    }
-    setLoading(false);
-  }, [showToast]);
-
-  useEffect(() => {
-    loadBlogs();
-  }, [loadBlogs]);
-
-  const openBlog = (blog) => {
-    navigate(`/cms/blogs/edit-blog/${blog.id}`);
-  };
-
-  const handleDelete = async (blog) => {
-    const confirmed = window.confirm(`Delete blog "${blog.name}"?`);
-    if (!confirmed) return;
-
-    const { data } = await deleteBlog(blog.id);
-    if (data?.success) {
-      showToast('Blog deleted', 'success');
-      loadBlogs();
-    } else {
-      showToast(data?.message || 'Failed to delete blog', 'error');
-    }
-  };
-
   return (
-    <div className="cms-blogs-page">
-      {loading ? (
-        <p className="cms-blogs-muted">Loading blogs...</p>
-      ) : blogs.length === 0 ? (
-        <p className="blog-cards-empty">No blogs yet. Click Add Blog to create one.</p>
-      ) : (
-        <div className="blog-cards-grid">
-          {blogs.map((blog) => (
-            <BlogCard
-              key={blog.id}
-              blog={blog}
-              onLearnMore={openBlog}
-              onEdit={openBlog}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
-      )}
+    <div className="blog-cards-grid">
+      {SAMPLE_BLOGS.map((blog) => (
+        <BlogCard key={blog.id} blog={blog} />
+      ))}
     </div>
   );
 }

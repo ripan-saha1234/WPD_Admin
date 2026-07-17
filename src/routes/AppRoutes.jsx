@@ -1,11 +1,11 @@
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout from '../layouts/AppLayout/AppLayout';
 import LoginPage from '../pages/auth/LoginPage';
 import DashboardPage from '../pages/dashboard/DashboardPage';
+import Cms from '../pages/cms/cms';
 import AllBlogsPage from '../pages/cms/blogs/all-blogs/AllBlogsPage';
-import AddBlogsPage from '../pages/cms/blogs/add-blogs/AddBlogsPage';
-import EditBlogPage from '../pages/cms/blogs/edit-blogs/EditBlogPage';
 import BlogCategoriesPage from '../pages/cms/blogs/blog-categories/BlogCategoriesPage';
+import AddBlogPage from '../pages/cms/blogs/add-blogs/AddBlogPage';
 
 function AppRoutes() {
   return (
@@ -14,17 +14,11 @@ function AppRoutes() {
       <Route path="/" element={<AppLayout />}>
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
-
-        <Route path="cms/blogs" element={<Outlet />}>
-          <Route index element={<AllBlogsPage />} />
-          <Route path="add-blogs" element={<AddBlogsPage />} />
-          <Route path="edit-blog/:id" element={<EditBlogPage />} />
-          <Route path="blog-categories" element={<BlogCategoriesPage />} />
-        </Route>
-
-        <Route path="blog" element={<Navigate to="/cms/blogs" replace />} />
-        <Route path="blog/add" element={<Navigate to="/cms/blogs/add-blogs" replace />} />
-        <Route path="blog-category" element={<Navigate to="/cms/blogs/blog-categories" replace />} />
+        <Route path="cms" element={<Cms />} />
+        <Route path="cms/blogs" element={<AllBlogsPage />} />
+        <Route path="cms/blogs/blog-categories" element={<BlogCategoriesPage />} />
+        <Route path="cms/blogs/add-blogs" element={<AddBlogPage />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
     </Routes>
   );

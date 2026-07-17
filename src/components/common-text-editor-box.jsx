@@ -2,13 +2,13 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import '../css/common-text-editor-box.css';
 
 const BLOCK_FORMAT_OPTIONS = [
-  { label: 'Paragraph', value: 'p' },
   { label: 'Heading 1', value: 'h1' },
   { label: 'Heading 2', value: 'h2' },
   { label: 'Heading 3', value: 'h3' },
   { label: 'Heading 4', value: 'h4' },
   { label: 'Heading 5', value: 'h5' },
   { label: 'Heading 6', value: 'h6' },
+  { label: 'Paragraph', value: 'p' },
 ];
 
 const BLOCK_TAGS = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'blockquote']);
@@ -661,42 +661,19 @@ const CommonTextEditorBox = ({
 
       <div className={`rich-text-editor ${className} ${error ? 'error' : ''}`}>
         <div className="rte-toolbar" onMouseDown={onToolbarMouseDown}>
-          <div className="rte-group">
-            <button
-              type="button"
-              className="rte-btn"
-              onClick={() => executeCommand('undo')}
-              disabled={disabled || !canUndo}
-              title="Undo (Ctrl+Z)"
-            >
-              ↶
-            </button>
-            <button
-              type="button"
-              className="rte-btn"
-              onClick={() => executeCommand('redo')}
-              disabled={disabled || !canRedo}
-              title="Redo (Ctrl+Y)"
-            >
-              ↷
-            </button>
-          </div>
-
-          <div className="rte-group rte-group-block-format">
-            <select
-              className="rte-block-select"
-              value={blockFormat}
-              onChange={(e) => applyBlockFormat(e.target.value)}
-              disabled={disabled}
-              title="Text style"
-              aria-label="Text style"
-            >
-              {BLOCK_FORMAT_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+          <div className="rte-group rte-group-blocks">
+            {BLOCK_FORMAT_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={`rte-btn rte-btn-block ${blockFormat === option.value ? 'active' : ''}`}
+                onClick={() => applyBlockFormat(option.value)}
+                disabled={disabled}
+                title={option.label}
+              >
+                {option.value === 'p' ? 'Paragraph' : option.value.toUpperCase()}
+              </button>
+            ))}
           </div>
 
           <div className="rte-group">
@@ -727,15 +704,6 @@ const CommonTextEditorBox = ({
             >
               <u>U</u>
             </button>
-            <button
-              type="button"
-              className={`rte-btn ${activeFormats.strikeThrough ? 'active' : ''}`}
-              onClick={() => executeCommand('strikeThrough')}
-              disabled={disabled}
-              title="Strikethrough (Ctrl+Shift+X)"
-            >
-              <s>S</s>
-            </button>
           </div>
 
           <div className="rte-group">
@@ -746,16 +714,12 @@ const CommonTextEditorBox = ({
               disabled={disabled}
               title="Bullet list (Ctrl+Shift+8)"
             >
-              •≡
-            </button>
-            <button
-              type="button"
-              className={`rte-btn ${activeFormats.insertOrderedList ? 'active' : ''}`}
-              onClick={() => executeCommand('insertOrderedList')}
-              disabled={disabled}
-              title="Numbered list (Ctrl+Shift+7)"
-            >
-              1.
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <circle cx="4" cy="6" r="1.5" fill="currentColor" />
+                <circle cx="4" cy="12" r="1.5" fill="currentColor" />
+                <circle cx="4" cy="18" r="1.5" fill="currentColor" />
+                <path d="M9 6H20M9 12H20M9 18H20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
             </button>
           </div>
 
@@ -767,7 +731,9 @@ const CommonTextEditorBox = ({
               disabled={disabled}
               title="Align left"
             >
-              ⬅
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M4 6H20M4 12H14M4 18H18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
             </button>
             <button
               type="button"
@@ -776,7 +742,9 @@ const CommonTextEditorBox = ({
               disabled={disabled}
               title="Align center"
             >
-              ↔
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M4 6H20M7 12H17M5 18H19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
             </button>
             <button
               type="button"
@@ -785,7 +753,9 @@ const CommonTextEditorBox = ({
               disabled={disabled}
               title="Align right"
             >
-              ➡
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M4 6H20M10 12H20M6 18H20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
             </button>
             <button
               type="button"
@@ -794,7 +764,9 @@ const CommonTextEditorBox = ({
               disabled={disabled}
               title="Justify"
             >
-              ⬌
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
             </button>
           </div>
 
@@ -806,16 +778,10 @@ const CommonTextEditorBox = ({
               disabled={disabled}
               title="Insert / remove link (Ctrl+K)"
             >
-              🔗
-            </button>
-            <button
-              type="button"
-              className="rte-btn"
-              onClick={clearFormatting}
-              disabled={disabled}
-              title="Clear formatting (Ctrl+Shift+\\)"
-            >
-              Tx
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M10 13.5a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1.5 1.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M14 10.5a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1.5-1.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </button>
           </div>
         </div>

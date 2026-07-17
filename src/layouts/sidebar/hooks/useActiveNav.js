@@ -10,8 +10,6 @@ export function useActiveNav(items) {
       .filter((item) => pathname === item.path || pathname.startsWith(`${item.path}/`))
       .sort((a, b) => b.path.length - a.path.length)[0];
 
-    // Exact or prefix: /cms/blogs matches list + add/edit, not /cms/blogs/blog-categories
-    // handled above via `${item.path}/` — but list page is exact /cms/blogs
     if (match) return match.id;
 
     const prefixMatch = items

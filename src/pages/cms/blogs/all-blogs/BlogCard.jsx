@@ -1,54 +1,39 @@
 import './BlogCard.css';
 
-function BlogCard({ blog, onLearnMore, onEdit, onDelete }) {
-  const imageSrc = blog.thumbnail_image || '/login-image.svg';
-  const category = blog.categoryName || blog.blog_category?.name || 'Blog';
-
+function BlogCard({ blog, onLearnMore }) {
   return (
     <article className="blog-card">
       <div className="blog-card-media">
-        <img
-          className="blog-card-image"
-          src={imageSrc}
-          alt={blog.name || 'Blog thumbnail'}
-          onError={(e) => {
-            e.currentTarget.src = '/login-image.svg';
-          }}
-        />
-        <span className="blog-card-badge">{category}</span>
-        <div className="blog-card-actions">
-          <button
-            type="button"
-            className="blog-card-icon-btn"
-            title="Edit"
-            onClick={() => onEdit?.(blog)}
-          >
-            <img src="/edit-icon.svg" alt="" />
-          </button>
-          <button
-            type="button"
-            className="blog-card-icon-btn"
-            title="Delete"
-            onClick={() => onDelete?.(blog)}
-          >
-            <img src="/delete-icon.svg" alt="" />
-          </button>
-        </div>
+        {blog.thumbnail ? (
+          <img src={blog.thumbnail} alt={blog.title} className="blog-card-image" />
+        ) : (
+          <div className="blog-card-image blog-card-image--placeholder" />
+        )}
+        {blog.category && (
+          <span className="blog-card-category">{blog.category}</span>
+        )}
       </div>
 
       <div className="blog-card-body">
-        <h3 className="blog-card-title" title={blog.name}>
-          {blog.name}
-        </h3>
-      </div>
+        <div className="blog-card-date">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="2" stroke="#8a8a8a" strokeWidth="1.6" />
+            <path d="M3 9H21" stroke="#8a8a8a" strokeWidth="1.6" />
+            <path d="M8 3V7M16 3V7" stroke="#8a8a8a" strokeWidth="1.6" strokeLinecap="round" />
+          </svg>
+          <span>{blog.date}</span>
+        </div>
 
-      <div className="blog-card-footer">
+        <h3 className="blog-card-title">{blog.title}</h3>
+        <p className="blog-card-excerpt">{blog.excerpt}</p>
+
         <button
           type="button"
-          className="blog-card-learn-more"
+          className="blog-card-link"
           onClick={() => onLearnMore?.(blog)}
         >
           Learn More
+          <span aria-hidden="true">→</span>
         </button>
       </div>
     </article>

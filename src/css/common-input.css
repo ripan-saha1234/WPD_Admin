@@ -3,6 +3,8 @@
   flex-direction: column;
   margin-bottom: 15px;
   position: relative;
+  width: 100%;
+  min-width: 0;
 }
 
 .common-input-label {
@@ -20,7 +22,10 @@
 }
 
 .common-input {
-  padding: 1.2% 1.5%;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 12px 14px;
   border: 1px solid #D9D9D9;
   border-radius: 0.5rem;
   background-color: transparent;
@@ -109,6 +114,7 @@
 
 .common-input-textarea {
   border-radius: 0.5rem;
+  resize: vertical;
 }
 
 /* Fix for browser autofill styling on textarea */

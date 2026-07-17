@@ -1,0 +1,147 @@
+.table-element-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-element {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #e0e5f2;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-element th,
+.table-element td {
+  border-right: 1px solid #e0e5f2;
+  border-bottom: 1px solid #e0e5f2;
+}
+
+.table-element tr > *:last-child {
+  border-right: none;
+}
+
+.table-element tbody tr:last-child > * {
+  border-bottom: none;
+}
+
+.table-element thead th {
+  background: #eef1f6;
+  padding: 0;
+  height: 40px;
+  vertical-align: middle;
+}
+
+.table-element-gutter {
+  width: 34px;
+  min-width: 34px;
+  background: #f7f9fc;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0;
+}
+
+.table-element tbody .table-element-gutter {
+  padding: 6px 0;
+}
+
+.table-element-drag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+}
+
+.table-element-col-header {
+  position: relative;
+}
+
+.table-element-col-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 30px 8px 12px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0d0d0d;
+  font-family: inherit;
+}
+
+.table-element-col-header .table-element-icon-btn {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+}
+
+.table-element-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.table-element-icon-btn:hover {
+  background: #e6ebf3;
+}
+
+.table-element-icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.table-element-cell {
+  padding: 0;
+}
+
+.table-element-cell-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  color: #464646;
+  font-family: inherit;
+}
+
+.table-element-cell-input:focus {
+  background: #f5f9ff;
+}
+
+.table-element-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.table-element-add {
+  padding: 6px 12px;
+  border: 1px solid #cfe6ff;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #0690fd;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.table-element-add:hover {
+  background: #eef7ff;
+}
+
+.table-element-size {
+  color: #8a94a6;
+  font-size: 12px;
+}

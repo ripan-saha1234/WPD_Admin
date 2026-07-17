@@ -1,0 +1,88 @@
+.add-blog-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1.25rem;
+}
+
+.add-blog-top-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  column-gap: 1.5rem;
+  align-items: start;
+}
+
+.add-blog-field-label {
+  margin: 0 0 0.4rem;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0d0d0d;
+}
+
+.add-blog-share-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.add-blog-share-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0d0d0d;
+}
+
+.add-blog-share-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 14px;
+  color: #0d0d0d;
+  cursor: pointer;
+}
+
+.add-blog-share-option input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  accent-color: #0690fd;
+  cursor: pointer;
+}
+
+.add-blog-add-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1rem;
+  background: #ffffff;
+  border: 1px solid #e0e5f2;
+  border-radius: 12px;
+  color: #0690fd;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.add-blog-add-section:hover {
+  background: #f5f8ff;
+}
+
+.add-blog-add-section-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #d5dbe8;
+  border-radius: 50%;
+  color: #464646;
+  font-size: 14px;
+  line-height: 1;
+}
+
+@media (max-width: 900px) {
+  .add-blog-top-row {
+    grid-template-columns: 1fr;
+  }
+}

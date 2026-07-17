@@ -7,21 +7,15 @@ export const SIDEBAR_NAV_ITEMS = [
     icon: '/dashboard-icon.svg',
   },
   {
-    id: 'blog',
-    path: '/cms/blogs',
-    label: 'Blog',
+    id: 'cms',
+    path: '/cms',
+    label: 'CMS',
     icon: '/cms-icon.svg',
-  },
-  {
-    id: 'blog-categories',
-    path: '/cms/blogs/blog-categories',
-    label: 'Blog Category',
-    icon: '/cms-tiles-icon.svg',
   },
 ];
 
 export const SIDEBAR_BRAND = {
-  logo: '/logo_wpd.svg',
+  logo: '/logo.svg',
   alt: 'WPD Admin',
 };
 
