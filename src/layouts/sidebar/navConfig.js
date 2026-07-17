@@ -15,7 +15,7 @@ export const SIDEBAR_NAV_ITEMS = [
 ];
 
 export const SIDEBAR_BRAND = {
-  logo: '/logo.svg',
+  logo: '/logo_wpd.svg',
   alt: 'WPD Admin',
 };
 
