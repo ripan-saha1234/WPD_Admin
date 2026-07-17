@@ -5,14 +5,19 @@ import './ElementCard.css';
  * Common wrapper for every section element — header with drag handle,
  * element label, collapse chevron and delete, body below.
  */
-function ElementCard({ title, onDelete, children }) {
+function ElementCard({ title, onDelete, dragHandleProps = {}, children }) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
     <div className="element-card">
       <div className="element-card-header">
         <div className="element-card-header-left">
-          <span className="element-card-drag" aria-hidden="true">
+          <span
+            className="element-card-drag"
+            aria-hidden="true"
+            title="Drag to reorder element"
+            {...dragHandleProps}
+          >
             <svg width="11" height="9" viewBox="0 0 12 10" fill="none">
               <path
                 d="M1 1H11M1 5H11M1 9H11"

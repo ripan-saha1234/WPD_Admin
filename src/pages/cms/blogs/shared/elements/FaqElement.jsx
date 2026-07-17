@@ -8,7 +8,7 @@ const nextFaqId = () => `faq-${Date.now()}-${faqIdCounter++}`;
 
 const createFaqItem = () => ({ id: nextFaqId(), question: '', answer: '' });
 
-function FaqElement({ element, onChange, onDelete }) {
+function FaqElement({ element, onChange, onDelete, dragHandleProps }) {
   const items = element.data?.items?.length ? element.data.items : null;
   const [openMenuId, setOpenMenuId] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
@@ -55,7 +55,7 @@ function FaqElement({ element, onChange, onDelete }) {
   };
 
   return (
-    <ElementCard title="FAQ" onDelete={onDelete}>
+    <ElementCard title="FAQ" onDelete={onDelete} dragHandleProps={dragHandleProps}>
       <div className="faq-element-list">
         {faqItems.map((item, index) => (
           <div key={item.id} className="faq-element-item">

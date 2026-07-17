@@ -28,7 +28,7 @@ function getInitialTable() {
   return { columns, rows };
 }
 
-function TableElement({ element, onChange, onDelete }) {
+function TableElement({ element, onChange, onDelete, dragHandleProps }) {
   const table = element.data?.columns
     ? { columns: element.data.columns, rows: element.data.rows || [] }
     : getInitialTable();
@@ -89,7 +89,7 @@ function TableElement({ element, onChange, onDelete }) {
   };
 
   return (
-    <ElementCard title="Table" onDelete={onDelete}>
+    <ElementCard title="Table" onDelete={onDelete} dragHandleProps={dragHandleProps}>
       <div className="table-element-scroll">
         <table className="table-element">
           <thead>

@@ -2,9 +2,9 @@ import ElementCard from './ElementCard';
 import CommonInput from '../../../../../components/common-input';
 import './ButtonElement.css';
 
-function ButtonElement({ element, onChange, onDelete }) {
+function ButtonElement({ element, onChange, onDelete, dragHandleProps }) {
   return (
-    <ElementCard title="Button" onDelete={onDelete}>
+    <ElementCard title="Button" onDelete={onDelete} dragHandleProps={dragHandleProps}>
       <div className="button-element-row">
         <CommonInput
           label="Button name"

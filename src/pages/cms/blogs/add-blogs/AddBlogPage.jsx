@@ -112,6 +112,29 @@ function AddBlogPage() {
     );
   };
 
+  const reorderSections = (fromIndex, toIndex) => {
+    if (fromIndex === toIndex) return;
+    setSections((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return next;
+    });
+  };
+
+  const reorderElements = (sectionId, fromIndex, toIndex) => {
+    if (fromIndex === toIndex) return;
+    setSections((prev) =>
+      prev.map((section) => {
+        if (section.id !== sectionId) return section;
+        const elements = [...section.elements];
+        const [moved] = elements.splice(fromIndex, 1);
+        elements.splice(toIndex, 0, moved);
+        return { ...section, elements };
+      })
+    );
+  };
+
   const handleElementDelete = (sectionId, elementId) => {
     setSections((prev) =>
       prev.map((section) =>
@@ -239,6 +262,8 @@ function AddBlogPage() {
           onAddElement={addElement}
           onElementChange={handleElementChange}
           onElementDelete={handleElementDelete}
+          onReorder={reorderSections}
+          onElementReorder={reorderElements}
         />
       ))}
 

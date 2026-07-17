@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import SectionElement from './elements/SectionElement';
 import './BlogSectionCard.css';
 
@@ -9,14 +10,44 @@ function BlogSectionCard({
   onAddElement,
   onElementChange = () => {},
   onElementDelete = () => {},
+  onReorder = () => {},
+  onElementReorder = () => {},
 }) {
   const elementCount = section.elements.length;
+  const [dragEnabled, setDragEnabled] = useState(false);
 
   return (
-    <section className="blog-section-card">
+    <section
+      className="blog-section-card"
+      draggable={dragEnabled}
+      onDragStart={(e) => {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('application/x-section-index', String(index));
+      }}
+      onDragEnd={() => setDragEnabled(false)}
+      onDragOver={(e) => {
+        if (e.dataTransfer.types.includes('application/x-section-index')) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+        }
+      }}
+      onDrop={(e) => {
+        const raw = e.dataTransfer.getData('application/x-section-index');
+        if (raw === '') return;
+        e.preventDefault();
+        onReorder(Number(raw), index);
+        setDragEnabled(false);
+      }}
+    >
       <header className="blog-section-card-header">
         <div className="blog-section-card-header-left">
-          <span className="blog-section-drag" aria-hidden="true">
+          <span
+            className="blog-section-drag"
+            aria-hidden="true"
+            title="Drag to reorder section"
+            onMouseDown={() => setDragEnabled(true)}
+            onMouseUp={() => setDragEnabled(false)}
+          >
             <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
               <path
                 d="M1 1H11M1 5H11M1 9H11"
@@ -100,14 +131,19 @@ function BlogSectionCard({
             </button>
           ) : (
             <div className="blog-section-elements">
-              {section.elements.map((element) => (
+              {section.elements.map((element, elementIndex) => (
                 <SectionElement
                   key={element.id}
                   element={element}
+                  index={elementIndex}
+                  sectionId={section.id}
                   onChange={(elementId, dataPatch) =>
                     onElementChange(section.id, elementId, dataPatch)
                   }
                   onDelete={(elementId) => onElementDelete(section.id, elementId)}
+                  onReorder={(fromIndex, toIndex) =>
+                    onElementReorder(section.id, fromIndex, toIndex)
+                  }
                 />
               ))}
             </div>

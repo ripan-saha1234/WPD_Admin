@@ -2,9 +2,9 @@ import ElementCard from './ElementCard';
 import CommonFileUpload from '../../../../../components/common-file-upload';
 import CommonInput from '../../../../../components/common-input';
 
-function ImageElement({ element, onChange, onDelete }) {
+function ImageElement({ element, onChange, onDelete, dragHandleProps }) {
   return (
-    <ElementCard title="Image" onDelete={onDelete}>
+    <ElementCard title="Image" onDelete={onDelete} dragHandleProps={dragHandleProps}>
       <CommonFileUpload
         acceptedTypes="image"
         placeholder="Drop your Image here"
