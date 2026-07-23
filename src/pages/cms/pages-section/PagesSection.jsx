@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './PagesSection.css';
 
 const CMS_PAGES = [
-  { id: 'home', label: 'Home' },
+  { id: 'home', label: 'Home', path: '/cms/pages/home' },
   { id: 'about', label: 'About' },
   { id: 'join-as-promoter', label: 'Join as promoter' },
   { id: 'contact', label: 'Contact' },
