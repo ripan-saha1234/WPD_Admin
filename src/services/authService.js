@@ -1,68 +1,51 @@
-import {
-  STATIC_AUTH_TOKEN,
-  STATIC_AUTH_USER,
-  STATIC_CREDENTIALS,
-} from '../utils/auth';
+import { getAuthToken } from '../utils/auth';
 
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/?$/, '/');
 
 export const loginAdmin = async ({ email, password }) => {
-  // --- API auth (enable when backend is ready) ---
-  // const response = await fetch(`${API_BASE_URL}/admin/auth/login`, {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //     Accept: 'application/json',
-  //   },
-  //   body: JSON.stringify({ email, password }),
-  // });
-  // const data = await response.json();
-  // return { response, data };
+  const response = await fetch(`${API_BASE_URL}auth/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({ email, password }),
+  });
 
-  await new Promise((resolve) => setTimeout(resolve, 400));
-
-  const isValid =
-    email === STATIC_CREDENTIALS.email &&
-    password === STATIC_CREDENTIALS.password;
-
-  if (isValid) {
-    return {
-      response: { ok: true },
-      data: {
-        success: true,
-        data: {
-          token: STATIC_AUTH_TOKEN,
-          user: STATIC_AUTH_USER,
-        },
-      },
+  let data = {};
+  try {
+    data = await response.json();
+  } catch {
+    data = {
+      success: false,
+      message: 'Unexpected server response',
     };
   }
 
-  return {
-    response: { ok: false },
-    data: {
-      success: false,
-      message: 'Invalid email or password',
-    },
-  };
+  return { response, data };
 };
 
-export const logoutAdmin = async (_token) => {
-  // --- API auth (enable when backend is ready) ---
-  // const response = await fetch(`${API_BASE_URL}/admin/auth/logout`, {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //     Accept: 'application/json',
-  //     Authorization: `Bearer ${token}`,
-  //   },
-  //   body: JSON.stringify({}),
-  // });
-  // const data = await response.json();
-  // return { response, data };
+export const logoutAdmin = async (token) => {
+  const authToken = token || getAuthToken();
 
-  return {
-    response: { ok: true },
-    data: { success: true },
-  };
+  const response = await fetch(`${API_BASE_URL}auth/logout`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+    },
+    body: JSON.stringify({
+      token: authToken,
+    }),
+  });
+
+  let data = {};
+  try {
+    data = await response.json();
+  } catch {
+    data = { success: true };
+  }
+
+  return { response, data };
 };

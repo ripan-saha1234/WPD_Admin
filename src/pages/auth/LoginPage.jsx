@@ -82,21 +82,24 @@ function LoginPage() {
     setErrors({ email: '', password: '', general: '' });
 
     try {
-      const { data } = await loginAdmin({
-        email: formData.email,
+      const { response, data } = await loginAdmin({
+        email: formData.email.trim(),
         password: formData.password,
       });
 
-      if (data.success === true) {
+      if (data.success === true && data?.data?.token) {
         setAuthSession(data.data.token, data.data.user);
         setUser(mapUserFromApi(data.data.user));
         navigate('/dashboard');
-      } else {
-        setErrors((prev) => ({
-          ...prev,
-          general: data.message || 'Invalid email or password',
-        }));
+        return;
       }
+
+      setErrors((prev) => ({
+        ...prev,
+        general:
+          data.message ||
+          (!response.ok ? 'Invalid email or password' : 'Login failed'),
+      }));
     } catch (error) {
       console.error('Login error:', error);
       setErrors((prev) => ({

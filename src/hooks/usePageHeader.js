@@ -50,6 +50,7 @@ export function usePageHeader({
           textColor: button?.textColor ?? '',
           borderColor: button?.borderColor ?? '',
           img: button?.img ?? '',
+          disabled: Boolean(button?.disabled),
         })),
       }),
     [title, breadcrumbs, subTitle, buttons]

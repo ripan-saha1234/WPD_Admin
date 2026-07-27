@@ -1,20 +1,17 @@
-import { useContext, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { globalContext } from '../../../../context/context';
 import { usePageHeader } from '../../../../hooks/usePageHeader';
 import CommonTable from '../../../../components/common-table';
 import CommonDialog from '../../../../components/common-dialog';
-
-const INITIAL_CATEGORIES = [
-  { id: 1, name: 'Technology', blogCount: 2 },
-  { id: 2, name: 'Product Launches', blogCount: 5 },
-  { id: 3, name: 'Business', blogCount: 3 },
-  { id: 4, name: 'Workshops', blogCount: 4 },
-  { id: 5, name: 'Conferences', blogCount: 6 },
-  { id: 6, name: 'Team Building', blogCount: 2 },
-  { id: 7, name: 'Cloud Computing', blogCount: 7 },
-  { id: 8, name: 'AI & ML', blogCount: 2 },
-  { id: 9, name: 'Trade Shows', blogCount: 1 },
-];
+import CommonLoader from '../../../../components/common-loader';
+import {
+  createBlogCategory,
+  deleteBlogCategory,
+  extractBlogCategoriesList,
+  getBlogCategories,
+  mapBlogCategoryFromApi,
+  updateBlogCategory,
+} from '../../../../services/blogCategoryService';
 
 const TABLE_HEADERS = [
   { title: 'Blog Name', value: 'name' },
@@ -47,22 +44,48 @@ const CATEGORY_FORM_SECTIONS = [
 function BlogCategoriesPage() {
   const { showToast } = useContext(globalContext);
 
-  const [categories, setCategories] = useState(INITIAL_CATEGORIES);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
-  // Add / Edit dialog state
   const [formDialogOpen, setFormDialogOpen] = useState(false);
   const [editingCategoryId, setEditingCategoryId] = useState(null);
   const [formData, setFormData] = useState({ name: '' });
   const [errors, setErrors] = useState({});
 
-  // Delete dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
-  // CommonDialog requires function setters even when the form has no fields
   const [deleteFormData, setDeleteFormData] = useState({});
   const [deleteErrors, setDeleteErrors] = useState({});
 
   const isEditing = editingCategoryId !== null;
+
+  const fetchCategories = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) setLoading(true);
+    try {
+      const { response, data } = await getBlogCategories();
+
+      if (!response.ok || data.success === false) {
+        showToast(data.message || 'Failed to load blog categories', 'error');
+        setCategories([]);
+        return;
+      }
+
+      const list = extractBlogCategoriesList(data).map(mapBlogCategoryFromApi);
+      setCategories(list);
+    } catch (error) {
+      console.error('Fetch blog categories error:', error);
+      showToast('Network error. Please try again.', 'error');
+      setCategories([]);
+    } finally {
+      if (!silent) setLoading(false);
+    }
+  }, [showToast]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const breadcrumbs = useMemo(
     () => [
@@ -115,33 +138,84 @@ function BlogCategoriesPage() {
     }
   };
 
-  const handleFormSubmit = (data) => {
+  const handleFormSubmit = async (data) => {
     const name = data.name.trim();
+    const existing = isEditing
+      ? categories.find((item) => item.id === editingCategoryId)
+      : null;
 
-    if (isEditing) {
-      setCategories((current) =>
-        current.map((item) =>
-          item.id === editingCategoryId ? { ...item, name } : item
-        )
-      );
-      showToast('Blog category updated', 'success');
-    } else {
-      setCategories((current) => [
-        ...current,
-        { id: Date.now(), name, blogCount: 0 },
-      ]);
-      showToast('Blog category added', 'success');
+    setSubmitting(true);
+    try {
+      if (isEditing) {
+        const { response, data: apiData } = await updateBlogCategory(
+          editingCategoryId,
+          {
+            name,
+            parent_id: existing?.parent_id ?? '',
+            status: existing?.status || 'active',
+          }
+        );
+
+        if (!response.ok || apiData.success !== true) {
+          showToast(apiData.message || 'Failed to update blog category', 'error');
+          throw new Error(apiData.message || 'Update failed');
+        }
+
+        showToast(apiData.message || 'Blog category updated successfully.', 'success');
+        await fetchCategories({ silent: true });
+        return;
+      }
+
+      const { response, data: apiData } = await createBlogCategory({
+        name,
+        parent_id: '',
+        status: 'active',
+      });
+
+      if (!response.ok || apiData.success !== true) {
+        showToast(apiData.message || 'Failed to create blog category', 'error');
+        throw new Error(apiData.message || 'Create failed');
+      }
+
+      showToast(apiData.message || 'Blog category created successfully.', 'success');
+      await fetchCategories({ silent: true });
+    } catch (error) {
+      if (error?.message !== 'Create failed' && error?.message !== 'Update failed') {
+        console.error('Save blog category error:', error);
+        showToast('Network error. Please try again.', 'error');
+      }
+      throw error;
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (!categoryToDelete) return;
 
-    setCategories((current) =>
-      current.filter((item) => item.id !== categoryToDelete.id)
-    );
-    showToast('Blog category deleted', 'success');
-    setCategoryToDelete(null);
+    setDeleting(true);
+    try {
+      const { response, data: apiData } = await deleteBlogCategory(
+        categoryToDelete.id
+      );
+
+      if (!response.ok || apiData.success === false) {
+        showToast(apiData.message || 'Failed to delete blog category', 'error');
+        throw new Error(apiData.message || 'Delete failed');
+      }
+
+      showToast(apiData.message || 'Blog category deleted successfully.', 'success');
+      setCategoryToDelete(null);
+      await fetchCategories({ silent: true });
+    } catch (error) {
+      if (error?.message !== 'Delete failed') {
+        console.error('Delete blog category error:', error);
+        showToast('Network error. Please try again.', 'error');
+      }
+      throw error;
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const deleteDialogSections = useMemo(
@@ -154,6 +228,10 @@ function BlogCategoriesPage() {
     ],
     [categoryToDelete]
   );
+
+  if (loading) {
+    return <CommonLoader text="Loading blog categories..." />;
+  }
 
   return (
     <>
@@ -177,6 +255,8 @@ function BlogCategoriesPage() {
         submitButtonText={isEditing ? 'Update' : 'Add'}
         onSubmit={handleFormSubmit}
         dialogsize="sm"
+        submitButtonLoading={submitting}
+        submitButtonLoadingText="Saving..."
       />
 
       <CommonDialog
@@ -191,6 +271,8 @@ function BlogCategoriesPage() {
         submitButtonText="Delete"
         onSubmit={handleDeleteConfirm}
         dialogsize="sm"
+        submitButtonLoading={deleting}
+        submitButtonLoadingText="Deleting..."
       />
     </>
   );

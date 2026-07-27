@@ -1,24 +1,5 @@
-export const AUTH_TOKEN_KEY = 'Wpd_admin_token';
+export const AUTH_TOKEN_KEY = 'wpd_admin_token';
 export const AUTH_USER_KEY = 'wpd_admin_user';
-
-/** Static login until backend auth API is ready */
-export const STATIC_CREDENTIALS = {
-  email: 'admin@wpd.com',
-  password: 'admin123',
-};
-
-export const STATIC_AUTH_USER = {
-  id: 1,
-  name: 'Wpd Admin',
-  first_name: 'Wpd',
-  last_name: 'Admin',
-  email: STATIC_CREDENTIALS.email,
-  phone: '',
-  image: '/avatar.svg',
-  roles: ['admin'],
-};
-
-export const STATIC_AUTH_TOKEN = 'wpd-static-dev-token';
 
 export const getAuthToken = () => {
   try {
@@ -32,9 +13,9 @@ export const getAuthToken = () => {
       token = tokenItem;
     }
 
-    return typeof token === 'string' ? token : null;
+    return typeof token === 'string' && token.trim() ? token : null;
   } catch (error) {
-    console.log('Error getting token:', error);
+    console.error('Error getting token:', error);
     return null;
   }
 };
@@ -49,8 +30,12 @@ export const getStoredUser = () => {
 };
 
 export const setAuthSession = (token, user) => {
+  if (!token) {
+    throw new Error('Auth token is required');
+  }
+
   localStorage.setItem(AUTH_TOKEN_KEY, JSON.stringify(token));
-  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user || {}));
 };
 
 export const clearAuthSession = () => {
@@ -58,7 +43,16 @@ export const clearAuthSession = () => {
   localStorage.removeItem(AUTH_USER_KEY);
 };
 
-export const mapUserFromApi = (userData) => ({
+export const getAuthHeader = () => {
+  const token = getAuthToken();
+  if (!token) return {};
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+};
+
+export const mapUserFromApi = (userData = {}) => ({
   id: userData.id || null,
   name: userData.name || '',
   firstName: userData.first_name || '',
@@ -66,5 +60,5 @@ export const mapUserFromApi = (userData) => ({
   phone: userData.phone || '',
   email: userData.email || '',
   image: userData.image || '/avatar.svg',
-  roles: userData.roles || [],
+  roles: Array.isArray(userData.roles) ? userData.roles : [],
 });

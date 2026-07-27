@@ -1,54 +1,56 @@
-import { useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { globalContext } from '../../../../context/context';
 import { usePageHeader } from '../../../../hooks/usePageHeader';
+import CommonLoader from '../../../../components/common-loader';
+import {
+  extractBlogsList,
+  getBlogs,
+  mapBlogCardFromApi,
+} from '../../../../services/blogService';
 import BlogCard from './BlogCard';
 import './BlogCard.css';
 
-const SAMPLE_BLOGS = [
-  {
-    id: '1',
-    title: 'The Role of IT in Modern Businesses',
-    category: 'Tech Blog',
-    date: '12/6/2024',
-    excerpt:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt...',
-    thumbnail:
-      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: '2',
-    title: 'The Role of IT in Modern Businesses',
-    category: 'Cloud Computing',
-    date: '12/6/2024',
-    excerpt:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt...',
-    thumbnail:
-      'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: '3',
-    title: 'The Role of IT in Modern Businesses',
-    category: 'AI & ML',
-    date: '12/6/2024',
-    excerpt:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt...',
-    thumbnail:
-      'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: '4',
-    title: 'The Role of IT in Modern Businesses',
-    category: 'Tech Blog',
-    date: '12/6/2024',
-    excerpt:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt...',
-    thumbnail:
-      'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=800&q=80',
-  },
-];
-
 function AllBlogsPage() {
   const navigate = useNavigate();
+  const { showToast } = useContext(globalContext);
+
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadBlogs = async () => {
+      setLoading(true);
+      try {
+        const { response, data } = await getBlogs();
+
+        if (cancelled) return;
+
+        if (!response.ok || data.success === false) {
+          showToast(data.message || 'Failed to load blogs', 'error');
+          setBlogs([]);
+          return;
+        }
+
+        setBlogs(extractBlogsList(data).map(mapBlogCardFromApi));
+      } catch (error) {
+        if (cancelled) return;
+        console.error('Fetch blogs error:', error);
+        showToast('Network error. Please try again.', 'error');
+        setBlogs([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    loadBlogs();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [showToast]);
 
   const breadcrumbs = useMemo(
     () => [
@@ -86,10 +88,18 @@ function AllBlogsPage() {
     buttons: headerButtons,
   });
 
+  if (loading) {
+    return <CommonLoader text="Loading blogs..." />;
+  }
+
   return (
     <div className="blog-cards-grid">
-      {SAMPLE_BLOGS.map((blog) => (
-        <BlogCard key={blog.id} blog={blog} />
+      {blogs.map((blog) => (
+        <BlogCard
+          key={blog.id}
+          blog={blog}
+          onLearnMore={(item) => navigate(`/cms/blogs/edit-blog/${item.id}`)}
+        />
       ))}
     </div>
   );

@@ -6,6 +6,7 @@ import Cms from '../pages/cms/cms';
 import AllBlogsPage from '../pages/cms/blogs/all-blogs/AllBlogsPage';
 import BlogCategoriesPage from '../pages/cms/blogs/blog-categories/BlogCategoriesPage';
 import AddBlogPage from '../pages/cms/blogs/add-blogs/AddBlogPage';
+import EditBlogPage from '../pages/cms/blogs/edit-blogs/EditBlogPage';
 import HomePageCms from '../pages/cms/pages/home/HomePageCms';
 
 function AppRoutes() {
@@ -20,6 +21,7 @@ function AppRoutes() {
         <Route path="cms/blogs" element={<AllBlogsPage />} />
         <Route path="cms/blogs/blog-categories" element={<BlogCategoriesPage />} />
         <Route path="cms/blogs/add-blogs" element={<AddBlogPage />} />
+        <Route path="cms/blogs/edit-blog/:id" element={<EditBlogPage />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
     </Routes>
