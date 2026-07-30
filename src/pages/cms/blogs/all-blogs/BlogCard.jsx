@@ -1,6 +1,6 @@
 import './BlogCard.css';
 
-function BlogCard({ blog, onLearnMore }) {
+function BlogCard({ blog, onLearnMore, onDelete }) {
   return (
     <article className="blog-card">
       <div className="blog-card-media">
@@ -11,6 +11,19 @@ function BlogCard({ blog, onLearnMore }) {
         )}
         {blog.category && (
           <span className="blog-card-category">{blog.category}</span>
+        )}
+        {onDelete && (
+          <button
+            type="button"
+            className="blog-card-delete"
+            aria-label="Delete blog"
+            onClick={(event) => {
+              event.stopPropagation();
+              onDelete(blog);
+            }}
+          >
+            <img src="/delete-icon.svg" alt="" width="14" height="14" />
+          </button>
         )}
       </div>
 

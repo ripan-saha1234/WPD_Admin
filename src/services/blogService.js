@@ -346,3 +346,29 @@ export const updateBlog = async (id, formPayload) => {
   const data = await parseJson(response);
   return { response, data };
 };
+
+export const deleteBlog = async (id) => {
+  const response = await fetch(`${API_BASE_URL}blogs/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Accept: 'application/json',
+      ...getAuthHeader(),
+    },
+  });
+
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    return {
+      response,
+      data: {
+        success: response.ok,
+        message: response.ok
+          ? 'Blog deleted successfully.'
+          : 'Failed to delete blog',
+      },
+    };
+  }
+
+  const data = await parseJson(response);
+  return { response, data };
+};

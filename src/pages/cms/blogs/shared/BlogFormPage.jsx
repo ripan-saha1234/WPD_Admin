@@ -47,6 +47,7 @@ function BlogFormPage({ mode = 'create' }) {
   const [elementTargetSectionId, setElementTargetSectionId] = useState(null);
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const [submittingAs, setSubmittingAs] = useState(null);
   const [loadingBlog, setLoadingBlog] = useState(isEdit);
   const [meta, setMeta] = useState({
     excerpt: '',
@@ -246,7 +247,7 @@ function BlogFormPage({ mode = 'create' }) {
     );
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (status = 'draft') => {
     if (submitting) return;
 
     const newErrors = {
@@ -261,6 +262,7 @@ function BlogFormPage({ mode = 'create' }) {
     }
 
     setSubmitting(true);
+    setSubmittingAs(status);
     try {
       const payload = {
         name: formData.name,
@@ -268,7 +270,7 @@ function BlogFormPage({ mode = 'create' }) {
         featureImage: formData.featureImage,
         share: formData.share,
         excerpt: meta.excerpt || '',
-        status: meta.status || 'draft',
+        status,
         published_at: meta.published_at,
         sections,
       };
@@ -286,16 +288,22 @@ function BlogFormPage({ mode = 'create' }) {
         return;
       }
 
-      showToast(
-        data.message || (isEdit ? 'Blog updated' : 'Blog added'),
-        'success'
-      );
+      const successMessage =
+        data.message ||
+        (isEdit
+          ? status === 'published'
+            ? 'Blog published'
+            : 'Blog saved as draft'
+          : 'Blog added');
+
+      showToast(successMessage, 'success');
       navigate('/cms/blogs');
     } catch (error) {
       console.error(isEdit ? 'Update blog error:' : 'Create blog error:', error);
       showToast('Network error. Please try again.', 'error');
     } finally {
       setSubmitting(false);
+      setSubmittingAs(null);
     }
   };
 
@@ -314,26 +322,48 @@ function BlogFormPage({ mode = 'create' }) {
     [id, isEdit]
   );
 
-  const headerButtons = useMemo(
-    () => [
+  const headerButtons = useMemo(() => {
+    const disabled = submitting || loadingBlog;
+
+    if (isEdit) {
+      return [
+        {
+          type: 'button',
+          text:
+            submitting && submittingAs === 'draft' ? 'Saving...' : 'Draft',
+          onClick: () => submitRef.current('draft'),
+          backgroundColor: '#FFFFFF',
+          textColor: '#0690fd',
+          borderColor: '#0690fd',
+          disabled,
+        },
+        {
+          type: 'button',
+          text:
+            submitting && submittingAs === 'published'
+              ? 'Updating...'
+              : 'Update',
+          onClick: () => submitRef.current('published'),
+          backgroundColor: '#0690fd',
+          textColor: '#FFFFFF',
+          borderColor: '#0690fd',
+          disabled,
+        },
+      ];
+    }
+
+    return [
       {
         type: 'button',
-        text: submitting
-          ? isEdit
-            ? 'Updating...'
-            : 'Adding...'
-          : isEdit
-            ? 'Update'
-            : 'Add',
-        onClick: () => submitRef.current(),
+        text: submitting ? 'Adding...' : 'Add',
+        onClick: () => submitRef.current('draft'),
         backgroundColor: '#0690fd',
         textColor: '#FFFFFF',
         borderColor: '#0690fd',
-        disabled: submitting || loadingBlog,
+        disabled,
       },
-    ],
-    [isEdit, loadingBlog, submitting]
-  );
+    ];
+  }, [isEdit, loadingBlog, submitting, submittingAs]);
 
   usePageHeader({
     title: isEdit ? 'Edit Blog' : 'Create a Blog',
