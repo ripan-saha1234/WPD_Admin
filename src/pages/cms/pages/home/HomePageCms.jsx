@@ -1,8 +1,15 @@
-import { useContext, useMemo, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { globalContext } from '../../../../context/context';
 import { usePageHeader } from '../../../../hooks/usePageHeader';
 import { useSeoSettings } from '../../../../hooks/useSeoSettings';
+import CommonLoader from '../../../../components/common-loader';
 import SeoSettingsDialog from '../../../../components/seo-settings/SeoSettingsDialog';
+import {
+  extractHomePageDetail,
+  getHomePage,
+  mapHomeFormFromApi,
+  saveHomePage,
+} from '../../../../services/homePageService';
 import {
   createEmptyHomeForm,
   validateHomeForm,
@@ -19,6 +26,9 @@ function HomePageCms() {
   const { showToast } = useContext(globalContext);
   const [formData, setFormData] = useState(createEmptyHomeForm);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [pageStatus, setPageStatus] = useState('draft');
   const {
     seoSettings,
     setSeoSettings,
@@ -27,11 +37,44 @@ function HomePageCms() {
     seoSettingsButton,
   } = useSeoSettings();
 
+  const loadHomePage = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { response, data } = await getHomePage();
+
+      if (!response.ok || data.success === false) {
+        if (response.status !== 404) {
+          showToast(data.message || 'Failed to load home page', 'error');
+        }
+        return;
+      }
+
+      const detail = extractHomePageDetail(data);
+      if (!detail) return;
+
+      const mapped = mapHomeFormFromApi(detail);
+      setFormData(mapped.formData);
+      setSeoSettings(mapped.seo);
+      setPageStatus(mapped.status || 'draft');
+    } catch (error) {
+      console.error('Load home page error:', error);
+      showToast('Network error. Please try again.', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [setSeoSettings, showToast]);
+
+  useEffect(() => {
+    loadHomePage();
+  }, [loadHomePage]);
+
   const updateSection = (sectionKey, sectionData) => {
     setFormData((prev) => ({ ...prev, [sectionKey]: sectionData }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (saving) return;
+
     const nextErrors = validateHomeForm(formData);
     setErrors(nextErrors);
 
@@ -40,8 +83,36 @@ function HomePageCms() {
       return;
     }
 
-    // API integration later — payload shape matches formData + seoSettings
-    showToast('Home page saved', 'success');
+    setSaving(true);
+    try {
+      const { response, data } = await saveHomePage({
+        formData,
+        seo: seoSettings,
+        status: pageStatus,
+      });
+
+      if (!response.ok || data.success === false) {
+        showToast(data.message || 'Failed to save home page', 'error');
+        return;
+      }
+
+      showToast(data.message || 'Home page saved', 'success');
+
+      const detail = extractHomePageDetail(data);
+      if (detail) {
+        const mapped = mapHomeFormFromApi(detail);
+        setFormData(mapped.formData);
+        setSeoSettings(mapped.seo);
+        setPageStatus(mapped.status || pageStatus);
+      } else {
+        await loadHomePage();
+      }
+    } catch (error) {
+      console.error('Save home page error:', error);
+      showToast('Network error. Please try again.', 'error');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const saveRef = useRef(handleSave);
@@ -57,17 +128,21 @@ function HomePageCms() {
 
   const headerButtons = useMemo(
     () => [
-      seoSettingsButton,
+      {
+        ...seoSettingsButton,
+        disabled: saving || loading,
+      },
       {
         type: 'button',
-        text: 'Save',
+        text: saving ? 'Saving...' : 'Save',
         onClick: () => saveRef.current(),
         backgroundColor: '#0690fd',
         textColor: '#FFFFFF',
         borderColor: '#0690fd',
+        disabled: saving || loading,
       },
     ],
-    [seoSettingsButton]
+    [loading, saving, seoSettingsButton]
   );
 
   usePageHeader({
@@ -75,6 +150,10 @@ function HomePageCms() {
     breadcrumbs,
     buttons: headerButtons,
   });
+
+  if (loading) {
+    return <CommonLoader text="Loading home page..." />;
+  }
 
   return (
     <div className="home-page-cms">
