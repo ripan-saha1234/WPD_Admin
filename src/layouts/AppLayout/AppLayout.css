@@ -188,12 +188,27 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
   background-color: #F4F4F4;
   border-radius: 0.5rem;
+  cursor: pointer;
 }
+
+.common-layout-header-icon-container .common-layout-header-icon-button:hover {
+  background-color: #ebebeb;
+}
+
+.common-layout-header-icon-container .common-layout-header-icon-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .common-layout-header-icon-container .common-layout-header-icon-button img {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 
 

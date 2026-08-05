@@ -91,9 +91,16 @@ function HeaderAction({ item, index, dropdownState }) {
       );
     case 'icon':
       return (
-        <div key={index} className="common-layout-header-icon-button">
-          <img src={item.img} alt="" onClick={item.onClick} />
-        </div>
+        <button
+          key={index}
+          type="button"
+          className="common-layout-header-icon-button"
+          onClick={item.onClick}
+          aria-label={item.ariaLabel || 'Settings'}
+          disabled={item.disabled}
+        >
+          <img src={item.img} alt="" />
+        </button>
       );
     default:
       return null;

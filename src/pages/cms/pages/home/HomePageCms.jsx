@@ -1,6 +1,8 @@
 import { useContext, useMemo, useRef, useState } from 'react';
 import { globalContext } from '../../../../context/context';
 import { usePageHeader } from '../../../../hooks/usePageHeader';
+import { useSeoSettings } from '../../../../hooks/useSeoSettings';
+import SeoSettingsDialog from '../../../../components/seo-settings/SeoSettingsDialog';
 import {
   createEmptyHomeForm,
   validateHomeForm,
@@ -17,6 +19,13 @@ function HomePageCms() {
   const { showToast } = useContext(globalContext);
   const [formData, setFormData] = useState(createEmptyHomeForm);
   const [errors, setErrors] = useState({});
+  const {
+    seoSettings,
+    setSeoSettings,
+    seoSettingsOpen,
+    setSeoSettingsOpen,
+    seoSettingsButton,
+  } = useSeoSettings();
 
   const updateSection = (sectionKey, sectionData) => {
     setFormData((prev) => ({ ...prev, [sectionKey]: sectionData }));
@@ -31,7 +40,7 @@ function HomePageCms() {
       return;
     }
 
-    // API integration later — payload shape matches formData
+    // API integration later — payload shape matches formData + seoSettings
     showToast('Home page saved', 'success');
   };
 
@@ -48,6 +57,7 @@ function HomePageCms() {
 
   const headerButtons = useMemo(
     () => [
+      seoSettingsButton,
       {
         type: 'button',
         text: 'Save',
@@ -57,7 +67,7 @@ function HomePageCms() {
         borderColor: '#0690fd',
       },
     ],
-    []
+    [seoSettingsButton]
   );
 
   usePageHeader({
@@ -92,6 +102,13 @@ function HomePageCms() {
       <TechnologiesSection
         data={formData.technologies}
         onChange={(data) => updateSection('technologies', data)}
+      />
+
+      <SeoSettingsDialog
+        open={seoSettingsOpen}
+        setOpen={setSeoSettingsOpen}
+        value={seoSettings}
+        onSave={setSeoSettings}
       />
     </div>
   );

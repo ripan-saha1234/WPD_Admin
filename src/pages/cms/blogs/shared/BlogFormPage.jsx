@@ -2,10 +2,12 @@ import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { globalContext } from '../../../../context/context';
 import { usePageHeader } from '../../../../hooks/usePageHeader';
+import { useSeoSettings } from '../../../../hooks/useSeoSettings';
 import CommonInput from '../../../../components/common-input';
 import CommonSelect from '../../../../components/common-select';
 import CommonFileUpload from '../../../../components/common-file-upload';
 import CommonLoader from '../../../../components/common-loader';
+import SeoSettingsDialog from '../../../../components/seo-settings/SeoSettingsDialog';
 import BlogSectionCard from '../shared/BlogSectionCard';
 import AddElementDialog from '../shared/AddElementDialog';
 import {
@@ -54,6 +56,13 @@ function BlogFormPage({ mode = 'create' }) {
     status: 'draft',
     published_at: null,
   });
+  const {
+    seoSettings,
+    setSeoSettings,
+    seoSettingsOpen,
+    setSeoSettingsOpen,
+    seoSettingsButton,
+  } = useSeoSettings();
 
   useEffect(() => {
     let cancelled = false;
@@ -119,6 +128,9 @@ function BlogFormPage({ mode = 'create' }) {
           status: mapped.status,
           published_at: mapped.published_at,
         });
+        if (mapped.seo) {
+          setSeoSettings(mapped.seo);
+        }
       } catch (error) {
         if (cancelled) return;
         console.error('Load blog error:', error);
@@ -134,7 +146,7 @@ function BlogFormPage({ mode = 'create' }) {
     return () => {
       cancelled = true;
     };
-  }, [id, isEdit, navigate, showToast]);
+  }, [id, isEdit, navigate, setSeoSettings, showToast]);
 
   const updateField = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -273,6 +285,7 @@ function BlogFormPage({ mode = 'create' }) {
         status,
         published_at: meta.published_at,
         sections,
+        seo: seoSettings,
       };
 
       const { response, data } = isEdit
@@ -290,11 +303,7 @@ function BlogFormPage({ mode = 'create' }) {
 
       const successMessage =
         data.message ||
-        (isEdit
-          ? status === 'published'
-            ? 'Blog published'
-            : 'Blog saved as draft'
-          : 'Blog added');
+        (status === 'published' ? 'Blog published' : 'Blog saved as draft');
 
       showToast(successMessage, 'success');
       navigate('/cms/blogs');
@@ -324,46 +333,37 @@ function BlogFormPage({ mode = 'create' }) {
 
   const headerButtons = useMemo(() => {
     const disabled = submitting || loadingBlog;
-
-    if (isEdit) {
-      return [
-        {
-          type: 'button',
-          text:
-            submitting && submittingAs === 'draft' ? 'Saving...' : 'Draft',
-          onClick: () => submitRef.current('draft'),
-          backgroundColor: '#FFFFFF',
-          textColor: '#0690fd',
-          borderColor: '#0690fd',
-          disabled,
-        },
-        {
-          type: 'button',
-          text:
-            submitting && submittingAs === 'published'
-              ? 'Updating...'
-              : 'Update',
-          onClick: () => submitRef.current('published'),
-          backgroundColor: '#0690fd',
-          textColor: '#FFFFFF',
-          borderColor: '#0690fd',
-          disabled,
-        },
-      ];
-    }
+    const publishLabel = isEdit ? 'Update' : 'Add';
+    const publishLoadingLabel = isEdit ? 'Updating...' : 'Adding...';
 
     return [
       {
+        ...seoSettingsButton,
+        disabled,
+      },
+      {
         type: 'button',
-        text: submitting ? 'Adding...' : 'Add',
+        text: submitting && submittingAs === 'draft' ? 'Saving...' : 'Draft',
         onClick: () => submitRef.current('draft'),
+        backgroundColor: '#FFFFFF',
+        textColor: '#0690fd',
+        borderColor: '#0690fd',
+        disabled,
+      },
+      {
+        type: 'button',
+        text:
+          submitting && submittingAs === 'published'
+            ? publishLoadingLabel
+            : publishLabel,
+        onClick: () => submitRef.current('published'),
         backgroundColor: '#0690fd',
         textColor: '#FFFFFF',
         borderColor: '#0690fd',
         disabled,
       },
     ];
-  }, [isEdit, loadingBlog, submitting, submittingAs]);
+  }, [isEdit, loadingBlog, seoSettingsButton, submitting, submittingAs]);
 
   usePageHeader({
     title: isEdit ? 'Edit Blog' : 'Create a Blog',
@@ -451,6 +451,13 @@ function BlogFormPage({ mode = 'create' }) {
         open={elementDialogOpen}
         setOpen={setElementDialogOpen}
         onSelect={handleElementSelect}
+      />
+
+      <SeoSettingsDialog
+        open={seoSettingsOpen}
+        setOpen={setSeoSettingsOpen}
+        value={seoSettings}
+        onSave={setSeoSettings}
       />
     </div>
   );

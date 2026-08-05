@@ -85,6 +85,7 @@ const buildCreateBlogFormData = ({
   status = 'draft',
   published_at = null,
   sections = [],
+  seo = null,
 }) => {
   const formData = new FormData();
 
@@ -100,6 +101,19 @@ const buildCreateBlogFormData = ({
   appendBoolean(formData, 'share_facebook', Boolean(share.facebook));
   appendBoolean(formData, 'share_twitter', Boolean(share.twitter));
   appendBoolean(formData, 'share_linkedin', Boolean(share.linkedin));
+
+  if (seo) {
+    formData.append('meta_title', seo.metaTitle || '');
+    formData.append('meta_description', seo.metaDescription || '');
+    const keyphrases = (seo.relatedKeyphrases || [])
+      .map((item) => (typeof item === 'string' ? item : item?.text || ''))
+      .map((text) => text.trim())
+      .filter(Boolean);
+    formData.append('related_keyphrases', JSON.stringify(keyphrases));
+    keyphrases.forEach((text, index) => {
+      formData.append(`related_keyphrases[${index}]`, text);
+    });
+  }
 
   const feature = getFileOrUrl(featureImage);
   if (feature.file) {
@@ -280,6 +294,25 @@ export const mapBlogFormFromApi = (blog = {}) => {
     status: blog.status || 'draft',
     published_at: blog.published_at || null,
     sections,
+    seo: {
+      metaTitle: blog.meta_title || blog.seo?.meta_title || blog.seo?.metaTitle || '',
+      metaDescription:
+        blog.meta_description ||
+        blog.seo?.meta_description ||
+        blog.seo?.metaDescription ||
+        '',
+      relatedKeyphrases: (
+        blog.related_keyphrases ||
+        blog.seo?.related_keyphrases ||
+        blog.seo?.relatedKeyphrases ||
+        []
+      )
+        .map((item, index) => ({
+          id: item?.id != null ? String(item.id) : `keyphrase-${index}`,
+          text: typeof item === 'string' ? item : item?.text || item?.keyphrase || '',
+        }))
+        .filter((item) => item.text),
+    },
   };
 };
 
