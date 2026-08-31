@@ -7,6 +7,7 @@ export const createServiceItem = () => ({
   id: nextHomeId('service'),
   title: '',
   description: '',
+  url: '',
   icon: null,
   image: null,
 });
@@ -28,6 +29,7 @@ export const createWhyFeature = () => ({
 export const createIndustryItem = () => ({
   id: nextHomeId('industry'),
   title: '',
+  description: '',
   image: null,
 });
 
@@ -48,7 +50,9 @@ export const createTechnologyItem = () => ({
 export function createEmptyHomeForm() {
   return {
     banner: {
+      backgroundType: 'image',
       backgroundImage: null,
+      backgroundVideo: null,
       heading: '',
       subheading: '',
       buttonName: '',

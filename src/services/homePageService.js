@@ -39,7 +39,8 @@ const getFileOrUrl = (value) => {
 };
 
 const appendValue = (formData, key, value) => {
-  formData.append(key, value == null ? '' : String(value));
+  if (value == null || value === '') return;
+  formData.append(key, String(value));
 };
 
 const appendImage = (formData, key, value, fallbackName = 'image.jpg') => {
@@ -48,10 +49,114 @@ const appendImage = (formData, key, value, fallbackName = 'image.jpg') => {
     formData.append(key, file, file.name || fallbackName);
     return;
   }
-  formData.append(key, url || '');
+  // Only send existing URLs — skip empty / unselected images
+  if (url) {
+    formData.append(key, url);
+  }
 };
 
-const toApiId = (id) => (id != null && id !== '' ? String(id) : undefined);
+const hasImageValue = (value) => {
+  const { file, url } = getFileOrUrl(value);
+  return Boolean(file || url);
+};
+
+const isBlankHtml = (html) => {
+  if (!html) return true;
+  return !String(html)
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+};
+
+const isFilledService = (item = {}) =>
+  Boolean(
+    item.title?.trim() ||
+      item.description?.trim() ||
+      item.url?.trim() ||
+      hasImageValue(item.icon) ||
+      hasImageValue(item.image)
+  );
+
+const isFilledIndustry = (item = {}) =>
+  Boolean(
+    item.title?.trim() ||
+      item.description?.trim() ||
+      hasImageValue(item.image)
+  );
+
+const isFilledTestimonial = (item = {}) =>
+  Boolean(
+    item.quote?.trim() || item.authorName?.trim() || item.authorRole?.trim()
+  );
+
+const isFilledTechnology = (item = {}) =>
+  Boolean(item.name?.trim() || hasImageValue(item.icon));
+
+const isFilledWhyBlock = (block = {}) => {
+  if (block.type === 'intro') return !isBlankHtml(block.html);
+  return Boolean(
+    block.title?.trim() ||
+      block.description?.trim() ||
+      hasImageValue(block.icon)
+  );
+};
+
+/** Real DB ids only — skip client temp ids like testimonial-173... */
+const toApiId = (id) => {
+  if (id == null || id === '') return undefined;
+  const str = String(id);
+  if (/^(service|industry|testimonial|tech|intro|feature|item)-/i.test(str)) {
+    return undefined;
+  }
+  return str;
+};
+
+const buildImageFieldForJson = (value) => {
+  const { file, url } = getFileOrUrl(value);
+  if (file) return '';
+  return url || '';
+};
+
+const mapBlockForPayload = (block) => ({
+  ...(toApiId(block.id) ? { id: toApiId(block.id) } : {}),
+  type: block.type || 'feature',
+  html: block.type === 'intro' ? block.html || '' : '',
+  icon: block.type === 'feature' ? buildImageFieldForJson(block.icon) : '',
+  title: block.type === 'feature' ? block.title || '' : '',
+  description: block.type === 'feature' ? block.description || '' : '',
+});
+
+const mapBlockForFormData = (body, block, index) => {
+  const id = toApiId(block.id);
+  if (id) appendValue(body, `why_choose_us[blocks][${index}][id]`, id);
+  appendValue(body, `why_choose_us[blocks][${index}][type]`, block.type || '');
+
+  if (block.type === 'intro') {
+    appendValue(body, `why_choose_us[blocks][${index}][html]`, block.html || '');
+    appendValue(body, `why_choose_us[blocks][${index}][icon]`, '');
+    appendValue(body, `why_choose_us[blocks][${index}][title]`, '');
+    appendValue(body, `why_choose_us[blocks][${index}][description]`, '');
+  } else {
+    appendValue(body, `why_choose_us[blocks][${index}][html]`, '');
+    appendValue(
+      body,
+      `why_choose_us[blocks][${index}][title]`,
+      block.title || ''
+    );
+    appendValue(
+      body,
+      `why_choose_us[blocks][${index}][description]`,
+      block.description || ''
+    );
+    appendImage(
+      body,
+      `why_choose_us[blocks][${index}][icon]`,
+      block.icon,
+      'why-feature-icon.jpg'
+    );
+  }
+};
 
 export const extractHomePageDetail = (apiData) => {
   const payload = apiData?.data;
@@ -75,6 +180,7 @@ export const mapHomeFormFromApi = (data = {}) => {
     id: item.id != null ? String(item.id) : nextHomeId('service'),
     title: item.title || '',
     description: item.description || '',
+    url: item.url || item.hyperlink || item.link || '',
     icon: item.icon || null,
     image: item.image || null,
   });
@@ -82,6 +188,7 @@ export const mapHomeFormFromApi = (data = {}) => {
   const mapIndustryItem = (item = {}) => ({
     id: item.id != null ? String(item.id) : nextHomeId('industry'),
     title: item.title || '',
+    description: item.description || '',
     image: item.image || null,
   });
 
@@ -147,8 +254,19 @@ export const mapHomeFormFromApi = (data = {}) => {
     status: data.status || 'draft',
     formData: {
       banner: {
+        backgroundType: (() => {
+          const type =
+            data.banner?.background_type || data.banner?.backgroundType || '';
+          if (type === 'video' || type === 'image') return type;
+          if (data.banner?.background_video || data.banner?.backgroundVideo) {
+            return 'video';
+          }
+          return 'image';
+        })(),
         backgroundImage:
           data.banner?.background_image || data.banner?.backgroundImage || null,
+        backgroundVideo:
+          data.banner?.background_video || data.banner?.backgroundVideo || null,
         heading: data.banner?.heading || '',
         subheading: data.banner?.subheading || '',
         buttonName: data.banner?.button_name || data.banner?.buttonName || '',
@@ -203,12 +321,6 @@ export const mapHomeFormFromApi = (data = {}) => {
   };
 };
 
-const buildImageFieldForJson = (value) => {
-  const { file, url } = getFileOrUrl(value);
-  if (file) return '';
-  return url || '';
-};
-
 export const buildHomePageFormData = ({
   formData,
   seo = createEmptySeoSettings(),
@@ -216,31 +328,51 @@ export const buildHomePageFormData = ({
 }) => {
   const body = new FormData();
 
+  const serviceItems = (formData.services?.items || []).filter(isFilledService);
+  const industryItems = (formData.industries?.items || []).filter(isFilledIndustry);
+  const testimonialItems = (formData.testimonials?.items || []).filter(
+    isFilledTestimonial
+  );
+  const technologyItems = (formData.technologies?.items || []).filter(
+    isFilledTechnology
+  );
+  const whyBlocks = (formData.whyChooseUs?.blocks || []).filter(isFilledWhyBlock);
+
   appendValue(body, 'status', status || 'draft');
 
   // Banner
+  const backgroundType =
+    formData.banner?.backgroundType === 'video' ? 'video' : 'image';
   appendValue(body, 'banner[heading]', formData.banner?.heading?.trim() || '');
   appendValue(body, 'banner[subheading]', formData.banner?.subheading || '');
   appendValue(body, 'banner[button_name]', formData.banner?.buttonName || '');
   appendValue(body, 'banner[button_url]', formData.banner?.buttonUrl || '');
+  appendValue(body, 'banner[background_type]', backgroundType);
   appendImage(
     body,
     'banner[background_image]',
     formData.banner?.backgroundImage,
     'banner-background.jpg'
   );
+  appendImage(
+    body,
+    'banner[background_video]',
+    formData.banner?.backgroundVideo,
+    'banner-background.mp4'
+  );
 
   // Services
   appendValue(body, 'services[section_title]', formData.services?.sectionTitle || '');
-  (formData.services?.items || []).forEach((item, index) => {
+  serviceItems.forEach((item, index) => {
     const id = toApiId(item.id);
     if (id) appendValue(body, `services[items][${index}][id]`, id);
-    appendValue(body, `services[items][${index}][title]`, item.title || '');
+    appendValue(body, `services[items][${index}][title]`, item.title?.trim() || '');
     appendValue(
       body,
       `services[items][${index}][description]`,
       item.description || ''
     );
+    appendValue(body, `services[items][${index}][url]`, item.url?.trim() || '');
     appendValue(body, `services[items][${index}][sort_order]`, String(index));
     appendImage(
       body,
@@ -279,40 +411,8 @@ export const buildHomePageFormData = ({
     'why-choose-us.jpg'
   );
 
-  (formData.whyChooseUs?.blocks || []).forEach((block, index) => {
-    const id = toApiId(block.id);
-    if (id) appendValue(body, `why_choose_us[blocks][${index}][id]`, id);
-    appendValue(body, `why_choose_us[blocks][${index}][type]`, block.type || '');
-    appendValue(
-      body,
-      `why_choose_us[blocks][${index}][sort_order]`,
-      String(index)
-    );
-
-    if (block.type === 'intro') {
-      appendValue(body, `why_choose_us[blocks][${index}][html]`, block.html || '');
-      appendValue(body, `why_choose_us[blocks][${index}][title]`, '');
-      appendValue(body, `why_choose_us[blocks][${index}][description]`, '');
-      appendValue(body, `why_choose_us[blocks][${index}][icon]`, '');
-    } else {
-      appendValue(body, `why_choose_us[blocks][${index}][html]`, '');
-      appendValue(
-        body,
-        `why_choose_us[blocks][${index}][title]`,
-        block.title || ''
-      );
-      appendValue(
-        body,
-        `why_choose_us[blocks][${index}][description]`,
-        block.description || ''
-      );
-      appendImage(
-        body,
-        `why_choose_us[blocks][${index}][icon]`,
-        block.icon,
-        'why-feature-icon.jpg'
-      );
-    }
+  whyBlocks.forEach((block, index) => {
+    mapBlockForFormData(body, block, index);
   });
 
   // Industries
@@ -321,10 +421,15 @@ export const buildHomePageFormData = ({
     'industries[section_title]',
     formData.industries?.sectionTitle || ''
   );
-  (formData.industries?.items || []).forEach((item, index) => {
+  industryItems.forEach((item, index) => {
     const id = toApiId(item.id);
     if (id) appendValue(body, `industries[items][${index}][id]`, id);
     appendValue(body, `industries[items][${index}][title]`, item.title || '');
+    appendValue(
+      body,
+      `industries[items][${index}][description]`,
+      item.description || ''
+    );
     appendValue(body, `industries[items][${index}][sort_order]`, String(index));
     appendImage(
       body,
@@ -340,7 +445,7 @@ export const buildHomePageFormData = ({
     'testimonials[section_title]',
     formData.testimonials?.sectionTitle || ''
   );
-  (formData.testimonials?.items || []).forEach((item, index) => {
+  testimonialItems.forEach((item, index) => {
     const id = toApiId(item.id);
     if (id) appendValue(body, `testimonials[items][${index}][id]`, id);
     appendValue(
@@ -372,7 +477,7 @@ export const buildHomePageFormData = ({
     'technologies[section_title]',
     formData.technologies?.sectionTitle || ''
   );
-  (formData.technologies?.items || []).forEach((item, index) => {
+  technologyItems.forEach((item, index) => {
     const id = toApiId(item.id);
     if (id) appendValue(body, `technologies[items][${index}][id]`, id);
     appendValue(body, `technologies[items][${index}][name]`, item.name || '');
@@ -417,7 +522,9 @@ export const buildHomePageFormData = ({
     );
   });
 
-  // JSON fallback for non-file fields (same pattern as blogs sections_json)
+  const mapImageForPayload = (value) => buildImageFieldForJson(value);
+
+  // JSON payload aligned with backend schema
   const payload = {
     status: status || 'draft',
     banner: {
@@ -425,74 +532,53 @@ export const buildHomePageFormData = ({
       subheading: formData.banner?.subheading || '',
       button_name: formData.banner?.buttonName || '',
       button_url: formData.banner?.buttonUrl || '',
-      background_image: buildImageFieldForJson(formData.banner?.backgroundImage),
+      background_type: backgroundType,
+      background_image: mapImageForPayload(formData.banner?.backgroundImage),
+      background_video: mapImageForPayload(formData.banner?.backgroundVideo),
     },
     services: {
       section_title: formData.services?.sectionTitle || '',
-      items: (formData.services?.items || []).map((item, index) => ({
-        id: toApiId(item.id),
+      items: serviceItems.map((item) => ({
+        ...(toApiId(item.id) ? { id: toApiId(item.id) } : {}),
         title: item.title || '',
         description: item.description || '',
-        sort_order: index,
-        icon: buildImageFieldForJson(item.icon),
-        image: buildImageFieldForJson(item.image),
+        url: item.url?.trim() || '',
+        icon: mapImageForPayload(item.icon),
+        image: mapImageForPayload(item.image),
       })),
     },
     why_choose_us: {
       section_title: formData.whyChooseUs?.sectionTitle || '',
+      image: mapImageForPayload(formData.whyChooseUs?.image),
       button_name: formData.whyChooseUs?.buttonName || '',
       button_url: formData.whyChooseUs?.buttonUrl || '',
-      image: buildImageFieldForJson(formData.whyChooseUs?.image),
-      blocks: (formData.whyChooseUs?.blocks || []).map((block, index) => {
-        if (block.type === 'intro') {
-          return {
-            id: toApiId(block.id),
-            type: 'intro',
-            html: block.html || '',
-            icon: '',
-            title: '',
-            description: '',
-            sort_order: index,
-          };
-        }
-        return {
-          id: toApiId(block.id),
-          type: 'feature',
-          html: '',
-          icon: buildImageFieldForJson(block.icon),
-          title: block.title || '',
-          description: block.description || '',
-          sort_order: index,
-        };
-      }),
+      blocks: whyBlocks.map(mapBlockForPayload),
     },
     industries: {
       section_title: formData.industries?.sectionTitle || '',
-      items: (formData.industries?.items || []).map((item, index) => ({
-        id: toApiId(item.id),
+      items: industryItems.map((item) => ({
+        ...(toApiId(item.id) ? { id: toApiId(item.id) } : {}),
         title: item.title || '',
-        sort_order: index,
-        image: buildImageFieldForJson(item.image),
+        description: item.description || '',
+        image: mapImageForPayload(item.image),
       })),
     },
     testimonials: {
       section_title: formData.testimonials?.sectionTitle || '',
-      items: (formData.testimonials?.items || []).map((item, index) => ({
-        id: toApiId(item.id),
+      items: testimonialItems.map((item) => ({
+        ...(toApiId(item.id) ? { id: toApiId(item.id) } : {}),
         rating: Number(item.rating) || 5,
         quote: item.quote || '',
         author_name: item.authorName || '',
         author_role: item.authorRole || '',
-        sort_order: index,
       })),
     },
     technologies: {
       section_title: formData.technologies?.sectionTitle || '',
-      items: (formData.technologies?.items || []).map((item, index) => ({
-        id: toApiId(item.id),
+      items: technologyItems.map((item) => ({
+        ...(toApiId(item.id) ? { id: toApiId(item.id) } : {}),
         name: item.name || '',
-        sort_order: index,
-        icon: buildImageFieldForJson(item.icon),
+        icon: mapImageForPayload(item.icon),
       })),
     },
     seo: {

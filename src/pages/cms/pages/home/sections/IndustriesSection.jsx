@@ -62,6 +62,17 @@ function IndustriesSection({ data, onChange }) {
               value={item.title}
               onChange={(e) => updateItem(item.id, { title: e.target.value })}
             />
+            <CommonInput
+              label="Description"
+              name={`industry-desc-${item.id}`}
+              multiline
+              rows={3}
+              placeholder="Short industry description"
+              value={item.description || ''}
+              onChange={(e) =>
+                updateItem(item.id, { description: e.target.value })
+              }
+            />
             <div>
               <p className="home-field-label">Background image</p>
               <CommonFileUpload

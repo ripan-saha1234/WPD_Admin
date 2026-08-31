@@ -76,6 +76,13 @@ function ServicesSection({ data, onChange }) {
                 updateItem(item.id, { description: e.target.value })
               }
             />
+            <CommonInput
+              label="Hyperlink"
+              name={`service-url-${item.id}`}
+              placeholder="https://example.com/service"
+              value={item.url || ''}
+              onChange={(e) => updateItem(item.id, { url: e.target.value })}
+            />
             <div className="home-two-col">
               <div>
                 <p className="home-field-label">Icon</p>
