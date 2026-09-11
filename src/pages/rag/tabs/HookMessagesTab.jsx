@@ -274,9 +274,10 @@ function HookMessagesTab({ refreshKey, showToast }) {
                     </div>
                   </div>
 
-                  {/* Message bubble preview */}
+                  {/* Message bubble preview — mirrors ChatbotNudge on website */}
                   <div className="hm-bubble-preview">
-                    <span className="hm-bubble-text">{msg.message_text}</span>
+                    <div className="hm-bubble-preview-body">{msg.message_text}</div>
+                    <span className="hm-bubble-dismiss" aria-hidden="true">✕</span>
                   </div>
 
                   <div className="rag-muted" style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>

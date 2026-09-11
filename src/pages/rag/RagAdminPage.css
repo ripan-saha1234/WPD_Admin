@@ -1,4 +1,4 @@
-.rag-admin-page {
+﻿.rag-admin-page {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -930,7 +930,7 @@
   }
 }
 
-/* ── Shared form primitives (used by TrackedPagesTab & HookMessagesTab) ─────── */
+/* â”€â”€ Shared form primitives (used by TrackedPagesTab & HookMessagesTab) â”€â”€â”€â”€â”€â”€â”€ */
 
 .rag-field-group {
   display: flex;
@@ -999,7 +999,7 @@
   margin: 1rem 0;
 }
 
-/* ── Tracked pages — test-fetch preview modal ───────────────────────────────── */
+/* â”€â”€ Tracked pages â€” test-fetch preview modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .rag-preview-backdrop {
   position: fixed;
@@ -1074,17 +1074,44 @@
   margin: 0;
 }
 
-/* ── Hook messages — bubble preview ─────────────────────────────────────────── */
+/* ── Hook message bubble preview (matches wpd-chat-nudge__body on website) ── */
 
 .hm-bubble-preview {
-  margin-top: 0.625rem;
-  background: #f0f7ff;
-  border: 1px solid #d6e9ff;
-  border-radius: 0 1rem 1rem 1rem;
-  padding: 0.75rem 1rem;
-  position: relative;
-  display: inline-block;
+  margin-top: 0.75rem;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 6px;
   max-width: 100%;
+}
+
+.hm-bubble-preview-body {
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 500;
+  padding: 12px 14px;
+  border-radius: 14px 14px 4px 14px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+  border: none;
+  word-break: break-word;
+  flex: 1;
+}
+
+.hm-bubble-dismiss {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  flex-shrink: 0;
+  font-size: 10px;
+  border: none;
+  pointer-events: none;  /* decorative in preview */
 }
 
 .hm-bubble-text {
@@ -1093,4 +1120,5 @@
   color: #0d0d0d;
   word-break: break-word;
 }
+
 
