@@ -164,3 +164,78 @@ export const formatSessionId = (id) => {
   if (!id || id.length < 12) return id || '';
   return `${id.substring(0, 8)}...${id.substring(id.length - 4)}`;
 };
+
+// ─── Tracked Pages ────────────────────────────────────────────────────────────
+
+export const getTrackedPages = () =>
+  ragFetch('/api/admin/pages', {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  });
+
+export const createTrackedPage = (payload) =>
+  ragFetch('/api/admin/pages', {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+export const updateTrackedPage = (id, payload) =>
+  ragFetch(`/api/admin/pages/${id}`, {
+    method: 'PUT',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+export const deleteTrackedPage = (id) =>
+  ragFetch(`/api/admin/pages/${id}`, {
+    method: 'DELETE',
+    headers: { Accept: 'application/json' },
+  });
+
+export const testFetchTrackedPage = (id) =>
+  ragFetch(`/api/admin/pages/${id}/test-fetch`, {
+    method: 'POST',
+    headers: { Accept: 'application/json' },
+  });
+
+export const refreshAllTrackedPages = () =>
+  ragFetch('/api/admin/pages/refresh-all', {
+    method: 'POST',
+    headers: { Accept: 'application/json' },
+  });
+
+// ─── Hook Messages ────────────────────────────────────────────────────────────
+
+export const getHookMessages = () =>
+  ragFetch('/api/admin/hook-messages', {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  });
+
+export const createHookMessage = (payload) =>
+  ragFetch('/api/admin/hook-messages', {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+export const updateHookMessage = (id, payload) =>
+  ragFetch(`/api/admin/hook-messages/${id}`, {
+    method: 'PUT',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+export const deleteHookMessage = (id) =>
+  ragFetch(`/api/admin/hook-messages/${id}`, {
+    method: 'DELETE',
+    headers: { Accept: 'application/json' },
+  });
+
+export const reorderHookMessages = (orderedIds) =>
+  ragFetch('/api/admin/hook-messages/reorder', {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ orderedIds }),
+  });

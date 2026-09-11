@@ -4,6 +4,8 @@ import { getSectionByPath } from './ragSections';
 import QuestionSetsPage from './questions/QuestionSetsPage';
 import SurveyAnalyticsTab from './tabs/SurveyAnalyticsTab';
 import DocumentIngestionTab from './tabs/DocumentIngestionTab';
+import TrackedPagesTab from './tabs/TrackedPagesTab';
+import HookMessagesTab from './tabs/HookMessagesTab';
 
 function RagSectionView() {
   const { sectionPath } = useParams();
@@ -31,9 +33,14 @@ function RagSectionView() {
       return <SurveyAnalyticsTab {...commonProps} />;
     case 'documents':
       return <DocumentIngestionTab {...commonProps} />;
+    case 'tracked-pages':
+      return <TrackedPagesTab {...commonProps} />;
+    case 'hook-messages':
+      return <HookMessagesTab {...commonProps} />;
     default:
       return null;
   }
 }
 
 export default RagSectionView;
+

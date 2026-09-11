@@ -28,6 +28,20 @@ export const RAG_SECTIONS = [
     description: 'Upload PDFs to the vector database and manage indexed knowledge files.',
     icon: '📄',
   },
+  {
+    id: 'tracked-pages',
+    path: 'tracked-pages',
+    label: 'Tracked Pages',
+    description: 'Add live website pages for the AI to crawl and cache — supports static HTML and React SPAs.',
+    icon: '🌐',
+  },
+  {
+    id: 'hook-messages',
+    path: 'hook-messages',
+    label: 'Hook Messages',
+    description: 'Manage proactive chat widget popup messages that appear to visitors before they open the chat.',
+    icon: '💬',
+  },
 ];
 
 const LEGACY_PATH_ALIASES = {
