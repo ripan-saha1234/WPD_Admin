@@ -12,6 +12,12 @@ export const SIDEBAR_NAV_ITEMS = [
     label: 'CMS',
     icon: '/cms-icon.svg',
   },
+  {
+    id: 'rag-admin',
+    path: '/rag',
+    label: 'Chatbot Admin',
+    icon: '/chatbot-icon.svg',
+  },
 ];
 
 export const SIDEBAR_BRAND = {

@@ -141,9 +141,10 @@ Create or edit `.env` in the project root:
 
 ```env
 VITE_API_BASE_URL=https://your-api.example.com
+VITE_RAG_API_BASE_URL=http://localhost:3000
 ```
 
-Only variables prefixed with `VITE_` are exposed to the client. Used when API calls are enabled in `src/services/authService.js`.
+Only variables prefixed with `VITE_` are exposed to the client. `VITE_API_BASE_URL` is used for CMS/auth APIs. `VITE_RAG_API_BASE_URL` points to the separate RAG/chatbot backend used by the **Chatbot Admin** module at `/rag` (`src/services/ragAdminService.js`).
 
 ---
 
@@ -467,5 +468,6 @@ Keep paths in sync (e.g. `/users` in both).
 ## License
 
 Private project — WPD Admin.
-#   W P D _ A d m i n  
+#   W P D _ A d m i n 
+ 
  

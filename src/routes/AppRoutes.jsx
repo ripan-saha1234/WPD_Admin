@@ -8,6 +8,11 @@ import BlogCategoriesPage from '../pages/cms/blogs/blog-categories/BlogCategorie
 import AddBlogPage from '../pages/cms/blogs/add-blogs/AddBlogPage';
 import EditBlogPage from '../pages/cms/blogs/edit-blogs/EditBlogPage';
 import HomePageCms from '../pages/cms/pages/home/HomePageCms';
+import RagAdminLayout from '../pages/rag/RagAdminLayout';
+import RagAdminHub from '../pages/rag/RagAdminHub';
+import RagSectionView from '../pages/rag/RagSectionView';
+import LeadsListPage from '../pages/rag/leads/LeadsListPage';
+import LeadDetailPage from '../pages/rag/leads/LeadDetailPage';
 
 function AppRoutes() {
   return (
@@ -22,6 +27,14 @@ function AppRoutes() {
         <Route path="cms/blogs/blog-categories" element={<BlogCategoriesPage />} />
         <Route path="cms/blogs/add-blogs" element={<AddBlogPage />} />
         <Route path="cms/blogs/edit-blog/:id" element={<EditBlogPage />} />
+        <Route path="rag" element={<RagAdminLayout />}>
+          <Route index element={<RagAdminHub />} />
+          <Route path="conversations" element={<LeadsListPage />} />
+          <Route path="conversations/:leadId" element={<LeadDetailPage />} />
+          <Route path="chat-transcripts" element={<Navigate to="/rag/conversations" replace />} />
+          <Route path="ai-insights" element={<Navigate to="/rag/conversations" replace />} />
+          <Route path=":sectionPath" element={<RagSectionView />} />
+        </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
     </Routes>
