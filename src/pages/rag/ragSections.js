@@ -8,6 +8,14 @@ export const RAG_SECTIONS = [
     icon: '💬',
   },
   {
+    id: 'sessions',
+    path: 'sessions',
+    label: 'Vistor Sessions',
+    description:
+      'View every visitor chat session browse transcripts, onboarding answers, and AI-generated lead insights.',
+    icon: '🧑‍💻',
+  },
+  {
     id: 'questions',
     path: 'question-sets',
     label: 'Question Sets',

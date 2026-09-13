@@ -6,6 +6,7 @@ import SurveyAnalyticsTab from './tabs/SurveyAnalyticsTab';
 import DocumentIngestionTab from './tabs/DocumentIngestionTab';
 import TrackedPagesTab from './tabs/TrackedPagesTab';
 import HookMessagesTab from './tabs/HookMessagesTab';
+import SessionsTab from './tabs/SessionsTab';
 
 function RagSectionView() {
   const { sectionPath } = useParams();
@@ -13,6 +14,7 @@ function RagSectionView() {
   const section = getSectionByPath(sectionPath);
   const { refreshKey, showToast } = useRagAdmin();
 
+  // 'conversations' is handled externally (legacy Leads & Conversations page)
   if (!section || section.id === 'conversations') {
     return (
       <div className="rag-section-missing">
@@ -27,6 +29,8 @@ function RagSectionView() {
   const commonProps = { refreshKey, showToast };
 
   switch (section.id) {
+    case 'sessions':
+      return <SessionsTab {...commonProps} />;
     case 'questions':
       return <QuestionSetsPage {...commonProps} />;
     case 'poll-results':
@@ -43,4 +47,3 @@ function RagSectionView() {
 }
 
 export default RagSectionView;
-
