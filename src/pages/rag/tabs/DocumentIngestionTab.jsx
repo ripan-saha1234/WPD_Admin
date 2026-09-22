@@ -45,21 +45,15 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
   const handleUpload = async (file) => {
     if (!file) return;
 
-    if (!file.name.toLowerCase().endsWith('.pdf')) {
-      setUploadStatus('Only PDF files are supported.');
-      showToast?.('Only PDF files are supported.', 'error');
-      return;
-    }
-
     setUploading(true);
-    setUploadStatus(`Uploading and indexing ${file.name}...`);
+    setUploadStatus(`Chunking, embedding, and indexing ${file.name}...`);
 
     try {
       const { response, data } = await uploadRagDocument(file);
       if (!response.ok) throw new Error(data.error || 'Upload failed');
 
       setUploadStatus(`${data.fileName} indexed (${data.chunks} chunks).`);
-      showToast?.('Document uploaded and indexed', 'success');
+      showToast?.('Document uploaded, chunked, and embedded', 'success');
       loadDocuments();
     } catch (err) {
       setUploadStatus(`Error: ${err.message}`);
@@ -95,16 +89,18 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
       <div className="rag-documents-layout">
         <div className="rag-card rag-upload-card">
           <div className="rag-panel-title">
-            <span>Upload PDF to Vector DB</span>
+            <span>Upload Document to Vector DB</span>
           </div>
           <CommonFileUpload
-            acceptedTypes="document"
-            placeholder="Drop PDF here or click to browse"
-            browseText="Browse PDF"
-            supportText="Only PDF files are supported. Re-uploading replaces old vectors."
+            acceptedTypes=".md,.markdown,.txt,.pdf,.doc,.docx"
+            placeholder="Drop Markdown (.md, .txt) or documentation here"
+            browseText="Browse Files"
+            supportText="Supports Markdown (.md), text (.txt) and PDF documents. Chunks & vectors are indexed into pgvector."
             disabled={uploading}
             onFilesChange={(file) => handleUpload(file)}
           />
+
+
           {uploadStatus && (
             <p className={`rag-upload-status ${uploading ? 'loading' : ''}`}>
               {uploadStatus}

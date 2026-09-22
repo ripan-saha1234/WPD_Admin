@@ -10,32 +10,41 @@ export const RAG_SECTIONS = [
   {
     id: 'sessions',
     path: 'sessions',
-    label: 'Vistor Sessions',
+    label: 'Visitor Sessions',
     description:
-      'View every visitor chat session browse transcripts, onboarding answers, and AI-generated lead insights.',
+      'View every visitor chat session, browse transcripts, RAG sources, and AI-generated lead insights.',
     icon: '🧑‍💻',
+  },
+  {
+    id: 'services',
+    path: 'services',
+    label: 'Services & Pricing',
+    description:
+      'Manage company service catalog, pricing models, and deterministic lookup data used by the AI chatbot.',
+    icon: '💼',
   },
   {
     id: 'questions',
     path: 'question-sets',
-    label: 'Question Sets',
-    description: 'Build your chatbot onboarding flow — create MCQ and poll questions, set order, and manage active steps.',
+    label: 'Opening Questions',
+    description: 'Configure interactive opening questions and suggestion chips randomly presented to new visitors.',
     icon: '📋',
   },
   {
     id: 'poll-results',
     path: 'survey-analytics',
     label: 'Survey Analytics',
-    description: 'See how users responded to onboarding polls and multiple-choice questions.',
+    description: 'See how users responded to onboarding polls and opening question options.',
     icon: '📊',
   },
   {
     id: 'documents',
     path: 'document-ingestion',
     label: 'Document Ingestion',
-    description: 'Upload PDFs to the vector database and manage indexed knowledge files.',
+    description: 'Upload markdown, text, or docs to pgvector and manage indexed knowledge files.',
     icon: '📄',
   },
+
   {
     id: 'tracked-pages',
     path: 'tracked-pages',

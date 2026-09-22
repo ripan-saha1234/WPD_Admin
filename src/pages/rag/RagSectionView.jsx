@@ -7,6 +7,8 @@ import DocumentIngestionTab from './tabs/DocumentIngestionTab';
 import TrackedPagesTab from './tabs/TrackedPagesTab';
 import HookMessagesTab from './tabs/HookMessagesTab';
 import SessionsTab from './tabs/SessionsTab';
+import ServicesCatalogTab from './tabs/ServicesCatalogTab';
+
 
 function RagSectionView() {
   const { sectionPath } = useParams();
@@ -31,7 +33,10 @@ function RagSectionView() {
   switch (section.id) {
     case 'sessions':
       return <SessionsTab {...commonProps} />;
+    case 'services':
+      return <ServicesCatalogTab {...commonProps} />;
     case 'questions':
+
       return <QuestionSetsPage {...commonProps} />;
     case 'poll-results':
       return <SurveyAnalyticsTab {...commonProps} />;

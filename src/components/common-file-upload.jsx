@@ -145,6 +145,8 @@ const CommonFileUpload = ({
       doc: 'application/msword',
       docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       txt: 'text/plain',
+      md: 'text/markdown',
+      markdown: 'text/markdown',
       // Others
       zip: 'application/zip',
       rar: 'application/x-rar-compressed'
@@ -160,13 +162,14 @@ const CommonFileUpload = ({
       case 'video':
         return 'video/*';
       case 'document':
-        return '.pdf,.doc,.docx,.txt';
+        return '.pdf,.doc,.docx,.txt,.md,.markdown';
       case 'all':
         return '*/*';
       default:
         return acceptedTypes; // Custom mime types
     }
   };
+
 
   // Get support text based on accepted types
   const getSupportText = () => {
@@ -215,10 +218,14 @@ const CommonFileUpload = ({
       case 'document':
         return fileType === 'application/pdf' ||
           fileType.includes('document') ||
+          fileType.includes('markdown') ||
           fileName.endsWith('.pdf') ||
           fileName.endsWith('.doc') ||
           fileName.endsWith('.docx') ||
-          fileName.endsWith('.txt');
+          fileName.endsWith('.txt') ||
+          fileName.endsWith('.md') ||
+          fileName.endsWith('.markdown');
+
       default:
         // Custom mime types
         const acceptedArray = acceptedTypes.split(',').map(type => type.trim());
