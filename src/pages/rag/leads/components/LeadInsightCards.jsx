@@ -1,16 +1,30 @@
-import { getLeadInsightSummary } from '../../mock/leadsMockData';
+import { useMemo } from 'react';
 
-function LeadInsightCards({ leads }) {
-  const summary = getLeadInsightSummary(leads);
-  const maxBar = Math.max(summary.hot, summary.warm, summary.cold, 1);
+function LeadInsightCards({ leads = [] }) {
+  const summary = useMemo(() => {
+    const total = leads.length;
+    const synced = leads.filter((l) => l.crmSyncStatus === 'synced').length;
+    const pending = leads.filter((l) => l.crmSyncStatus === 'pending').length;
+    const failed = leads.filter((l) => l.crmSyncStatus === 'failed').length;
+    const companies = new Set(
+      leads.map((l) => l.company).filter((c) => c && c !== '—')
+    ).size;
+    const services = new Set(
+      leads.map((l) => l.interestedServiceName).filter((s) => s && s !== '—')
+    ).size;
+
+    return { total, synced, pending, failed, companies, services };
+  }, [leads]);
+
+  const maxBar = Math.max(summary.synced, summary.pending, summary.failed, 1);
 
   const cards = [
     { label: 'Total Leads', value: summary.total, icon: '👥', color: '#0690fd' },
-    { label: 'Hot Leads', value: summary.hot, icon: '🔥', color: '#ef4444' },
-    { label: 'Warm Leads', value: summary.warm, icon: '🌡️', color: '#f59e0b' },
-    { label: 'Cold Leads', value: summary.cold, icon: '❄️', color: '#64748b' },
-    { label: 'Pending AI', value: summary.pending, icon: '🧠', color: '#8b5cf6' },
-    { label: 'Assigned', value: summary.assigned, icon: '✅', color: '#16a34a' },
+    { label: 'CRM Synced', value: summary.synced, icon: '✅', color: '#16a34a' },
+    { label: 'Pending Sync', value: summary.pending, icon: '⏳', color: '#f59e0b' },
+    { label: 'Failed Sync', value: summary.failed, icon: '⚠️', color: '#ef4444' },
+    { label: 'Companies', value: summary.companies, icon: '🏢', color: '#8b5cf6' },
+    { label: 'Services Inquired', value: summary.services, icon: '💼', color: '#0284c7' },
   ];
 
   return (
@@ -30,12 +44,12 @@ function LeadInsightCards({ leads }) {
       </div>
 
       <div className="leads-chart-card">
-        <h3>Lead distribution</h3>
+        <h3>CRM Webhook Status</h3>
         <div className="leads-bar-chart">
           {[
-            { key: 'hot', label: 'Hot', count: summary.hot, color: '#ef4444' },
-            { key: 'warm', label: 'Warm', count: summary.warm, color: '#f59e0b' },
-            { key: 'cold', label: 'Cold', count: summary.cold, color: '#94a3b8' },
+            { key: 'synced', label: 'Synced', count: summary.synced, color: '#16a34a' },
+            { key: 'pending', label: 'Pending', count: summary.pending, color: '#f59e0b' },
+            { key: 'failed', label: 'Failed', count: summary.failed, color: '#ef4444' },
           ].map((item) => (
             <div key={item.key} className="leads-bar-row">
               <span className="leads-bar-label">{item.label}</span>

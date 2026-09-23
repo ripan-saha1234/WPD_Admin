@@ -79,7 +79,60 @@ const ragFetch = async (path, options = {}) => {
   return { response, data };
 };
 
+// ─── Leads ───────────────────────────────────────────────────────────────────
+
+export const getRagLeads = async (queryParams) => {
+  let queryStr = '';
+  if (queryParams instanceof URLSearchParams) {
+    queryStr = queryParams.toString();
+  } else if (typeof queryParams === 'string') {
+    queryStr = queryParams;
+  } else if (queryParams && typeof queryParams === 'object') {
+    queryStr = new URLSearchParams(
+      Object.entries(queryParams).filter(([_, v]) => v != null && v !== '')
+    ).toString();
+  }
+
+  const { response, data } = await ragFetch(
+    queryStr ? `/admin/leads?${queryStr}` : '/admin/leads'
+  );
+
+  if (!response.ok) return { response, data };
+
+  const rawItems = data?.data?.items || data?.items || [];
+  const total = data?.data?.total ?? rawItems.length;
+
+  return {
+    response,
+    data: {
+      items: rawItems,
+      total,
+      limit: data?.data?.limit || 50,
+      offset: data?.data?.offset || 0,
+    },
+  };
+};
+
+export const getRagLead = async (leadId) => {
+  const { response, data } = await ragFetch(`/admin/leads/${leadId}`);
+  if (!response.ok) return { response, data };
+  return { response, data: data?.data || data };
+};
+
+export const updateRagLead = async (leadId, payload) => {
+  const { response, data } = await ragFetch(`/admin/leads/${leadId}`, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+  return { response, data: data?.data || data };
+};
+
 // ─── Sessions & Conversation History ─────────────────────────────────────────
+
 
 export const getRagStats = async () => {
   const { response, data } = await ragFetch('/admin/sessions?limit=200');

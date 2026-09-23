@@ -156,6 +156,20 @@
 .leads-status-badge--qualified { background: #dcfce7; color: #16a34a; }
 .leads-status-badge--lost { background: #f1f5f9; color: #64748b; }
 
+.leads-crm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.leads-crm-badge--synced { background: #dcfce7; color: #15803d; }
+.leads-crm-badge--pending { background: #fef3c7; color: #b45309; }
+.leads-crm-badge--failed { background: #fee2e2; color: #b91c1c; }
+
 .leads-link-btn {
   border: none;
   background: none;

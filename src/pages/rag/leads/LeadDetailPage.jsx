@@ -1,31 +1,49 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import CommonButton from '../../../components/common-button';
+import CommonLoader from '../../../components/common-loader';
 import { globalContext } from '../../../context/context';
 import { useLeads } from '../context/LeadsContext';
-import { BDM_OPTIONS, LEAD_STATUS_OPTIONS } from '../mock/leadsMockData';
-import AssignLeadModal from './components/AssignLeadModal';
 import AiAnalysisReportModal from './components/AiAnalysisReportModal';
-import LeadBadge from '../components/LeadBadge';
 import './leads.css';
-
-const CHANNEL_LABELS = {
-  sms: 'SMS',
-  whatsapp: 'WhatsApp',
-  chat: 'Web Chat',
-};
 
 function LeadDetailPage() {
   const { leadId } = useParams();
   const navigate = useNavigate();
   const { showToast } = useContext(globalContext);
-  const { getLeadById, assignLead, runAiAnalysis } = useLeads();
-  const lead = getLeadById(leadId);
+  const { getLeadById, fetchLeadWithMessages, runAiAnalysis } = useLeads();
 
-  const [assignOpen, setAssignOpen] = useState(false);
+  const cachedLead = getLeadById(leadId);
+  const [lead, setLead] = useState(cachedLead || null);
+  const [loading, setLoading] = useState(!cachedLead || !cachedLead.chats?.length);
+
   const [reportOpen, setReportOpen] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [reportAnalysis, setReportAnalysis] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    if (leadId) {
+      fetchLeadWithMessages(leadId).then((res) => {
+        if (!mounted) return;
+        if (res) {
+          setLead(res);
+        }
+        setLoading(false);
+      });
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [leadId, fetchLeadWithMessages]);
+
+  if (loading && !lead) {
+    return (
+      <div className="leads-page leads-detail-page">
+        <CommonLoader text="Loading lead conversation details..." />
+      </div>
+    );
+  }
 
   if (!lead) {
     return (
@@ -38,10 +56,6 @@ function LeadDetailPage() {
     );
   }
 
-  const bdmName = BDM_OPTIONS.find((b) => b.id === lead.assignedTo)?.name;
-  const statusLabel =
-    LEAD_STATUS_OPTIONS.find((s) => s.value === lead.status)?.label || lead.status;
-
   const handleRunAnalysis = () => {
     setAnalyzing(true);
     setTimeout(() => {
@@ -53,13 +67,7 @@ function LeadDetailPage() {
     }, 800);
   };
 
-  const handleAssign = (id, bdmId) => {
-    assignLead(id, bdmId);
-    showToast?.('Lead assigned successfully', 'success');
-  };
-
-  const totalMessages =
-    lead.channels.sms + lead.channels.whatsapp + lead.channels.chat;
+  const messages = lead.chats || [];
 
   return (
     <div className="leads-page leads-detail-page">
@@ -74,24 +82,24 @@ function LeadDetailPage() {
           </button>
           <h2>{lead.name}</h2>
           <p className="rag-muted">
-            <code>{lead.id}</code> · {lead.email} · {statusLabel}
-            {bdmName ? ` · Assigned to ${bdmName}` : ''}
+            <code>{lead.id}</code> · {lead.email}
+            {lead.company && lead.company !== '—' ? ` · ${lead.company}` : ''}
           </p>
-          <div className="leads-detail-badges">
-            <LeadBadge type={lead.leadType} />
+          <div className="leads-detail-badges" style={{ marginTop: '6px', display: 'flex', gap: '8px' }}>
+            <span className={`leads-crm-badge leads-crm-badge--${lead.crmSyncStatus}`}>
+              CRM: {lead.crmSyncStatus}
+            </span>
+            {lead.interestedServiceName && lead.interestedServiceName !== '—' && (
+              <span className="rag-origin-badge rag-origin-badge--folder">
+                Service: {lead.interestedServiceName}
+              </span>
+            )}
             {lead.aiAnalysis && (
               <span className="leads-analyzed-pill">AI Analyzed</span>
             )}
           </div>
         </div>
         <div className="leads-detail-actions">
-          <CommonButton
-            text={lead.assignedTo ? 'Reassign' : 'Assign to BDM'}
-            onClick={() => setAssignOpen(true)}
-            backgroundColor="#fff"
-            color="#0d0d0d"
-            borderColor="#e8e8e8"
-          />
           <CommonButton
             text={analyzing ? 'Analyzing...' : 'Run AI Analysis'}
             onClick={handleRunAnalysis}
@@ -103,57 +111,94 @@ function LeadDetailPage() {
         </div>
       </div>
 
-      <div className="leads-channel-cards">
-        <div className="leads-channel-card">
-          <span className="leads-channel-icon">📱</span>
-          <span className="leads-channel-count">{lead.channels.sms}</span>
-          <span className="leads-channel-label">SMS</span>
+      {/* Info Overview Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+        <div className="rag-card" style={{ padding: '1.25rem' }}>
+          <h3 style={{ margin: '0 0 0.75rem', fontSize: '14px', fontWeight: 700 }}>Contact Information</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '13px' }}>
+            <div><span style={{ color: '#64748b' }}>Full Name:</span> <strong>{lead.name}</strong></div>
+            <div><span style={{ color: '#64748b' }}>Email:</span> <a href={`mailto:${lead.email}`} style={{ color: '#0690fd' }}>{lead.email}</a></div>
+            <div><span style={{ color: '#64748b' }}>Phone:</span> {lead.phone || '—'}</div>
+            <div><span style={{ color: '#64748b' }}>Company:</span> <strong>{lead.company || '—'}</strong></div>
+          </div>
         </div>
-        <div className="leads-channel-card">
-          <span className="leads-channel-icon">💬</span>
-          <span className="leads-channel-count">{lead.channels.whatsapp}</span>
-          <span className="leads-channel-label">WhatsApp</span>
+
+        <div className="rag-card" style={{ padding: '1.25rem' }}>
+          <h3 style={{ margin: '0 0 0.75rem', fontSize: '14px', fontWeight: 700 }}>Project Requirements</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '13px' }}>
+            <div><span style={{ color: '#64748b' }}>Interested Service:</span> <strong>{lead.interestedServiceName || 'Discovery'}</strong></div>
+            <div>
+              <span style={{ color: '#64748b' }}>Description:</span>
+              <p style={{ margin: '4px 0 0', lineHeight: 1.5, color: '#1e293b' }}>
+                {lead.projectDescription || 'No detailed requirement provided.'}
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="leads-channel-card">
-          <span className="leads-channel-icon">🌐</span>
-          <span className="leads-channel-count">{lead.channels.chat}</span>
-          <span className="leads-channel-label">Web Chat</span>
-        </div>
-        <div className="leads-channel-card leads-channel-card--total">
-          <span className="leads-channel-icon">📊</span>
-          <span className="leads-channel-count">{totalMessages}</span>
-          <span className="leads-channel-label">Total Messages</span>
+
+        <div className="rag-card" style={{ padding: '1.25rem' }}>
+          <h3 style={{ margin: '0 0 0.75rem', fontSize: '14px', fontWeight: 700 }}>Session &amp; CRM Sync</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '13px' }}>
+            <div><span style={{ color: '#64748b' }}>Session ID:</span> <code>{lead.sessionId}</code></div>
+            <div>
+              <span style={{ color: '#64748b' }}>CRM Sync Status:</span>{' '}
+              <span className={`leads-crm-badge leads-crm-badge--${lead.crmSyncStatus}`}>
+                {lead.crmSyncStatus}
+              </span>
+            </div>
+            <div><span style={{ color: '#64748b' }}>Captured:</span> {new Date(lead.timestamp).toLocaleString()}</div>
+            <div><span style={{ color: '#64748b' }}>Total Turns:</span> {messages.length} messages</div>
+          </div>
         </div>
       </div>
 
+      {/* Conversation History */}
       <div className="rag-card leads-conversation-card">
         <div className="rag-panel-header">
           <div className="rag-panel-title">
             <span>Conversation History</span>
-            <span className="rag-badge-muted">{lead.chats.length} messages</span>
+            <span className="rag-badge-muted">{messages.length} messages</span>
           </div>
           <p className="rag-panel-hint">
-            All messages from SMS, WhatsApp, and web chat combined in chronological order.
+            Full chronological conversation transcript from the AI chatbot session.
           </p>
         </div>
 
-        <div className="leads-chat-timeline">
-          {lead.chats.map((msg) => (
-            <div
-              key={msg.id}
-              className={`leads-chat-item leads-chat-item--${msg.role}`}
-            >
-              <div className="leads-chat-meta">
-                <span className={`leads-channel-tag leads-channel-tag--${msg.channel}`}>
-                  {CHANNEL_LABELS[msg.channel] || msg.channel}
-                </span>
-                <span>{msg.role === 'user' ? lead.name : 'Chatbot'}</span>
-                <span>{new Date(msg.timestamp).toLocaleString()}</span>
+        {messages.length === 0 ? (
+          <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
+            <p>No messages recorded for this session.</p>
+          </div>
+        ) : (
+          <div className="leads-chat-timeline">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`leads-chat-item leads-chat-item--${msg.role}`}
+              >
+                <div className="leads-chat-meta">
+                  <span className={`leads-channel-tag leads-channel-tag--chat`}>
+                    {msg.role === 'user' ? 'Visitor' : 'Chatbot'}
+                  </span>
+                  <span>{msg.role === 'user' ? lead.name : 'Web Prism AI'}</span>
+                  <span>{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  {msg.detected_intent && (
+                    <span style={{ fontSize: '11px', background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px', color: '#475569' }}>
+                      Intent: {msg.detected_intent}
+                    </span>
+                  )}
+                </div>
+                <div className="leads-chat-bubble" style={{ whiteSpace: 'pre-wrap' }}>
+                  {msg.content}
+                </div>
+                {msg.rag_sources && msg.rag_sources.length > 0 && (
+                  <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', paddingLeft: '8px' }}>
+                    📚 <em>Sources: {msg.rag_sources.map((s) => s.section || s.id).slice(0, 2).join(', ')}</em>
+                  </div>
+                )}
               </div>
-              <div className="leads-chat-bubble">{msg.content}</div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {lead.aiAnalysis && !reportOpen && (
@@ -180,17 +225,9 @@ function LeadDetailPage() {
               <span className="leads-quick-score">{lead.aiAnalysis.icpFit}</span>
               <span className="rag-muted">ICP Fit</span>
             </div>
-            <LeadBadge type={lead.aiAnalysis.leadType} />
           </div>
         </div>
       )}
-
-      <AssignLeadModal
-        open={assignOpen}
-        lead={lead}
-        onClose={() => setAssignOpen(false)}
-        onAssign={handleAssign}
-      />
 
       <AiAnalysisReportModal
         open={reportOpen}
