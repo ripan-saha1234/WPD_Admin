@@ -1,4 +1,4 @@
-﻿.rag-admin-page {
+.rag-admin-page {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -851,6 +851,75 @@
   color: #16a34a;
   border: 1px solid #bbf7d0;
 }
+
+.rag-category-badge {
+  display: inline-flex;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.rag-category-badge--service {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #dbeafe;
+}
+
+.rag-category-badge--case-study {
+  background: #fdf2f8;
+  color: #be185d;
+  border-color: #fce7f3;
+}
+
+.rag-category-badge--company {
+  background: #faf5ff;
+  color: #7e22ce;
+  border-color: #f3e8ff;
+}
+
+.rag-chunk-count-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+.rag-docs-search-input {
+  padding: 0.45rem 0.85rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  color: #1e293b;
+  outline: none;
+  min-width: 240px;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.rag-docs-search-input:focus {
+  border-color: #0690fd;
+  background: #ffffff;
+}
+
+.rag-doc-title-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+
 
 .rag-signal-list {
   margin-top: 0.5rem;

@@ -408,32 +408,66 @@ export const getRagSurveyAnalytics = async () => {
 // ─── Knowledge Base Documents ────────────────────────────────────────────────
 
 export const getRagDocuments = async () => {
-  const { response, data } = await ragFetch('/admin/documents?limit=200');
-  if (!response.ok) return { response, data };
+  // First attempt to fetch server-aggregated summaries
+  const { response, data } = await ragFetch('/admin/documents/summary');
+  if (response.ok) {
+    const docs = data?.data || data || [];
+    const documents = docs.map((doc) => ({
+      fileName: doc.title || doc.source_file || 'Untitled Document',
+      source: doc.source_file || doc.title || 'Untitled Document',
+      title: doc.title,
+      chunks: Number(doc.chunks) || 0,
+      category: doc.category || 'general',
+      origin: doc.created_by === 'ingest_script' ? 'folder' : 'upload',
+      created_at: doc.created_at,
+      doc_type: doc.category || 'markdown',
+      visibility: doc.visibility || 'public',
+    }));
 
-  const chunks = data?.data || data || [];
+    const totalChunks = documents.reduce((acc, d) => acc + d.chunks, 0);
 
-  // Group chunks by source_title
+    return {
+      response,
+      data: {
+        documents,
+        totalDocuments: documents.length,
+        totalChunks,
+      },
+    };
+  }
+
+  // Fallback to fetching raw chunks and grouping client-side
+  const { response: fallbackRes, data: fallbackData } = await ragFetch('/admin/documents?limit=1000');
+  if (!fallbackRes.ok) return { response: fallbackRes, data: fallbackData };
+
+  const chunks = fallbackData?.data || fallbackData || [];
+
+  // Group chunks by title / source
   const groups = new Map();
   for (const chunk of chunks) {
-    const title = chunk.source_title || 'Untitled Document';
-    if (!groups.has(title)) {
-      groups.set(title, {
+    const title = chunk.title || chunk.metadata?.source_file || 'Untitled Document';
+    const source = chunk.metadata?.source_file || title;
+    const key = title;
+
+    if (!groups.has(key)) {
+      groups.set(key, {
         fileName: title,
-        source: title,
+        source: source,
+        title: title,
         chunks: 0,
-        origin: 'upload',
+        category: chunk.metadata?.category || 'general',
+        origin: chunk.created_by === 'ingest_script' ? 'folder' : 'upload',
         created_at: chunk.created_at,
-        doc_type: chunk.doc_type || 'markdown',
+        doc_type: chunk.metadata?.doc_type || 'markdown',
       });
     }
-    groups.get(title).chunks += 1;
+    groups.get(key).chunks += 1;
   }
 
   const documents = Array.from(groups.values());
 
   return {
-    response,
+    response: fallbackRes,
     data: {
       documents,
       totalDocuments: documents.length,
@@ -441,6 +475,7 @@ export const getRagDocuments = async () => {
     },
   };
 };
+
 
 export const uploadRagDocument = async (file) => {
   if (!file) {

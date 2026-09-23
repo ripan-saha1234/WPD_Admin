@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import CommonFileUpload from '../../../components/common-file-upload';
 import CommonButton from '../../../components/common-button';
 import CommonLoader from '../../../components/common-loader';
@@ -11,6 +11,11 @@ import {
   uploadRagDocument,
 } from '../../../services/ragAdminService';
 
+const formatTitle = (text) => {
+  if (!text) return 'Untitled Document';
+  return text.replace(/\uFFFD/g, '—');
+};
+
 function DocumentIngestionTab({ refreshKey, showToast }) {
   const [documents, setDocuments] = useState([]);
   const [totalDocuments, setTotalDocuments] = useState(0);
@@ -18,18 +23,20 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
-  const [deleteSource, setDeleteSource] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [docToDelete, setDocToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
   const loadDocuments = useCallback(async () => {
     setLoading(true);
     try {
       const { response, data } = await getRagDocuments();
-      if (!response.ok) throw new Error(data.error || 'Failed to load documents');
+      if (!response.ok) throw new Error(data?.error || data?.detail || 'Failed to load documents');
 
-      setDocuments(data.documents || []);
-      setTotalDocuments(data.totalDocuments ?? (data.documents || []).length);
-      setTotalChunks(data.totalChunks ?? 0);
+      const docs = data.documents || [];
+      setDocuments(docs);
+      setTotalDocuments(data.totalDocuments ?? docs.length);
+      setTotalChunks(data.totalChunks ?? docs.reduce((acc, d) => acc + (d.chunks || 0), 0));
     } catch (err) {
       showToast?.(err.message, 'error');
       setDocuments([]);
@@ -50,7 +57,7 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
 
     try {
       const { response, data } = await uploadRagDocument(file);
-      if (!response.ok) throw new Error(data.error || 'Upload failed');
+      if (!response.ok) throw new Error(data?.error || data?.detail || 'Upload failed');
 
       setUploadStatus(`${data.fileName} indexed (${data.chunks} chunks).`);
       showToast?.('Document uploaded, chunked, and embedded', 'success');
@@ -64,13 +71,15 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
   };
 
   const handleDelete = async () => {
-    if (!deleteSource) return;
+    if (!docToDelete) return;
     setDeleting(true);
     try {
-      const { response, data } = await deleteRagDocument(deleteSource);
-      if (!response.ok) throw new Error(data.error || 'Delete failed');
-      showToast?.('Document removed from vector database', 'success');
-      setDeleteSource(null);
+      const targetIdentifier = docToDelete.title || docToDelete.source || docToDelete.fileName;
+      const { response, data } = await deleteRagDocument(targetIdentifier);
+      if (!response.ok) throw new Error(data?.error || data?.detail || 'Delete failed');
+
+      showToast?.(`"${formatTitle(targetIdentifier)}" removed from vector database`, 'success');
+      setDocToDelete(null);
       loadDocuments();
     } catch (err) {
       showToast?.(err.message, 'error');
@@ -78,6 +87,18 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
       setDeleting(false);
     }
   };
+
+  const filteredDocuments = useMemo(() => {
+    if (!searchQuery.trim()) return documents;
+    const q = searchQuery.toLowerCase();
+    return documents.filter(
+      (doc) =>
+        doc.fileName?.toLowerCase().includes(q) ||
+        doc.title?.toLowerCase().includes(q) ||
+        doc.source?.toLowerCase().includes(q) ||
+        doc.category?.toLowerCase().includes(q)
+    );
+  }, [documents, searchQuery]);
 
   return (
     <div className="rag-tab-content">
@@ -100,7 +121,6 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
             onFilesChange={(file) => handleUpload(file)}
           />
 
-
           {uploadStatus && (
             <p className={`rag-upload-status ${uploading ? 'loading' : ''}`}>
               {uploadStatus}
@@ -109,36 +129,69 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
         </div>
 
         <div className="rag-card rag-table-card">
-          <div className="rag-panel-header">
+          <div className="rag-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div className="rag-panel-title">
               <span>Indexed Knowledge Documents</span>
+              {documents.length > 0 && (
+                <span className="rag-count-badge" style={{ marginLeft: '0.5rem' }}>
+                  {filteredDocuments.length}
+                </span>
+              )}
             </div>
+            {documents.length > 0 && (
+              <input
+                type="text"
+                className="rag-docs-search-input"
+                placeholder="Search documents, sources..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            )}
           </div>
 
           {loading ? (
             <CommonLoader text="Loading documents..." size={16} />
           ) : documents.length === 0 ? (
-            <EmptyState message="No documents indexed yet. Upload a PDF to get started." />
+            <EmptyState message="No documents indexed yet. Upload a Markdown or documentation file to get started." />
+          ) : filteredDocuments.length === 0 ? (
+            <EmptyState message={`No documents matching "${searchQuery}"`} />
           ) : (
             <div className="rag-table-wrap">
               <table className="rag-table">
                 <thead>
                   <tr>
                     <th>Document</th>
-                    <th>Source</th>
+                    <th>Source File</th>
+                    <th>Category</th>
                     <th>Chunks</th>
                     <th>Origin</th>
-                    <th />
+                    <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {documents.map((doc) => (
-                    <tr key={doc.source}>
-                      <td>{doc.fileName}</td>
+                  {filteredDocuments.map((doc, idx) => (
+                    <tr key={`${doc.title || doc.source}-${idx}`}>
                       <td>
-                        <code>{doc.source}</code>
+                        <span className="rag-doc-title-cell" title={doc.fileName}>
+                          <span>📄</span>
+                          <span>{formatTitle(doc.fileName)}</span>
+                        </span>
                       </td>
-                      <td>{doc.chunks}</td>
+                      <td>
+                        <code style={{ fontSize: '0.78rem', background: '#f1f5f9', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>
+                          {doc.source}
+                        </code>
+                      </td>
+                      <td>
+                        <span className={`rag-category-badge rag-category-badge--${doc.category || 'general'}`}>
+                          {doc.category || 'general'}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="rag-chunk-count-badge">
+                          🧩 {doc.chunks}
+                        </span>
+                      </td>
                       <td>
                         <span
                           className={`rag-origin-badge rag-origin-badge--${
@@ -150,10 +203,10 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
                             : 'Knowledge Folder'}
                         </span>
                       </td>
-                      <td>
+                      <td style={{ textAlign: 'right' }}>
                         <CommonButton
                           text="Delete"
-                          onClick={() => setDeleteSource(doc.source)}
+                          onClick={() => setDocToDelete(doc)}
                           backgroundColor="#fff"
                           color="#ef4444"
                           borderColor="#fecaca"
@@ -169,12 +222,12 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
       </div>
 
       <ConfirmDialog
-        open={Boolean(deleteSource)}
-        title="Delete Document"
-        message={`Remove "${deleteSource}" from the vector database?`}
-        confirmText="Delete"
+        open={Boolean(docToDelete)}
+        title="Delete Knowledge Document"
+        message={`Remove "${formatTitle(docToDelete?.fileName || docToDelete?.title)}" (${docToDelete?.chunks || 0} chunks) from the vector database? This action cannot be undone.`}
+        confirmText="Delete Document"
         onConfirm={handleDelete}
-        onCancel={() => setDeleteSource(null)}
+        onCancel={() => setDocToDelete(null)}
         loading={deleting}
       />
     </div>
@@ -182,3 +235,4 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
 }
 
 export default DocumentIngestionTab;
+
