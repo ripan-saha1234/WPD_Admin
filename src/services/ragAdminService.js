@@ -41,6 +41,9 @@ export const buildSessionQueryParams = ({
   page = 1,
   limit = 25,
   search = '',
+  stage = '',
+  status = '',
+  lead_status = '',
   filter = 'all',
   leadType = '',
 } = {}) => {
@@ -50,11 +53,17 @@ export const buildSessionQueryParams = ({
     offset: String(offset),
   });
 
-  if (leadType && leadType !== 'all') {
-    params.set('lead_status', leadType);
+  const finalLeadStatus = lead_status || (leadType && leadType !== 'all' ? leadType : '');
+  const finalStage = stage || (filter && filter !== 'all' ? filter : '');
+
+  if (finalLeadStatus && finalLeadStatus !== 'all') {
+    params.set('lead_status', finalLeadStatus);
   }
-  if (filter && filter !== 'all') {
-    params.set('stage', filter);
+  if (finalStage && finalStage !== 'all') {
+    params.set('stage', finalStage);
+  }
+  if (status && status !== 'all') {
+    params.set('status', status);
   }
   if (search) {
     params.set('search', search);
@@ -254,8 +263,11 @@ export const getRagSession = async (sessionId) => {
         status: sessionData.status,
         visitor_stage: sessionData.visitor_stage,
         lead_status: sessionData.lead_status,
+        initial_question_id: sessionData.initial_question_id,
         initial_question_text: sessionData.initial_question_text,
         initial_response: sessionData.initial_response,
+        consent_flags: sessionData.consent_flags || {},
+        analytics_metadata: sessionData.analytics_metadata || {},
         created_at: sessionData.created_at,
         ended_at: sessionData.ended_at,
         lead: sessionData.lead,
