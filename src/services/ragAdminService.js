@@ -413,10 +413,14 @@ export const getRagDocuments = async () => {
   if (response.ok) {
     const docs = data?.data || data || [];
     const documents = docs.map((doc) => ({
+      id: doc.id,
       fileName: doc.title || doc.source_file || 'Untitled Document',
       source: doc.source_file || doc.title || 'Untitled Document',
       title: doc.title,
       chunks: Number(doc.chunks) || 0,
+      current_version: Number(doc.current_version) || 1,
+      total_versions: Number(doc.total_versions) || 1,
+      status: doc.status || 'active',
       category: doc.category || 'general',
       origin: doc.created_by === 'ingest_script' ? 'folder' : 'upload',
       created_at: doc.created_at,
@@ -451,10 +455,14 @@ export const getRagDocuments = async () => {
 
     if (!groups.has(key)) {
       groups.set(key, {
+        id: chunk.document_id,
         fileName: title,
         source: source,
         title: title,
         chunks: 0,
+        current_version: 1,
+        total_versions: 1,
+        status: 'active',
         category: chunk.metadata?.category || 'general',
         origin: chunk.created_by === 'ingest_script' ? 'folder' : 'upload',
         created_at: chunk.created_at,
@@ -476,12 +484,58 @@ export const getRagDocuments = async () => {
   };
 };
 
+export const getRagDocumentVersions = async (documentId) => {
+  const { response, data } = await ragFetch(`/admin/documents/${documentId}/versions`);
+  if (!response.ok) return { response, data };
+  return { response, data: data?.data || data || [] };
+};
 
-export const uploadRagDocument = async (file) => {
+export const rollbackRagDocumentVersion = async (documentId, versionNumber) => {
+  const { response, data } = await ragFetch(
+    `/admin/documents/${documentId}/versions/${versionNumber}/activate`,
+    {
+      method: 'POST',
+      headers: { Accept: 'application/json' },
+    }
+  );
+  return { response, data: data?.data || data };
+};
+
+export const uploadRagDocument = async (file, changeSummary = '') => {
   if (!file) {
     return {
       response: { ok: false },
       data: { error: 'No file provided' },
+    };
+  }
+
+  const isDocx = file.name.toLowerCase().endsWith('.docx');
+
+  if (isDocx) {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (changeSummary) {
+      formData.append('change_summary', changeSummary);
+    }
+
+    const { response, data } = await ragFetch('/admin/documents/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      return { response, data };
+    }
+
+    const ingestData = data?.data || data;
+    return {
+      response,
+      data: {
+        fileName: ingestData.title || file.name,
+        chunks: ingestData.total_chunks || 1,
+        version: ingestData.version_number || 1,
+        is_deduplicated: ingestData.is_deduplicated || false,
+      },
     };
   }
 
@@ -500,6 +554,8 @@ export const uploadRagDocument = async (file) => {
     content: content || `# ${file.name}\n\nUploaded document content.`,
     visibility: 'public',
     replace_existing: true,
+    change_summary: changeSummary || `Uploaded ${file.name}`,
+    auto_activate: true,
   };
 
   const { response, data } = await ragFetch('/admin/documents/ingest', {
@@ -519,17 +575,25 @@ export const uploadRagDocument = async (file) => {
   return {
     response,
     data: {
-      fileName: file.name,
+      fileName: ingestData.title || file.name,
       chunks: ingestData.total_chunks || 1,
+      version: ingestData.version_number || 1,
+      is_deduplicated: ingestData.is_deduplicated || false,
     },
   };
 };
 
-export const deleteRagDocument = (sourceTitle) =>
-  ragFetch(`/admin/documents/by-title/${encodeURIComponent(sourceTitle)}`, {
+export const deleteRagDocument = (sourceTitleOrId) => {
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sourceTitleOrId);
+  const endpoint = isUuid
+    ? `/admin/documents/${sourceTitleOrId}`
+    : `/admin/documents/by-title/${encodeURIComponent(sourceTitleOrId)}`;
+
+  return ragFetch(endpoint, {
     method: 'DELETE',
     headers: { Accept: 'application/json' },
   });
+};
 
 export const getRagInsightsOverview = () =>
   ragFetch('/admin/sessions?limit=50', {

@@ -5,6 +5,7 @@ const RagAdminContext = createContext(null);
 export function RagAdminProvider({ children, showToast }) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
+  const [customHeaderButtons, setCustomHeaderButtons] = useState([]);
 
   const refresh = useCallback(() => {
     setRefreshKey((k) => k + 1);
@@ -17,9 +18,11 @@ export function RagAdminProvider({ children, showToast }) {
       refresh,
       selectedSessionId,
       setSelectedSessionId,
+      customHeaderButtons,
+      setCustomHeaderButtons,
       showToast,
     }),
-    [refreshKey, refresh, selectedSessionId, showToast]
+    [refreshKey, refresh, selectedSessionId, customHeaderButtons, showToast]
   );
 
   return (

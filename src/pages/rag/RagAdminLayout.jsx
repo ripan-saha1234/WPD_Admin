@@ -10,7 +10,7 @@ import './RagAdminPage.css';
 function RagAdminLayoutInner() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { refresh } = useRagAdmin();
+  const { refresh, customHeaderButtons } = useRagAdmin();
   const { getLeadById } = useLeads();
 
   const pathParts = location.pathname.replace(/^\/rag\/?/, '').split('/').filter(Boolean);
@@ -60,16 +60,29 @@ function RagAdminLayoutInner() {
         borderColor: '#e8e8e8',
       });
     }
-    buttons.push({
-      type: 'button',
-      text: 'Refresh',
-      onClick: refresh,
-      backgroundColor: '#0690fd',
-      textColor: '#FFFFFF',
-      borderColor: '#0690fd',
-    });
+
+    if (customHeaderButtons && customHeaderButtons.length > 0) {
+      buttons.push({
+        type: 'button',
+        text: 'Refresh',
+        onClick: refresh,
+        backgroundColor: '#fff',
+        textColor: '#0d0d0d',
+        borderColor: '#e8e8e8',
+      });
+      buttons.push(...customHeaderButtons);
+    } else {
+      buttons.push({
+        type: 'button',
+        text: 'Refresh',
+        onClick: refresh,
+        backgroundColor: '#0690fd',
+        textColor: '#FFFFFF',
+        borderColor: '#0690fd',
+      });
+    }
     return buttons;
-  }, [isHub, leadId, handleBack, refresh]);
+  }, [isHub, leadId, handleBack, refresh, customHeaderButtons]);
 
   const pageTitle = lead
     ? lead.name
