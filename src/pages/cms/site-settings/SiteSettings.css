@@ -1,8 +1,8 @@
 .site-settings-card {
-  background: #ffffff;
-  border: 1px solid #e0e5f2;
-  border-radius: 15px;
-  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .site-settings-header {
@@ -10,27 +10,47 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
+  gap: 1rem;
+  padding: 1.1rem 1.5rem;
   background: transparent;
   border: none;
+  color: var(--text);
   cursor: pointer;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  transition: background-color var(--transition);
+}
+
+.site-settings-header:hover {
+  background: var(--surface-hover);
 }
 
 .site-settings-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #0d0d0d;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--text);
 }
 
 .site-settings-chevron {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #e0e5f2;
-  border-radius: 8px;
-  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-xs);
+  transition: transform 0.2s var(--ease), border-color var(--transition);
+}
+
+.site-settings-chevron path {
+  stroke: var(--text-2);
+}
+
+.site-settings-header:hover .site-settings-chevron {
+  border-color: var(--text-3);
 }
 
 .site-settings-chevron.open {
@@ -39,49 +59,55 @@
 
 .site-settings-body {
   display: flex;
-  border-top: 1px solid #e0e5f2;
-  margin: 0 1rem 1rem;
-  border: 1px solid #e0e5f2;
-  border-radius: 12px;
+  margin: 0 1.25rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   min-height: 320px;
+  background: var(--surface);
 }
 
 .site-settings-tabs {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  padding: 1.25rem 1rem;
-  min-width: 190px;
-  border-right: 1px solid #e0e5f2;
+  gap: 0.25rem;
+  padding: 1rem 0.75rem;
+  min-width: 200px;
+  background: var(--surface-2);
+  border-right: 1px solid var(--border);
+  border-radius: var(--radius) 0 0 var(--radius);
 }
 
 .site-settings-tab {
   text-align: left;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 8px;
-  padding: 0.55rem 0.75rem;
-  font-size: 13px;
-  font-weight: 600;
-  color: #0d0d0d;
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.8rem;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-2);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color var(--transition), color var(--transition),
+    border-color var(--transition), box-shadow var(--transition);
 }
 
 .site-settings-tab:hover {
-  background: #f5f8ff;
+  background: var(--surface-hover);
+  color: var(--text);
 }
 
 .site-settings-tab.active {
-  color: #0690fd;
-  border-color: #e0e5f2;
-  background: #ffffff;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+  color: var(--primary-text);
+  font-weight: 600;
+  border-color: var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .site-settings-content {
   flex: 1;
-  padding: 1.25rem 1.5rem;
+  min-width: 0;
+  padding: 1.5rem;
 }
 
 .site-settings-uploads {
@@ -95,15 +121,26 @@
 }
 
 .site-settings-upload-label {
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.45rem;
   font-size: 13px;
   font-weight: 600;
-  color: #0d0d0d;
+  color: var(--text-2);
 }
 
 .site-settings-upload-label span {
-  color: #ff0000;
+  color: var(--danger);
   margin-left: 2px;
+}
+
+.site-settings-content .common-input-label,
+.site-settings-content .common-select-label,
+.site-settings-content .rte-label {
+  margin-left: 0;
+  font-weight: 600;
+}
+
+.site-settings-content .common-text-editor-box {
+  margin-top: 0;
 }
 
 .site-settings-footer-grid {
@@ -128,7 +165,7 @@
 
 .site-settings-placeholder {
   margin: 0;
-  color: #5e5e5e;
+  color: var(--text-3);
   font-size: 14px;
 }
 
@@ -156,7 +193,9 @@
   .site-settings-tabs {
     flex-direction: row;
     flex-wrap: wrap;
+    min-width: 0;
     border-right: none;
-    border-bottom: 1px solid #e0e5f2;
+    border-bottom: 1px solid var(--border);
+    border-radius: var(--radius) var(--radius) 0 0;
   }
 }

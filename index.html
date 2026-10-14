@@ -5,7 +5,22 @@
     <link rel="icon" type="image/svg+xml" href="/logo_wpd.svg" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
     <title>WPD Admin</title>
+    <script>
+      // Apply the saved theme before first paint to avoid a light/dark flash
+      (function () {
+        try {
+          var saved = localStorage.getItem('wpd-admin-theme');
+          var mode = saved === 'light' || saved === 'dark'
+            ? saved
+            : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', mode);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

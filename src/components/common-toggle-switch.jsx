@@ -1,12 +1,13 @@
 import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 
-const StyledSwitch = styled(Switch)(({ theme }) => ({
+const StyledSwitch = styled(Switch)(() => ({
   padding: 8,
   '& .MuiSwitch-track': {
     borderRadius: 22 / 2,
-    backgroundColor: '#E9E9EA',
+    backgroundColor: 'var(--border-strong)',
     opacity: 1,
+    transition: 'background-color var(--transition)',
     '&::before, &::after': {
       content: '""',
       position: 'absolute',
@@ -27,25 +28,22 @@ const StyledSwitch = styled(Switch)(({ theme }) => ({
       )}" d="M19,13H5V11H19V13Z" /></svg>')`,
       right: 12,
     },
-    ...theme.applyStyles('dark', {
-      backgroundColor: '#39393D',
-    }),
   },
   '& .MuiSwitch-switchBase': {
     '&.Mui-checked': {
       color: '#fff',
       '& + .MuiSwitch-track': {
-        backgroundColor: '#0690fd',
+        backgroundColor: 'var(--primary)',
         opacity: 1,
       },
     },
   },
   '& .MuiSwitch-thumb': {
-    boxShadow: 'none',
     width: 16,
     height: 16,
     margin: 2,
     backgroundColor: '#fff',
+    boxShadow: 'var(--shadow-xs)',
   },
 }));
 

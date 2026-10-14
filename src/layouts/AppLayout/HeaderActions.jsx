@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react';
 import CommonButton from '../../components/common-button';
 import { useClickOutside } from './hooks/useClickOutside';
+import { MoreIcon, SearchIcon } from '../../components/ui/icons';
 
 function HeaderSearch({ item, index }) {
   return (
     <div key={`search-${index}`} className="common-layout-header-icon-search-container">
-      <img src="/search-icon.svg" alt="" />
+      <SearchIcon size={16} className="common-layout-header-icon-search-glyph" />
       <input
         type={item.inputType}
         name={item.name}
@@ -26,7 +27,7 @@ function HeaderDropdown({ item, index, dropdownOpen, setDropdownOpen, dropdownRe
       className="common-layout-header-icon-dropdown-container"
       onClick={() => setDropdownOpen((open) => !open)}
     >
-      <img src="/triple-dot-icon.svg" alt="" />
+      <MoreIcon size={18} />
       {dropdownOpen && (
         <div className="common-layout-header-icon-dropdown-items-container">
           {item.dropdownItems?.map((dropdownItem, dropdownIndex) => (

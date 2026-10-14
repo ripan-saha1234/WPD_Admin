@@ -1,13 +1,18 @@
 .faq-element-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .faq-element-item {
-  border: 1px solid #e0e5f2;
-  border-radius: 8px;
-  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  transition: border-color var(--transition);
+}
+
+.faq-element-item:hover {
+  border-color: var(--border-strong);
 }
 
 .faq-element-item-header {
@@ -15,8 +20,14 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.65rem 0.8rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+.faq-element-item-header:hover {
+  background: var(--surface-hover);
 }
 
 .faq-element-item-left {
@@ -33,10 +44,14 @@
   flex-shrink: 0;
 }
 
+.faq-element-drag circle {
+  fill: var(--text-3);
+}
+
 .faq-element-item-title {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 500;
-  color: #0d0d0d;
+  color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -51,66 +66,92 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-xs);
   background: transparent;
   cursor: pointer;
+  transition: background-color var(--transition);
 }
 
 .faq-element-dots:hover {
-  background: #f5f8ff;
+  background: var(--primary-soft);
+}
+
+.faq-element-dots:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+.faq-element-dots circle {
+  fill: var(--primary-text);
 }
 
 .faq-element-menu {
   position: absolute;
-  top: 110%;
+  top: calc(100% + 4px);
   right: 0;
   z-index: 100;
-  min-width: 110px;
-  padding: 5px 0;
-  border: 1px solid #e0e5f2;
-  border-radius: 8px;
-  background: #ffffff;
-  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+  min-width: 128px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  animation: ui-fade-in 140ms var(--ease);
 }
 
 .faq-element-menu button {
   display: block;
   width: 100%;
-  padding: 8px 13px;
+  padding: 7px 10px;
   border: none;
+  border-radius: var(--radius-xs);
   background: transparent;
-  color: #464646;
+  color: var(--text-2);
   font-size: 13px;
+  font-weight: 500;
   text-align: left;
   cursor: pointer;
+  transition: background-color var(--transition), color var(--transition);
 }
 
 .faq-element-menu button:hover {
-  color: #0690fd;
-  background: #f5f8ff;
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+/* Second menu entry is the destructive one */
+.faq-element-menu button:last-child:hover {
+  color: var(--danger-text);
+  background: var(--danger-soft);
 }
 
 .faq-element-item-body {
-  padding: 0.4rem 0.8rem 0.2rem;
-  border-top: 1px solid #e0e5f2;
+  padding: 0.75rem 0.8rem 0.25rem;
+  border-top: 1px solid var(--divider);
 }
 
 .faq-element-add {
   margin-top: 0.75rem;
-  padding: 7px 16px;
-  border: 1px solid #0690fd;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #0690fd;
-  font-size: 13px;
+  padding: 8px 16px;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--primary-text);
+  font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color var(--transition);
 }
 
 .faq-element-add:hover {
-  background: #eef7ff;
+  background: var(--primary-soft);
+}
+
+.faq-element-add:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }

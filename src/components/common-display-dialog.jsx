@@ -34,7 +34,7 @@ function CommonDisplayDialog({
           <Grid item xs={12} key={section.id} style={{ width: "100%" }}>
             <div className="common-display-dialog-straight-text-container" key={section.id}>
               <span>{section.title} : </span> 
-              <a href={section.content} target="_blank" rel="noopener noreferrer" style={{ color: '#6600CC', wordBreak: 'break-all' }}>
+              <a href={section.content} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-text)', wordBreak: 'break-all', fontWeight: 500 }}>
                 {section.content}
               </a>
             </div>
@@ -93,8 +93,8 @@ function CommonDisplayDialog({
       className="dialog-container"
       PaperProps={{
         style: {
-          borderRadius: '1rem',
-          padding: '1%',
+          borderRadius: 'var(--radius-lg)',
+          padding: 0,
         }
       }}
     >
@@ -107,7 +107,7 @@ function CommonDisplayDialog({
           }}
           sx={{
             position: 'absolute',
-            right: 15,
+            right: 18,
             top: 15,
           }}
         >

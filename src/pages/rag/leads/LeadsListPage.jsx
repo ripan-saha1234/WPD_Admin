@@ -57,21 +57,21 @@ function LeadsListPage() {
             <span className="rag-badge-muted">{filteredLeads.length} of {leads.length}</span>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginLeft: 'auto' }}>
+          <div className="leads-toolbar" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginLeft: 'auto' }}>
             <input
               type="text"
-              className="rag-filter-select"
+              className="rag-filter-select leads-toolbar-input"
               placeholder="Search leads..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: '200px', padding: '6px 12px' }}
+              style={{ width: '220px', padding: '0 12px' }}
             />
 
             <select
-              className="rag-filter-select"
+              className="rag-filter-select leads-toolbar-select"
               value={crmFilter}
               onChange={(e) => setCrmFilter(e.target.value)}
-              style={{ padding: '6px 12px' }}
+              style={{ padding: '0 12px' }}
             >
               <option value="all">All CRM Statuses</option>
               <option value="synced">Synced</option>
@@ -92,7 +92,7 @@ function LeadsListPage() {
         {loading ? (
           <CommonLoader text="Loading leads..." />
         ) : filteredLeads.length === 0 ? (
-          <div style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>
+          <div className="leads-empty" style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-3)' }}>
             <p style={{ margin: 0, fontWeight: 500 }}>No captured leads found matching current criteria.</p>
           </div>
         ) : (
@@ -121,7 +121,7 @@ function LeadsListPage() {
                     <td>
                       <div>{lead.email}</div>
                       {lead.phone && lead.phone !== '—' && (
-                        <div style={{ fontSize: '12px', color: '#64748b' }}>{lead.phone}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--text-3)' }}>{lead.phone}</div>
                       )}
                     </td>
                     <td>
@@ -135,7 +135,7 @@ function LeadsListPage() {
                       {lead.projectDescription || lead.shortMessage}
                     </td>
                     <td>
-                      <span style={{ fontSize: '13px', color: '#1e293b' }}>
+                      <span style={{ fontSize: '13px', color: 'var(--text)' }}>
                         {lead.interestedServiceName}
                       </span>
                     </td>
@@ -147,7 +147,7 @@ function LeadsListPage() {
                         {!['synced', 'pending', 'failed'].includes(lead.crmSyncStatus) && lead.crmSyncStatus}
                       </span>
                     </td>
-                    <td style={{ fontSize: '12px', color: '#64748b', whiteSpace: 'nowrap' }}>
+                    <td style={{ fontSize: '12px', color: 'var(--text-3)', whiteSpace: 'nowrap' }}>
                       {lead.timestamp ? new Date(lead.timestamp).toLocaleDateString() : '—'}
                     </td>
                     <td>

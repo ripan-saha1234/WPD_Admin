@@ -7,61 +7,102 @@
 
 .add-element-dialog-title {
   margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  color: #0d0d0d;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--text);
 }
 
 .add-element-dialog-close {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: transparent;
   cursor: pointer;
+  transition: background-color var(--transition);
 }
 
 .add-element-dialog-close:hover {
-  background: #f2f4f8;
+  background: var(--surface-hover);
+}
+
+.add-element-dialog-close:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }
 
 .add-element-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.9rem;
+  gap: 0.75rem;
 }
 
 .add-element-card {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 0.9rem;
-  border: 1px solid #e0e5f2;
-  border-radius: 10px;
-  background: #ffffff;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--transition), background-color var(--transition),
+    box-shadow var(--transition), transform var(--transition);
 }
 
 .add-element-card:hover {
-  border-color: #0690fd;
-  box-shadow: 0 2px 8px rgba(6, 144, 253, 0.12);
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.add-element-card:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: var(--ring);
 }
 
 .add-element-card-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background: #f1f4f9;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-3);
   flex-shrink: 0;
+  transition: background-color var(--transition);
+}
+
+/* Override the icons' hard-coded stroke/fill so they follow the theme */
+.add-element-card-icon svg [stroke] {
+  stroke: var(--text-2);
+  transition: stroke var(--transition);
+}
+
+.add-element-card-icon svg [fill]:not([fill='none']) {
+  fill: var(--text-2);
+  transition: fill var(--transition);
+}
+
+.add-element-card:hover .add-element-card-icon {
+  background: var(--primary-soft-2);
+}
+
+.add-element-card:hover .add-element-card-icon svg [stroke] {
+  stroke: var(--primary-text);
+}
+
+.add-element-card:hover .add-element-card-icon svg [fill]:not([fill='none']) {
+  fill: var(--primary-text);
 }
 
 .add-element-card-text {
@@ -74,12 +115,12 @@
 .add-element-card-title {
   font-size: 14px;
   font-weight: 600;
-  color: #0d0d0d;
+  color: var(--text);
 }
 
 .add-element-card-subtitle {
   font-size: 12px;
-  color: #8a94a6;
+  color: var(--text-3);
 }
 
 @media (max-width: 560px) {

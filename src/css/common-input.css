@@ -1,56 +1,69 @@
 .common-input-wrapper {
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
   position: relative;
   width: 100%;
   min-width: 0;
 }
 
 .common-input-label {
-  margin-bottom: 5px;
+  margin-bottom: 6px;
   font-weight: 500;
-  color: #0D0D0D;
-  font-size: 14px;
-  margin-left: 1.5%;
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.4;
+  margin-left: 2px;
 }
 
 .common-input-label.required::after {
   content: '*';
-  color: red;
-  margin-left: 0px;
+  color: var(--danger);
+  margin-left: 3px;
 }
 
 .common-input {
   width: 100%;
   box-sizing: border-box;
   min-width: 0;
-  padding: 12px 14px;
-  border: 1px solid #D9D9D9;
-  border-radius: 0.5rem;
-  background-color: transparent;
+  min-height: 40px;
+  padding: 9px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
   font-size: 14px;
-  color: #6D6D6D;
+  line-height: 1.5;
+  color: var(--text);
   font-weight: 400;
-  transition: border-color 0.3s ease;
-  font-family: 'League Spartan';
+  font-family: var(--font);
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--transition), box-shadow var(--transition), background-color var(--transition);
 }
 
 .common-input::placeholder {
-  font-family: 'League Spartan';
-  color: #6D6D6D;
+  font-family: var(--font);
+  color: var(--text-3);
   font-size: 14px;
   font-weight: 400;
+  opacity: 1;
+}
+
+.common-input:hover:not(:disabled):not(:focus) {
+  border-color: var(--text-3);
 }
 
 .common-input:focus {
   outline: none;
-  border: 1px solid #c2c2c2;
-  box-shadow: 0 0 5px #c2c2c274;
+  border: 1px solid var(--primary);
+  box-shadow: var(--ring);
 }
 
 .common-input.error {
-  border: 1px solid red;
+  border: 1px solid var(--danger);
+}
+
+.common-input.error:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 20%, transparent);
 }
 
 /* Fix for browser autofill styling */
@@ -58,63 +71,75 @@
 .common-input:-webkit-autofill:hover,
 .common-input:-webkit-autofill:focus,
 .common-input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px white inset !important;
-  -webkit-text-fill-color: #6D6D6D !important;
+  -webkit-box-shadow: 0 0 0 30px var(--surface) inset !important;
+  -webkit-text-fill-color: var(--text) !important;
+  caret-color: var(--text);
   transition: background-color 5000s ease-in-out 0s;
-  background-color: white !important;
+  background-color: var(--surface) !important;
 }
 
 /* For Firefox */
 .common-input:-moz-autofill {
-  background-color: white !important;
-  color: #6D6D6D !important;
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
 }
 
 /* For Edge/IE */
 .common-input:-ms-input-placeholder {
-  color: #6D6D6D !important;
+  color: var(--text-3) !important;
 }
 
 .error-message {
-  color: red;
+  color: var(--danger-text);
   font-size: 12px;
-  margin-top: 5px;
-  margin-left: 2%;
+  font-weight: 500;
+  margin-top: 6px;
+  margin-left: 2px;
 }
 
 .common-input-message {
-  color: #0D0D0D;
+  color: var(--text-3);
   font-size: 12px;
-  margin-top: 5px;
-  margin-left: 4%;
+  margin-top: 6px;
+  margin-left: 2px;
 }
 
 /* Reduce size of calendar and clock icons for date and time inputs */
 .common-input[type="date"]::-webkit-calendar-picker-indicator,
 .common-input[type="time"]::-webkit-calendar-picker-indicator,
 .common-input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   cursor: pointer;
+  opacity: 0.6;
+}
+
+:root[data-theme='dark'] .common-input[type="date"]::-webkit-calendar-picker-indicator,
+:root[data-theme='dark'] .common-input[type="time"]::-webkit-calendar-picker-indicator,
+:root[data-theme='dark'] .common-input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }
 
 /* For Firefox */
 .common-input[type="date"]::-moz-calendar-picker-indicator,
 .common-input[type="time"]::-moz-calendar-picker-indicator,
 .common-input[type="datetime-local"]::-moz-calendar-picker-indicator {
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   cursor: pointer;
 }
 
 .common-input:disabled {
-  background-color: #f4f4f4;
+  background-color: var(--surface-3);
+  color: var(--text-3);
+  box-shadow: none;
   cursor: not-allowed;
 }
 
 .common-input-textarea {
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   resize: vertical;
+  line-height: 1.55;
 }
 
 /* Fix for browser autofill styling on textarea */
@@ -122,15 +147,53 @@
 .common-input-textarea:-webkit-autofill:hover,
 .common-input-textarea:-webkit-autofill:focus,
 .common-input-textarea:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px white inset !important;
-  -webkit-text-fill-color: #6D6D6D !important;
+  -webkit-box-shadow: 0 0 0 30px var(--surface) inset !important;
+  -webkit-text-fill-color: var(--text) !important;
   transition: background-color 5000s ease-in-out 0s;
-  background-color: white !important;
+  background-color: var(--surface) !important;
 }
 
 .common-input-textarea:-moz-autofill {
-  background-color: white !important;
-  color: #6D6D6D !important;
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
+}
+
+/* Native file input rendered by CommonInput (type="file") */
+.common-input-wrapper > input[type="file"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-2);
+  color: var(--text-2);
+  font-size: 13px;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: border-color var(--transition), background-color var(--transition);
+}
+
+.common-input-wrapper > input[type="file"]:hover:not(:disabled) {
+  border-color: var(--primary);
+  background-color: var(--primary-soft);
+}
+
+.common-input-wrapper > input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 7px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  background-color: var(--surface);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+.common-input-wrapper > input[type="file"]::file-selector-button:hover {
+  background-color: var(--surface-hover);
 }
 
 .common-input-upload-container {
@@ -139,33 +202,34 @@
 
 .common-input-file-label {
   display: block;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  color: #0D0D0D;
-  margin-bottom: 10px;
-  margin-left: 2%;
+  color: var(--text-2);
+  margin-bottom: 6px;
+  margin-left: 2px;
 }
 
 .common-input-required-asterisk {
-  color: #ff9980;
+  color: var(--danger);
 }
 
 .common-input-custom-file-input {
   position: relative;
   width: 100%;
-  height: 7.5vh;
-  border-radius: 0.5rem;
-  background-color: transparent;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background-color: var(--surface);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0 0 24px;
+  padding: 0 0 0 16px;
   box-sizing: border-box;
   overflow: hidden;
 }
 
 .common-input-file-placeholder {
-  color: #6D6D6D;
+  color: var(--text-3);
   font-size: 14px;
 }
 
@@ -174,19 +238,31 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--text);
 }
 
 .common-input-upload-button {
-  height: 5vh;
-  padding: 0 2.7%;
+  height: 34px;
+  padding: 0 16px;
   border: none;
-  background-color: #6600CC;
-  color: white;
-  font-size: 14px;
-  border-radius: 0.5rem;
+  background-color: var(--primary);
+  color: var(--primary-contrast);
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   position: absolute;
-  right: 1%;
+  right: 7px;
+  transition: background-color var(--transition);
+}
+
+.common-input-upload-button:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+}
+
+.common-input-upload-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .common-input-hidden-file-input {
@@ -235,9 +311,46 @@
   position: relative;
   width: 10vw;
   height: 100px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
+  background-color: var(--surface-2);
+}
+
+.common-input-image-preview-container > img,
+.common-input-image-preview-container > video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Remove button rendered inside each preview tile */
+.common-input-image-preview-container > button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background-color: var(--surface);
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.common-input-image-preview-container > button:hover {
+  background-color: var(--danger);
+  border-color: var(--danger);
+  color: #ffffff;
 }
 
 .common-input-image-preview-medium .common-input-image-preview-container {
@@ -259,52 +372,53 @@
 
 .common-input-image-remove-btn {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 20px;
-  height: 20px;
-  background-color: white;
-  color: #131313;
-  border: none;
-  border-radius: 0.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  background-color: var(--surface);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
   cursor: pointer;
   font-size: 14px;
   padding: 0;
   line-height: 1;
-  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.265);
+  box-shadow: var(--shadow-sm);
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: background-color var(--transition), color var(--transition);
 }
 
 .common-input-image-remove-btn:hover {
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
+  background-color: var(--danger);
+  border-color: var(--danger);
+  color: #ffffff;
 }
 
 .common-input-image-remove-btn:hover .common-input-image-remove-icon {
-  color: white;
-  filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(87deg) brightness(103%) contrast(103%);
+  color: #ffffff;
+  filter: brightness(0) invert(1);
 }
 
 .common-input-view-image-text {
   display: flex;
-  font-size: 1vw;
-  color: #13131370;
+  font-size: 13px;
+  color: var(--primary-text);
   text-decoration: underline;
-  margin-left: 8%;
+  text-underline-offset: 2px;
+  margin-left: 2px;
+  margin-top: 6px;
   cursor: pointer;
 }
 
 .common-input-wrapper .common-input-extra-css {
-  margin-left: 3%;
+  margin-left: 2px;
 }
 
 .common-input-wrapper .common-input-extra-css-file {
-  margin-left: 4.375%;
+  margin-left: 2px;
 }
 
 
@@ -313,11 +427,14 @@
   display: flex;
   align-items: center;
   width: 100%;
-  border-radius: 0.5rem;
-  background-color: transparent;
+  min-height: 40px;
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
   overflow: hidden;
   column-gap: 1%;
-  border: 1px solid #D9D9D9;
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 .common-input-country-code-wrapper {
@@ -330,19 +447,24 @@
   background-color: transparent;
   border: none;
   font-size: 14px;
-  color: #6D6D6D;
+  color: var(--text);
   font-weight: 500;
-  font-family: 'League Spartan';
+  font-family: var(--font);
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a94a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 0rem center;
   background-size: 1em;
   padding-right: 0.8rem;
-  padding-left: 1rem;
+  padding-left: 12px;
+}
+
+.common-input-country-code-select option {
+  background-color: var(--surface);
+  color: var(--text);
 }
 
 .common-input-country-code-select:focus {
@@ -351,8 +473,8 @@
 
 .common-input-country-code-divider {
   width: 1px;
-  height: 1.8vw;
-  background-color: #ccc;
+  height: 22px;
+  background-color: var(--border-strong);
   margin: 0 10px;
 }
 
@@ -360,6 +482,7 @@
   flex: 1;
   border: none;
   background-color: transparent;
+  box-shadow: none;
   margin-left: -5%;
 }
 
@@ -374,27 +497,27 @@
 .common-input-phone:-webkit-autofill:hover,
 .common-input-phone:-webkit-autofill:focus,
 .common-input-phone:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px white inset !important;
-  -webkit-text-fill-color: #6D6D6D !important;
+  -webkit-box-shadow: 0 0 0 30px var(--surface) inset !important;
+  -webkit-text-fill-color: var(--text) !important;
   transition: background-color 5000s ease-in-out 0s;
-  background-color: white !important;
+  background-color: var(--surface) !important;
 }
 
 .common-input-phone:-moz-autofill {
-  background-color: white !important;
-  color: #6D6D6D !important;
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
 }
 
 
 .common-input-phone-container:focus-within {
   outline: none;
-  border: 1px solid #c1c1c1;
-  box-shadow: 0 0 5px #c1c1c17b;
+  border: 1px solid var(--primary);
+  box-shadow: var(--ring);
 }
 
 
 .common-input-phone-container.error {
-  border: 1px solid red;
+  border: 1px solid var(--danger);
 }
 
 .common-input-csv-display-container {

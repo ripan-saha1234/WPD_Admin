@@ -1,29 +1,31 @@
-/* Rich Text Editor Styles */
+/* Rich Text Editor Styles
+   NOTE: common-text-editor-box.jsx also injects a <style id="rte-styles"> block at
+   runtime (it loads after this file). Both are kept on the same token palette. */
 .common-text-editor-box {
-  margin: 2% 0%;
+  margin: 4px 0 16px;
 }
 
 .rich-text-editor {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  background-color: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-family: var(--font);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  box-shadow: var(--shadow-xs);
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 .rich-text-editor:focus-within {
-  border-color: #0690fd;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--primary);
+  box-shadow: var(--ring);
 }
 
 /* Toolbar Styles */
 .rte-toolbar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 2px;
+  padding: 6px 8px;
   flex-wrap: wrap;
 }
 
@@ -31,7 +33,7 @@
   display: flex;
   align-items: center;
   gap: 2px;
-  border-right: 1px solid #e5e7eb;
+  border-right: 1px solid var(--border);
   padding-right: 8px;
   margin-right: 8px;
 }
@@ -46,38 +48,39 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  min-width: 30px;
+  height: 30px;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   background-color: transparent;
-  color: #374151;
-  font-size: 14px;
-  font-weight: 500;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color var(--transition), color var(--transition), border-color var(--transition);
   user-select: none;
   outline: none;
 }
 
 .rte-btn:hover {
-  background-color: #e5e7eb;
-  border-color: #d1d5db;
+  background-color: var(--surface-hover);
+  color: var(--text);
 }
 
 .rte-btn:active {
-  background-color: #d1d5db;
-  transform: scale(0.95);
+  background-color: var(--surface-3);
+  transform: scale(0.96);
 }
 
 .rte-btn.active {
-  background-color: #0690fd;
-  color: #ffffff;
-  border-color: #0690fd;
+  background-color: var(--primary-soft-2);
+  color: var(--primary-text);
+  border-color: transparent;
 }
 
 .rte-btn.active:hover {
-  background-color: #0690fd;
+  background-color: var(--primary-soft-2);
 }
 
 .rte-btn:disabled {
@@ -92,7 +95,7 @@
 
 .rte-btn-block {
   width: auto;
-  min-width: 32px;
+  min-width: 30px;
   padding: 0 10px;
   font-size: 12px;
   font-weight: 600;
@@ -101,21 +104,22 @@
 
 /* Editor Styles */
 .rte-editor {
-  padding: 16px;
+  padding: 0;
   min-height: 200px;
   max-height: none;
   overflow-y: auto;
   outline: none;
-  line-height: 1.6;
+  line-height: 1.65;
   font-size: 14px;
-  color: #6D6D6D !important;
+  font-family: var(--font);
+  color: var(--text) !important;
   word-wrap: break-word;
   white-space: pre-wrap;
 }
 
 .rte-editor.disabled {
-  background-color: #f9fafb;
-  color: #9ca3af;
+  background-color: var(--surface-2);
+  color: var(--text-3);
   cursor: not-allowed;
 }
 
@@ -123,8 +127,7 @@
 .rte-editor:empty::before,
 .rte-editor[data-empty="true"]::before {
   content: attr(data-placeholder);
-  color: #9ca3af;
-  font-style: italic;
+  color: var(--text-3);
   pointer-events: none;
 }
 
@@ -132,30 +135,31 @@
 .rte-editor strong,
 .rte-editor b {
   font-weight: 700;
-  color: #6D6D6D !important;
+  color: var(--text) !important;
 }
 
 .rte-editor em,
 .rte-editor i {
   font-style: italic;
-  color: #6D6D6D !important;
+  color: var(--text) !important;
 }
 
 .rte-editor u {
   text-decoration: underline;
-  color: #6D6D6D !important;
+  color: var(--text) !important;
 }
 
 .rte-editor s,
 .rte-editor strike,
 .rte-editor del {
   text-decoration: line-through;
-  color: #6D6D6D !important;
+  color: var(--text) !important;
 }
 
 .rte-editor a {
-  color: #0690fd !important;
+  color: var(--primary-text) !important;
   text-decoration: underline;
+  text-underline-offset: 2px;
   word-break: break-word;
 }
 
@@ -169,7 +173,7 @@
 .rte-editor div,
 .rte-editor span,
 .rte-editor li {
-  color: #6D6D6D !important;
+  color: var(--text) !important;
 }
 
 /* Lists */
@@ -177,21 +181,25 @@
   margin: 0;
   padding-left: 20px;
   list-style-type: disc;
-  color: #6D6D6D !important;
+  color: var(--text) !important;
 }
 
 .rte-editor ol {
   margin: 0;
   padding-left: 20px;
   list-style-type: decimal;
-  color: #6D6D6D !important;
+  color: var(--text) !important;
 }
 
 .rte-editor ul li,
 .rte-editor ol li {
   margin: 4px 0;
   padding-left: 4px;
-  color: #6D6D6D !important;
+  color: var(--text) !important;
+}
+
+.rte-editor li::marker {
+  color: var(--text-3);
 }
 
 .rte-editor ul ul {
@@ -199,7 +207,7 @@
   margin-bottom: 4px;
   padding-left: 20px;
   list-style-type: circle;
-  color: #6D6D6D !important;
+  color: var(--text) !important;
 }
 
 .rte-editor ol ol {
@@ -207,14 +215,14 @@
   margin-bottom: 4px;
   padding-left: 20px;
   list-style-type: lower-alpha;
-  color: #6D6D6D !important;
+  color: var(--text) !important;
 }
 
 /* Paragraphs and Divs */
 .rte-editor p,
 .rte-editor div {
   margin: 0 0 8px 0;
-  color: #6D6D6D !important;
+  color: var(--text) !important;
 }
 
 .rte-editor p:last-child,
@@ -232,7 +240,8 @@
   margin: 0 0 10px 0;
   font-weight: 700;
   line-height: 1.3;
-  color: #0D0D0D !important;
+  letter-spacing: -0.01em;
+  color: var(--text) !important;
 }
 
 .rte-editor h1 {
@@ -286,44 +295,48 @@
 }
 
 /* Selection */
-.rte-editor ::selection {
-  background-color: #0690fd;
-  color: #ffffff;
+.rte-editor ::selection,
+.rte-editor::selection {
+  background-color: var(--primary-soft-2);
 }
 
 .rte-label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  color: #0D0D0D;
-  margin: 0%;
-  margin-left: 1.5%;
-  margin-bottom: 1%;
+  color: var(--text-2);
+  line-height: 1.4;
+  margin: 0;
+  margin-left: 2px;
+  margin-bottom: 6px;
 }
 
 .rte-label span {
-  color: #FF0000;
-  /* Red color for required asterisk */
-  margin-left: 2px;
+  color: var(--danger);
+  /* Required asterisk */
+  margin-left: 3px;
 }
 
 .rte-error-message {
-  color: #FF0000;
-  /* Red color for error messages */
+  color: var(--danger-text);
   font-size: 12px;
-  margin-top: 4px;
-  margin-left: 1.5%;
+  font-weight: 500;
+  margin-top: 6px;
+  margin-left: 2px;
 }
 
-.common-text-editor-box .error {
-  border-color: #FF0000;
-  box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.1);
+/* Error message rendered below the editor (<p className="error">) */
+.common-text-editor-box > .error {
+  color: var(--danger-text);
+  font-size: 12px;
+  font-weight: 500;
+  margin: 6px 0 0 2px;
 }
 
 /* Responsive Design */
 @media (max-width: 640px) {
   .rte-toolbar {
     padding: 6px 8px;
-    gap: 4px;
+    gap: 2px;
   }
 
   .rte-group {
@@ -333,7 +346,7 @@
   }
 
   .rte-btn {
-    width: 28px;
+    min-width: 28px;
     height: 28px;
     font-size: 12px;
   }
@@ -346,20 +359,16 @@
   }
 
   .rte-editor {
-    padding: 12px;
     font-size: 16px;
     /* Better for mobile input */
   }
 }
 
 /* Focus States */
-.rte-btn:focus-visible {
-  outline: 2px solid #0690fd;
-  outline-offset: 2px;
-}
-
-.rte-editor:focus {
-  /* Handled by parent container */
+.rte-btn:focus-visible,
+.rte-btn-icon:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }
 
 /* Custom Scrollbar */
@@ -368,17 +377,16 @@
 }
 
 .rte-editor::-webkit-scrollbar-track {
-  background-color: #f1f5f9;
-  border-radius: 4px;
+  background-color: transparent;
 }
 
 .rte-editor::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
-  border-radius: 4px;
+  background-color: var(--border-strong);
+  border-radius: var(--radius-full);
 }
 
 .rte-editor::-webkit-scrollbar-thumb:hover {
-  background-color: #94a3b8;
+  background-color: var(--text-3);
 }
 
 /* Animation for toolbar buttons */

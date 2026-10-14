@@ -19,12 +19,12 @@ function LeadInsightCards({ leads = [] }) {
   const maxBar = Math.max(summary.synced, summary.pending, summary.failed, 1);
 
   const cards = [
-    { label: 'Total Leads', value: summary.total, icon: '👥', color: '#0690fd' },
-    { label: 'CRM Synced', value: summary.synced, icon: '✅', color: '#16a34a' },
-    { label: 'Pending Sync', value: summary.pending, icon: '⏳', color: '#f59e0b' },
-    { label: 'Failed Sync', value: summary.failed, icon: '⚠️', color: '#ef4444' },
-    { label: 'Companies', value: summary.companies, icon: '🏢', color: '#8b5cf6' },
-    { label: 'Services Inquired', value: summary.services, icon: '💼', color: '#0284c7' },
+    { label: 'Total Leads', value: summary.total, icon: '👥', color: 'var(--primary-text)' },
+    { label: 'CRM Synced', value: summary.synced, icon: '✅', color: 'var(--success-text)' },
+    { label: 'Pending Sync', value: summary.pending, icon: '⏳', color: 'var(--warning-text)' },
+    { label: 'Failed Sync', value: summary.failed, icon: '⚠️', color: 'var(--danger-text)' },
+    { label: 'Companies', value: summary.companies, icon: '🏢', color: 'var(--primary-text)' },
+    { label: 'Services Inquired', value: summary.services, icon: '💼', color: 'var(--info-text)' },
   ];
 
   return (
@@ -47,9 +47,9 @@ function LeadInsightCards({ leads = [] }) {
         <h3>CRM Webhook Status</h3>
         <div className="leads-bar-chart">
           {[
-            { key: 'synced', label: 'Synced', count: summary.synced, color: '#16a34a' },
-            { key: 'pending', label: 'Pending', count: summary.pending, color: '#f59e0b' },
-            { key: 'failed', label: 'Failed', count: summary.failed, color: '#ef4444' },
+            { key: 'synced', label: 'Synced', count: summary.synced, color: 'var(--success)' },
+            { key: 'pending', label: 'Pending', count: summary.pending, color: 'var(--warning)' },
+            { key: 'failed', label: 'Failed', count: summary.failed, color: 'var(--danger)' },
           ].map((item) => (
             <div key={item.key} className="leads-bar-row">
               <span className="leads-bar-label">{item.label}</span>

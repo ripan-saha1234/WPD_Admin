@@ -5,18 +5,23 @@ import SidebarNavItem from './SidebarNavItem';
 import SidebarLogout from './SidebarLogout';
 import './Sidebar.css';
 
-function Sidebar() {
+function Sidebar({ collapsed = false }) {
   const activeId = useActiveNav(SIDEBAR_NAV_ITEMS);
   const handleLogout = useSidebarLogout();
 
   return (
-    <aside className="sidebar">
-      <img
-        src={SIDEBAR_BRAND.logo}
-        alt={SIDEBAR_BRAND.alt}
-        className="sidebar-logo"
-      />
+    <aside className={`sidebar${collapsed ? ' sidebar--collapsed' : ''}`}>
+      <div className="sidebar-brand">
+        <div className="sidebar-logo-wrap">
+          <img
+            src={SIDEBAR_BRAND.logo}
+            alt={SIDEBAR_BRAND.alt}
+            className="sidebar-logo"
+          />
+        </div>
+      </div>
       <nav className="sidebar-nav">
+        <span className="sidebar-section-label">Menu</span>
         <div className="sidebar-menu">
           {SIDEBAR_NAV_ITEMS.map((item) => (
             <SidebarNavItem

@@ -1,58 +1,90 @@
 .table1-container {
   width: 100%;
-  margin-bottom: 5%;
+  margin-bottom: 24px;
   position: relative;
-  padding-bottom: 1%;
-  font-family: "League Spartan", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding-bottom: 4px;
+  font-family: var(--font);
 }
 
+/* Card shell. overflow stays visible so the row action dropdown is not clipped;
+   the header / last-row corners are rounded individually instead. */
 .table1-table-container {
-  /* overflow: hidden; */
-  border-radius: 0.5rem;
+  border-radius: var(--radius-lg);
   position: relative;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
 .table1 {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .table1 thead {
-  background-color: #E9EDF7;
-  color: #182033;
-  height: 54px;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
+  background-color: var(--surface-2);
+  color: var(--text-3);
+  height: 44px;
 }
 
 .table1 th,
 .table1 td {
-  padding: 18px 15px;
+  padding: 14px 16px;
   text-align: left;
-  border-bottom: 1px solid #e0e0e0;
-  font-size: 15px;
+  border-bottom: 1px solid var(--divider);
+  font-size: 14px;
 }
 
 .table1 td {
-  font-size: 14px;
-  color: #0D0D0D;
+  font-size: 13.5px;
+  color: var(--text-2);
   font-weight: 400;
+  vertical-align: middle;
+}
+
+.table1 td:first-child {
+  color: var(--text);
+  font-weight: 500;
 }
 
 .table1 th {
-  color: #182033;
+  color: var(--text-3);
+  background-color: var(--surface-2);
   font-weight: 600;
-  padding: 1.5% 1.5%;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  padding: 11px 16px;
   text-wrap: nowrap;
-  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.table1 thead tr th:first-child {
+  border-top-left-radius: var(--radius-lg);
+}
+
+.table1 thead tr th:last-child {
+  border-top-right-radius: var(--radius-lg);
 }
 
 .table1 th.table1-action-header {
   text-align: center;
 }
 
-.table1 tbody tr:hover {
-  background-color: #f9f9f9;
+.table1 tbody tr {
+  transition: background-color var(--transition);
+}
+
+.table1 tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table1 tbody tr:last-child td:first-child {
+  border-bottom-left-radius: var(--radius-lg);
+}
+
+.table1 tbody tr:last-child td:last-child {
+  border-bottom-right-radius: var(--radius-lg);
 }
 
 .table1-action-container {
@@ -66,10 +98,25 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 5px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.table1-three-dots-button:hover {
+  background-color: var(--surface-3);
+  color: var(--primary-text);
+}
+
+.table1-three-dots-button:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }
 
 .table1-action-dropdown {
@@ -78,15 +125,17 @@
   left: 20%;
   transform: translateX(-50%);
   margin-top: 4px;
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
   z-index: 1000;
-  min-width: 120px;
-  padding: 8px 0;
+  min-width: 140px;
+  padding: 6px;
   display: flex;
   flex-direction: column;
-  border: 1px solid #e0e0e0;
+  gap: 1px;
+  border: 1px solid var(--border);
+  animation: ui-fade-in 140ms var(--ease);
 }
 
 .table1-action-dropdown.dropdown-up {
@@ -99,93 +148,123 @@
 .table1-action-button {
   background: none;
   border: none;
+  border-radius: var(--radius-xs);
   text-align: left;
-  padding: 8px 16px;
+  padding: 8px 12px;
   cursor: pointer;
-  font-size: 14px;
-  color: #464646;
-  transition: background-color 0.2s;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: var(--font);
+  color: var(--text-2);
+  transition: background-color var(--transition), color var(--transition);
 }
 
 .table1-action-button:hover {
-  background-color: #f5f5f7;
+  background-color: var(--surface-hover);
+  color: var(--text);
 }
 
 .table1 tbody tr:nth-child(even) {
-  background-color: #FFFFFF;
+  background-color: var(--surface);
 }
 
 .table1 tbody tr:nth-child(odd) {
-  background-color: #FFFFFF;
+  background-color: var(--surface);
+}
+
+/* Declared after the zebra rules so hover wins */
+.table1 tbody tr:hover {
+  background-color: var(--surface-hover);
 }
 
 .table1-status-container {
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
-  font-size: 13px;
-  font-weight: 500;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 20px;
   width: fit-content;
-  border-radius: 0.2rem;
-  padding: 3% 6%;
+  border-radius: var(--radius-full);
+  padding: 2px 10px;
+  white-space: nowrap;
+  background-color: var(--neutral-soft);
+  color: var(--neutral-text);
+}
+
+.table1-status-container::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background-color: currentColor;
+  opacity: 0.85;
 }
 
 .table1-status-container.status-success {
-  color: white;
-  background-color: #249F32;
+  color: var(--success-text);
+  background-color: var(--success-soft);
 }
 
 .table1-status-container.status-inactive {
-  color: #FF4D49;
-  background-color: #FF4D4929;
+  color: var(--danger-text);
+  background-color: var(--danger-soft);
 }
 
 .table1-status-container.status-upcoming {
-  color: white;
-  background-color: #5959D0;
+  color: var(--primary-text);
+  background-color: var(--primary-soft);
 }
 
 .table1-status-container.status-progress {
-  color: white;
-  background-color: #C87629;
+  color: var(--warning-text);
+  background-color: var(--warning-soft);
 }
 
 
 .table1-customer-container {
   display: flex;
   flex-direction: row;
-  column-gap: 2%;
+  align-items: center;
+  column-gap: 10px;
 }
 
 .table1-customer-image-container {
+  flex-shrink: 0;
   width: 32px;
   height: 32px;
-  border-radius: 5rem;
+  border-radius: var(--radius-full);
   overflow: hidden;
   object-fit: contain;
+  background-color: var(--surface-3);
+  border: 1px solid var(--border);
 }
 
 .table1-customer-image-container img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .table1-customer-name-container {
   display: flex;
   flex-direction: column;
-  row-gap: 0.5vh;
+  row-gap: 2px;
 }
 
 .table1-customer-name-container h2 {
-  font-size: 14px;
-  font-weight: 400;
-  color: #0D0D0D;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0;
   margin: 0%;
 }
 
 .table1-customer-name-container p {
   font-size: 12px;
   font-weight: 400;
-  color: #5D5D5D;
+  color: var(--text-3);
   margin: 0%;
 }
 
@@ -210,47 +289,57 @@
 }
 
 .table-action2-container img {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition);
+}
+
+.table-action2-container:hover img {
+  background-color: var(--surface-3);
 }
 
 /* Modern pagination styles */
 .modern-pagination {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
-  margin-top: 24px;
+  margin-top: 16px;
   gap: 8px;
 }
 
 .pagination-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .pagination-nav-button {
   width: 32px;
   height: 32px;
-  border: 1px solid #e0e0e0;
-  background: white;
-  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  color: #6b7280;
+  box-shadow: var(--shadow-xs);
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition);
+  color: var(--text-2);
 }
 
 .pagination-nav-button:disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .pagination-nav-button:hover:not(:disabled) {
-  border-color: #d1d5db;
-  background-color: #f9fafb;
+  border-color: var(--text-3);
+  background-color: var(--surface-hover);
+  color: var(--text);
 }
 
 .pagination-numbers {
@@ -260,34 +349,41 @@
 }
 
 .pagination-number {
-  width: 32px;
+  min-width: 32px;
   height: 32px;
-  border: none;
+  padding: 0 8px;
+  border: 1px solid transparent;
   background: transparent;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  color: #6b7280;
-  transition: all 0.2s ease;
+  font-family: var(--font);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-2);
+  transition: background-color var(--transition), color var(--transition), border-color var(--transition);
 }
 
 .pagination-number:hover:not(.ellipsis):not(.active) {
-  background-color: #f3f4f6;
-  color: #0690fd;
+  background-color: var(--surface-hover);
+  color: var(--text);
 }
 
 .pagination-number.active {
-  background-color: #0690fd0D;
-  color: #0690fd;
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-contrast);
+  font-weight: 600;
+  box-shadow: var(--shadow-primary);
 }
 
 .pagination-number.ellipsis {
   cursor: default;
   background: transparent;
+  color: var(--text-3);
 }
 
 .pagination-number.ellipsis:hover {
@@ -298,16 +394,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 50px;
+  min-height: 120px;
   width: 100%;
-  /* border-radius: 0.5rem; */
-  background-color: #F6F7F9;
-  border: 1px solid #E0E0E0;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  background-color: var(--surface-2);
+  border-top: 1px dashed var(--border-strong);
 }
 
 .table1-no-data-container p {
-  font-size: 14px;
-  font-weight: 400;
-  color: #5D5D5D;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-3);
   margin: 0%;
 }

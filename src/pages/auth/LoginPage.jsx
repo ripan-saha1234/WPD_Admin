@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { globalContext } from '../../context/context';
 import { loginAdmin } from '../../services/authService';
 import { mapUserFromApi, setAuthSession } from '../../utils/auth';
+import ThemeToggle from '../../components/ui/ThemeToggle';
 import './LoginPage.css';
 
 function LoginPage() {
@@ -113,57 +114,76 @@ function LoginPage() {
 
   return (
     <div className="authentication-container">
-      <div className="authentication-container-content">
-        {/* <img src="/logo_wpd.svg" alt="WPD Admin" /> */}
-        <h1>WPD Admin</h1>
-
-        {errors.general && (
-          <div className="authentication-error-message">
-            {errors.general}
-          </div>
-        )}
-
-        <form onSubmit={handleLogin}>
-          <div className="authentication-container-content-input">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-              className={errors.email ? 'authentication-input-error-border' : ''}
-            />
-            {errors.email && (
-              <span className="authentication-input-error">{errors.email}</span>
-            )}
+      <aside className="authentication-brand-panel" aria-hidden="true">
+        <div className="authentication-brand-logo">
+          <img src="/logo_wpd.svg" alt="" />
+        </div>
+        <div className="authentication-brand-copy">
+          <h2>Manage your website, content and chatbot in one place.</h2>
+          <p>CMS pages, blogs, visitor sessions, leads and AI insights — all from a single, fast admin.</p>
+        </div>
+        <ul className="authentication-brand-points">
+          <li>Content management</li>
+          <li>Chatbot &amp; lead insights</li>
+          <li>Knowledge base ingestion</li>
+        </ul>
+      </aside>
+      <div className="authentication-form-panel">
+        <ThemeToggle className="authentication-theme-toggle" />
+        <div className="authentication-container-content">
+          <div className="authentication-heading">
+            <h1>WPD Admin</h1>
+            <p>Welcome back — sign in to continue.</p>
           </div>
 
-          <div className="authentication-container-content-input">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              className={errors.password ? 'authentication-input-error-border' : ''}
-            />
-            {errors.password && (
-              <span className="authentication-input-error">{errors.password}</span>
-            )}
-          </div>
+          {errors.general && (
+            <div className="authentication-error-message">
+              {errors.general}
+            </div>
+          )}
 
-          <button
-            type="submit"
-            className="authentication-container-content-button"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Logging in...' : 'Log in'}
-          </button>
-        </form>
+          <form onSubmit={handleLogin}>
+            <div className="authentication-container-content-input">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                className={errors.email ? 'authentication-input-error-border' : ''}
+              />
+              {errors.email && (
+                <span className="authentication-input-error">{errors.email}</span>
+              )}
+            </div>
+
+            <div className="authentication-container-content-input">
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                className={errors.password ? 'authentication-input-error-border' : ''}
+              />
+              {errors.password && (
+                <span className="authentication-input-error">{errors.password}</span>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="authentication-container-content-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Logging in...' : 'Log in'}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

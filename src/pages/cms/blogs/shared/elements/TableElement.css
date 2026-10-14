@@ -1,21 +1,23 @@
 .table-element-scroll {
   width: 100%;
   overflow-x: auto;
+  border-radius: var(--radius);
 }
 
 .table-element {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  border: 1px solid #e0e5f2;
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   overflow: hidden;
+  background: var(--surface);
 }
 
 .table-element th,
 .table-element td {
-  border-right: 1px solid #e0e5f2;
-  border-bottom: 1px solid #e0e5f2;
+  border-right: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider);
 }
 
 .table-element tr > *:last-child {
@@ -27,16 +29,25 @@
 }
 
 .table-element thead th {
-  background: #eef1f6;
+  background: var(--surface-2);
+  border-bottom-color: var(--border);
   padding: 0;
-  height: 40px;
+  height: 42px;
   vertical-align: middle;
+}
+
+.table-element tbody tr {
+  transition: background-color var(--transition);
+}
+
+.table-element tbody tr:hover {
+  background: var(--surface-hover);
 }
 
 .table-element-gutter {
   width: 34px;
   min-width: 34px;
-  background: #f7f9fc;
+  background: var(--surface-2);
   text-align: center;
   vertical-align: middle;
   padding: 0;
@@ -53,6 +64,10 @@
   cursor: grab;
 }
 
+.table-element-drag circle {
+  fill: var(--text-3);
+}
+
 .table-element-col-header {
   position: relative;
 }
@@ -60,20 +75,29 @@
 .table-element-col-input {
   width: 100%;
   box-sizing: border-box;
-  padding: 8px 30px 8px 12px;
+  padding: 8px 32px 8px 12px;
   border: none;
   outline: none;
   background: transparent;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
-  color: #0d0d0d;
+  letter-spacing: 0.02em;
+  color: var(--text-2);
   font-family: inherit;
+  border-radius: var(--radius-xs);
+  transition: background-color var(--transition), box-shadow var(--transition);
+}
+
+.table-element-col-input:focus {
+  background: var(--surface);
+  box-shadow: inset 0 0 0 2px var(--primary);
+  color: var(--text);
 }
 
 .table-element-col-header .table-element-icon-btn {
   position: absolute;
   top: 50%;
-  right: 8px;
+  right: 6px;
   transform: translateY(-50%);
 }
 
@@ -81,22 +105,29 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-xs);
   background: transparent;
   cursor: pointer;
+  transition: background-color var(--transition);
 }
 
 .table-element-icon-btn:hover {
-  background: #e6ebf3;
+  background: var(--danger-soft);
+}
+
+.table-element-icon-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }
 
 .table-element-icon-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+  background: transparent;
 }
 
 .table-element-cell {
@@ -110,38 +141,58 @@
   border: none;
   outline: none;
   background: transparent;
-  font-size: 13px;
-  color: #464646;
+  font-size: 13.5px;
+  color: var(--text);
   font-family: inherit;
+  transition: background-color var(--transition), box-shadow var(--transition);
+}
+
+.table-element-cell-input::placeholder {
+  color: var(--text-3);
 }
 
 .table-element-cell-input:focus {
-  background: #f5f9ff;
+  background: var(--primary-soft);
+  box-shadow: inset 0 0 0 2px var(--primary);
 }
 
 .table-element-footer {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-top: 0.75rem;
 }
 
 .table-element-add {
   padding: 6px 12px;
-  border: 1px solid #cfe6ff;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #0690fd;
-  font-size: 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--primary-text);
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color var(--transition), border-color var(--transition);
 }
 
 .table-element-add:hover {
-  background: #eef7ff;
+  background: var(--primary-soft);
+  border-color: var(--primary);
+}
+
+.table-element-add:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }
 
 .table-element-size {
-  color: #8a94a6;
+  margin-left: auto;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  background: var(--neutral-soft);
+  color: var(--neutral-text);
   font-size: 12px;
+  font-weight: 600;
+  line-height: 20px;
 }

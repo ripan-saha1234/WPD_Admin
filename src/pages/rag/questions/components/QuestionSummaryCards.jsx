@@ -9,10 +9,10 @@ function QuestionSummaryCards({ questions }) {
   const pollCount = questions.filter((q) => q.question_type === 'poll').length;
 
   const cards = [
-    { label: 'Total Questions', value: questions.length, icon: '📋', color: '#0690fd' },
-    { label: 'Active in Flow', value: active, icon: '✅', color: '#16a34a' },
-    { label: 'Inactive', value: inactive, icon: '⏸️', color: '#64748b' },
-    { label: 'Total Responses', value: totalResponses, icon: '📊', color: '#8b5cf6' },
+    { label: 'Total Questions', value: questions.length, icon: '📋', color: 'var(--primary-text)' },
+    { label: 'Active in Flow', value: active, icon: '✅', color: 'var(--success-text)' },
+    { label: 'Inactive', value: inactive, icon: '⏸️', color: 'var(--text-2)' },
+    { label: 'Total Responses', value: totalResponses, icon: '📊', color: 'var(--info-text)' },
   ];
 
   return (

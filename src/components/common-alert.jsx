@@ -16,17 +16,23 @@ const CommonAlert = ({ msg }) => {
         severity={severity}
         variant="filled"
         sx={{
-          borderRadius: "10px",
+          borderRadius: "var(--radius)",
           fontWeight: 600,
-          boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+          fontSize: "13.5px",
+          minWidth: "280px",
+          boxShadow: "var(--shadow-lg)",
           ...(severity === "success"
             ? {
-                backgroundColor: "#E6F4EA",
-                color: "#1E4620"
+                backgroundColor: "color-mix(in srgb, var(--success) 14%, var(--surface))",
+                color: "var(--success-text)",
+                border: "1px solid color-mix(in srgb, var(--success) 35%, transparent)",
+                "& .MuiAlert-icon": { color: "var(--success)" }
               }
             : {
-                backgroundColor: "#FDE8E8",
-                color: "#7A1C1C"
+                backgroundColor: "color-mix(in srgb, var(--danger) 14%, var(--surface))",
+                color: "var(--danger-text)",
+                border: "1px solid color-mix(in srgb, var(--danger) 35%, transparent)",
+                "& .MuiAlert-icon": { color: "var(--danger)" }
               })
         }}
       >

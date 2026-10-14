@@ -115,9 +115,9 @@ const CommonTable = ({
         <div className="table1-action-container">
           <button className="table1-three-dots-button" onClick={(e) => toggleActionMenu(rowIndex, e)}>
             <svg width="16" height="4" viewBox="0 0 16 4" fill="none">
-              <circle cx="2" cy="2" r="2" fill="#0690fd" />
-              <circle cx="8" cy="2" r="2" fill="#0690fd" />
-              <circle cx="14" cy="2" r="2" fill="#0690fd" />
+              <circle cx="2" cy="2" r="2" fill="currentColor" />
+              <circle cx="8" cy="2" r="2" fill="currentColor" />
+              <circle cx="14" cy="2" r="2" fill="currentColor" />
             </svg>
           </button>
 

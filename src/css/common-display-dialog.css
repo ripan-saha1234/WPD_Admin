@@ -1,49 +1,88 @@
+/* Dialog chrome shared with CommonDialog (kept here too because this file can load on its own) */
+.dialog-container .MuiDialogTitle-root {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 64px;
+  margin: 0;
+  padding: 20px 104px 18px 24px;
+  border-bottom: 1px solid var(--divider);
+}
+
+.dialog-container .MuiDialogTitle-root .MuiIconButton-root {
+  width: 34px;
+  height: 34px;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition);
+}
+
+.dialog-container .MuiDialogTitle-root .MuiIconButton-root:hover {
+  background-color: var(--surface-hover);
+}
+
+.dialog-container .MuiDialogTitle-root + .MuiDialogContent-root {
+  padding-top: 20px !important;
+}
+
+.dialog-title {
+  font-weight: 650;
+  font-size: 18px;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
 .common-display-dialog-straight-text-container {
   display: flex;
   flex-direction: row;
   align-items: center;
+  flex-wrap: wrap;
   width: 100%;
-  color: #6D6D6D;
+  color: var(--text-2);
   font-size: 14px;
   font-weight: 400;
+  line-height: 1.55;
   margin: 0%;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--divider);
 }
 
 .common-display-dialog-straight-text-container span {
-  font-weight: 700;
-  color: #0D0D0D;
-  margin-right: 1%;
-}
-
-.dialog-title {
   font-weight: 600;
-  font-size: 20px;
-  color: #0D0D0D
+  color: var(--text);
+  margin-right: 6px;
 }
 
 .common-display-dialog-seperate-line-text-container {
   display: flex;
   flex-direction: column;
   width: 100%;
-  color: #6D6D6D;
+  color: var(--text-2);
   font-size: 14px;
   font-weight: 400;
   margin: 0%;
-  row-gap: 1.5vh;
+  row-gap: 6px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--divider);
 }
 
 .common-display-dialog-seperate-line-text-container h1 {
-  font-size: 14px;
-  font-weight: 700;
-  color: #0D0D0D;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
   margin: 0%;
 }
 
 .common-display-dialog-seperate-line-text-container p {
-  color: #6D6D6D;
+  color: var(--text);
   font-size: 14px;
   font-weight: 400;
+  line-height: 1.6;
   margin: 0%;
+  word-break: break-word;
 }
 
 .common-display-dialog-toggle-switch-container {
@@ -53,10 +92,11 @@
   width: 100%;
   gap: 12px;
   margin: 0%;
+  padding: 6px 0;
 }
 
 .common-display-dialog-toggle-switch-container span {
   font-weight: 600;
-  color: #090909;
-  font-size: 16px;
+  color: var(--text);
+  font-size: 14px;
 }

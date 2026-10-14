@@ -1,7 +1,17 @@
 .element-card {
-  background: #ffffff;
-  border: 1px solid #e0e5f2;
-  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.element-card:hover {
+  border-color: var(--border-strong);
+}
+
+.blog-section-element.dragging .element-card {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
 }
 
 .element-card-header {
@@ -9,54 +19,77 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.6rem 0.9rem;
+  padding: 0.65rem 0.9rem;
 }
 
 .element-card-header-left {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.6rem;
   min-width: 0;
 }
 
 .element-card-drag {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-xs);
   cursor: grab;
+  transition: background-color var(--transition);
+}
+
+.element-card-drag:hover {
+  background: var(--surface-hover);
+}
+
+.element-card-drag path {
+  stroke: var(--text-3);
 }
 
 .element-card-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #0d0d0d;
+  font-size: 13.5px;
+  font-weight: 650;
+  color: var(--text);
   white-space: nowrap;
 }
 
 .element-card-header-right {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.25rem;
 }
 
 .element-card-icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-xs);
   background: transparent;
   cursor: pointer;
+  transition: background-color var(--transition);
 }
 
 .element-card-icon-btn:hover {
-  background: #f5f8ff;
+  background: var(--surface-hover);
+}
+
+.element-card-icon-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }
 
 .element-card-chevron {
-  transition: transform 0.2s ease;
+  transition: transform 0.2s var(--ease);
+}
+
+.element-card-chevron path {
+  stroke: var(--primary-text);
 }
 
 .element-card-chevron.collapsed {
@@ -64,5 +97,6 @@
 }
 
 .element-card-body {
-  padding: 0 0.9rem 0.9rem;
+  padding: 0.9rem 0.9rem 1rem;
+  border-top: 1px solid var(--divider);
 }

@@ -605,7 +605,7 @@ const CommonDialog = ({
     const fieldStyle = {
       width: '100% ',
       boxSizing: 'border-box',
-      padding: '12.5px 20px'
+      padding: '9px 12px'
     };
 
     const gridProps = {
@@ -643,7 +643,7 @@ const CommonDialog = ({
               placeholder={placeholder}
               prefix={prefix}
               className='extra-input-css'
-              dialogStyleLabel={{ marginLeft: '22px' }}
+              dialogStyleLabel={{ marginLeft: '2px' }}
               half={width === 'half' ? true : false}
               style={fieldStyle}
               multiline={multiline}
@@ -668,8 +668,8 @@ const CommonDialog = ({
               errorMsg={`${label} is required`}
               placeholder={placeholder}
               className={width === 'half' ? 'extra-select-css' : ''}
-              halfStyleDialog={width === 'half' ? { padding: '3.1% 5.25%' } : {}}
-              halfStyleDialogLabel={width === 'half' ? { marginLeft: '22px' } : {}}
+              halfStyleDialog={width === 'half' ? { padding: '9px 12px' } : {}}
+              halfStyleDialogLabel={width === 'half' ? { marginLeft: '2px' } : {}}
               half={width === 'half' ? true : false}
               style={fieldStyle}
               disabled={disabled}
@@ -706,7 +706,7 @@ const CommonDialog = ({
           <Grid item xs={12} className="special-grid2" key={id} style={{ marginLeft: '2%', marginBottom: '2%' }}>
             <Box >
               {section.title &&
-                <div style={{ fontWeight: 'medium', marginBottom: '1%' }}>
+                <div style={{ fontWeight: 600, fontSize: '13px', color: 'var(--text-2)', marginBottom: '8px' }}>
                   {section.title || 'Assign Permissions'}
                 </div>
               }
@@ -719,9 +719,9 @@ const CommonDialog = ({
                           checked={!!formData[section.dataKey]?.[option.value]}
                           onChange={() => handleCheckboxChange(section.dataKey, option.value)}
                           sx={{
-                            color: '#0690fd',
+                            color: 'var(--border-strong)',
                             '&.Mui-checked': {
-                              color: '#0690fd',
+                              color: 'var(--primary)',
                             },
                             padding: '4px',
                             transform: 'scale(1.2)'
@@ -731,8 +731,8 @@ const CommonDialog = ({
                       label={option.label}
                       sx={{
                         '& .MuiFormControlLabel-label': {
-                          fontFamily: 'League Spartan',
-                          color: '#0D0D0D',
+                          fontFamily: 'var(--font)',
+                          color: 'var(--text)',
                           fontSize: '14px',
                           fontWeight: '400',
                         }
@@ -886,7 +886,7 @@ const CommonDialog = ({
       case 'normal text':
         return (
           <Grid item xs={12} key={id} style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <p style={{ fontSize: '20px', fontWeight: '600', color: '#0D0D0D' , textAlign: 'center'}}>{section?.text}</p>
+            <p style={{ fontSize: '17px', fontWeight: '600', color: 'var(--text)' , textAlign: 'center'}}>{section?.text}</p>
           </Grid>
         );
 
@@ -1123,8 +1123,8 @@ const CommonDialog = ({
       className="dialog-container"
       PaperProps={{
         style: {
-          borderRadius: '1rem',
-          padding: '1%',
+          borderRadius: 'var(--radius-lg)',
+          padding: 0,
         }
       }}
     >
@@ -1139,8 +1139,8 @@ const CommonDialog = ({
             }}
             sx={{
               position: 'absolute',
-              right: 40,
-              top: 8,
+              right: 58,
+              top: 15,
             }}
           >
             <img src="/info-icon.svg" alt="" onClick={infoFunction} />
@@ -1154,7 +1154,7 @@ const CommonDialog = ({
           }}
           sx={{
             position: 'absolute',
-            right: 15,
+            right: 18,
             top: 15,
           }}
         >
@@ -1181,12 +1181,13 @@ const CommonDialog = ({
         </Grid>
         {
           showButton &&
-          <Box sx={{
+          <Box className="common-dialog-footer" sx={{
             display: 'flex',
             flexDirection: 'row',
             width: '100%',
-            columnGap: "2%",
-            marginTop: '4%',
+            columnGap: "10px",
+            marginTop: '20px',
+            paddingTop: '16px',
             justifyContent: 'flex-end'
           }}>
             <CommonButton
@@ -1198,14 +1199,14 @@ const CommonDialog = ({
               disabled={submitButtonLoading}
             />
             <CommonButton
-              backgroundColor="#D9D9D9"
-              color="#404040"
+              backgroundColor="var(--surface)"
+              color="var(--text)"
               onClick={() => {
                 setOpen(false)
                 // handleCloseForQuestion();
               }}
               text="Cancel"
-              borderColor={"#D9D9D9"}
+              borderColor={"var(--border-strong)"}
             />
           </Box>
         }

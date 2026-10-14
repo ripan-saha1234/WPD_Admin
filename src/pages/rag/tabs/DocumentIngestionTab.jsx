@@ -415,7 +415,7 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
                             v{doc.current_version || 1}
                           </span>
                           {doc.total_versions > 1 && (
-                            <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                            <span style={{ fontSize: '0.72rem', color: 'var(--text-3)' }}>
                               ({doc.total_versions} vers)
                             </span>
                           )}
@@ -554,7 +554,7 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
 
               {/* Automated Pipeline Info Card */}
               <div className="rag-drawer-pipeline-info">
-                <div style={{ fontWeight: 600, color: '#0f172a', marginBottom: '0.4rem' }}>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: '0.4rem' }}>
                   ⚙️ Production Pipeline Features:
                 </div>
                 <div className="rag-drawer-pipeline-item">
@@ -593,43 +593,44 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.45)',
+            backgroundColor: 'var(--overlay)',
             zIndex: 9999,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backdropFilter: 'blur(3px)',
+            backdropFilter: 'blur(4px)',
           }}
           onClick={() => setSelectedDocForHistory(null)}
         >
           <div
             style={{
-              background: '#fff',
-              borderRadius: '12px',
+              background: 'var(--surface)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-lg)',
               width: '90%',
               maxWidth: '750px',
               maxHeight: '85vh',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
-              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+              boxShadow: 'var(--shadow-lg)',
             }}
             onClick={(e) => e.stopPropagation()}
           >
             <div
               style={{
                 padding: '1.25rem 1.5rem',
-                borderBottom: '1px solid #e2e8f0',
+                borderBottom: '1px solid var(--divider)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
               }}
             >
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 650, letterSpacing: '-0.01em', color: 'var(--text)' }}>
                   Version History
                 </h3>
-                <p style={{ margin: '3px 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                <p style={{ margin: '3px 0 0', fontSize: '0.82rem', color: 'var(--text-3)' }}>
                   {formatTitle(selectedDocForHistory.fileName)}
                 </p>
               </div>
@@ -640,7 +641,8 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
                   border: 'none',
                   fontSize: '1.4rem',
                   cursor: 'pointer',
-                  color: '#94a3b8',
+                  color: 'var(--text-3)',
+                  borderRadius: 'var(--radius-sm)',
                 }}
               >
                 &times;
@@ -655,7 +657,7 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
               ) : (
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                   <thead>
-                    <tr style={{ borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#64748b' }}>
+                    <tr style={{ borderBottom: '1px solid var(--border)', textAlign: 'left', color: 'var(--text-3)', background: 'var(--surface-2)', fontSize: '0.75rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
                       <th style={{ padding: '0.5rem 0.6rem' }}>Version</th>
                       <th style={{ padding: '0.5rem 0.6rem' }}>Status</th>
                       <th style={{ padding: '0.5rem 0.6rem' }}>Chunks</th>
@@ -671,8 +673,8 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
                         <tr
                           key={ver.id || ver.version_number}
                           style={{
-                            borderBottom: '1px solid #f1f5f9',
-                            backgroundColor: isActive ? '#f0fdf4' : 'transparent',
+                            borderBottom: '1px solid var(--divider)',
+                            backgroundColor: isActive ? 'var(--success-soft)' : 'transparent',
                           }}
                         >
                           <td style={{ padding: '0.75rem 0.6rem', fontWeight: 600 }}>
@@ -682,13 +684,13 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
                             <span
                               style={{
                                 display: 'inline-block',
-                                padding: '2px 8px',
-                                borderRadius: '12px',
+                                padding: '2px 10px',
+                                borderRadius: 'var(--radius-full)',
                                 fontSize: '0.72rem',
                                 fontWeight: 700,
                                 textTransform: 'uppercase',
-                                backgroundColor: isActive ? '#dcfce7' : '#f1f5f9',
-                                color: isActive ? '#15803d' : '#64748b',
+                                backgroundColor: isActive ? 'var(--success-soft)' : 'var(--neutral-soft)',
+                                color: isActive ? 'var(--success-text)' : 'var(--neutral-text)',
                               }}
                             >
                               {ver.status}
@@ -697,15 +699,15 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
                           <td style={{ padding: '0.75rem 0.6rem' }}>
                             🧩 {ver.total_chunks}
                           </td>
-                          <td style={{ padding: '0.75rem 0.6rem', color: '#475569' }}>
+                          <td style={{ padding: '0.75rem 0.6rem', color: 'var(--text-2)' }}>
                             {ver.change_summary || '—'}
                           </td>
-                          <td style={{ padding: '0.75rem 0.6rem', color: '#64748b', fontSize: '0.78rem' }}>
+                          <td style={{ padding: '0.75rem 0.6rem', color: 'var(--text-3)', fontSize: '0.78rem' }}>
                             {ver.created_at ? new Date(ver.created_at).toLocaleDateString() : '—'}
                           </td>
                           <td style={{ padding: '0.75rem 0.6rem', textAlign: 'right' }}>
                             {isActive ? (
-                              <span style={{ fontSize: '0.78rem', color: '#16a34a', fontWeight: 600 }}>
+                              <span style={{ fontSize: '0.78rem', color: 'var(--success-text)', fontWeight: 600 }}>
                                 Current
                               </span>
                             ) : (
@@ -730,8 +732,8 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
             <div
               style={{
                 padding: '0.9rem 1.5rem',
-                borderTop: '1px solid #e2e8f0',
-                background: '#f8fafc',
+                borderTop: '1px solid var(--divider)',
+                background: 'var(--surface-2)',
                 display: 'flex',
                 justifyContent: 'flex-end',
               }}

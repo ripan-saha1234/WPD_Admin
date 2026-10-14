@@ -42,24 +42,24 @@ const STAGE_LABELS = {
 };
 
 const STAGE_COLORS = {
-  EXPLORER: { bg: '#eff6ff', text: '#1d4ed8' },
-  INTERESTED: { bg: '#fdf4ff', text: '#a21caf' },
-  REQUIREMENT_DISCOVERY: { bg: '#fef3c7', text: '#b45309' },
-  QUALIFIED: { bg: '#ffedd5', text: '#c2410c' },
-  CONTACT_COLLECTED: { bg: '#dcfce7', text: '#15803d' },
+  EXPLORER: { bg: 'var(--info-soft)', text: 'var(--info-text)' },
+  INTERESTED: { bg: 'var(--primary-soft-2)', text: 'var(--primary-text)' },
+  REQUIREMENT_DISCOVERY: { bg: 'var(--warning-soft)', text: 'var(--warning-text)' },
+  QUALIFIED: { bg: 'color-mix(in srgb, var(--warning) 24%, transparent)', text: 'var(--warning-text)' },
+  CONTACT_COLLECTED: { bg: 'var(--success-soft)', text: 'var(--success-text)' },
 };
 
 function StageBadge({ stage }) {
   const norm = (stage || 'EXPLORER').toUpperCase();
   const label = STAGE_LABELS[norm] || norm;
-  const colors = STAGE_COLORS[norm] || { bg: '#f1f5f9', text: '#475569' };
+  const colors = STAGE_COLORS[norm] || { bg: 'var(--neutral-soft)', text: 'var(--neutral-text)' };
 
   return (
     <span
       style={{
         display: 'inline-block',
         padding: '2px 8px',
-        borderRadius: '999px',
+        borderRadius: 'var(--radius-full)',
         fontSize: '11px',
         fontWeight: 700,
         backgroundColor: colors.bg,
@@ -75,15 +75,15 @@ function StageBadge({ stage }) {
 function StatusPill({ status }) {
   const isAct = status === 'active';
   const isEnd = status === 'ended';
-  const bg = isAct ? '#dcfce7' : isEnd ? '#f1f5f9' : '#fef3c7';
-  const text = isAct ? '#15803d' : isEnd ? '#64748b' : '#b45309';
+  const bg = isAct ? 'var(--success-soft)' : isEnd ? 'var(--neutral-soft)' : 'var(--warning-soft)';
+  const text = isAct ? 'var(--success-text)' : isEnd ? 'var(--neutral-text)' : 'var(--warning-text)';
 
   return (
     <span
       style={{
         display: 'inline-block',
         padding: '2px 8px',
-        borderRadius: '999px',
+        borderRadius: 'var(--radius-full)',
         fontSize: '11px',
         fontWeight: 700,
         backgroundColor: bg,
@@ -108,15 +108,15 @@ function SessionRow({ session, isSelected, onClick }) {
       onKeyDown={(e) => e.key === 'Enter' && onClick()}
       style={{
         padding: '0.875rem 1rem',
-        borderBottom: '1px solid #f0f0f0',
+        borderBottom: '1px solid var(--divider)',
         cursor: 'pointer',
-        backgroundColor: isSelected ? '#f0f7ff' : '#fff',
-        borderLeft: isSelected ? '3px solid #0690fd' : '3px solid transparent',
-        transition: 'all 0.15s ease',
+        backgroundColor: isSelected ? 'var(--primary-soft)' : 'var(--surface)',
+        borderLeft: isSelected ? '3px solid var(--primary)' : '3px solid transparent',
+        transition: 'background-color var(--transition), border-color var(--transition)',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-        <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '13px', color: '#0690fd' }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '13px', color: 'var(--primary-text)' }}>
           {formatSessionId(session.id)}
         </span>
         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
@@ -126,7 +126,7 @@ function SessionRow({ session, isSelected, onClick }) {
       </div>
 
       {session.lead_name && (
-        <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', marginBottom: '2px' }}>
+        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text)', marginBottom: '2px' }}>
           👤 {session.lead_name} {session.lead_company ? `(${session.lead_company})` : ''}
         </div>
       )}
@@ -138,11 +138,11 @@ function SessionRow({ session, isSelected, onClick }) {
               key={svc}
               style={{
                 fontSize: '11px',
-                background: '#f8fafc',
-                border: '1px solid #e2e8f0',
+                background: 'var(--surface-3)',
+                border: '1px solid var(--border)',
                 padding: '1px 6px',
-                borderRadius: '4px',
-                color: '#334155',
+                borderRadius: 'var(--radius-xs)',
+                color: 'var(--text-2)',
               }}
             >
               {svc}
@@ -151,7 +151,7 @@ function SessionRow({ session, isSelected, onClick }) {
         </div>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', color: 'var(--text-3)', marginTop: '6px' }}>
         <span>💬 {session.message_count ?? 0} messages</span>
         <span>{relativeTime(session.last_active_at || session.created_at)}</span>
       </div>
@@ -181,12 +181,12 @@ function TranscriptTurn({ message, visitorName = 'Visitor' }) {
           alignItems: 'center',
           gap: '6px',
           fontSize: '11px',
-          color: '#64748b',
+          color: 'var(--text-3)',
           marginBottom: '4px',
           padding: '0 4px',
         }}
       >
-        <span style={{ fontWeight: 600, color: isUser ? '#0690fd' : '#1e293b' }}>
+        <span style={{ fontWeight: 600, color: isUser ? 'var(--primary-text)' : 'var(--text)' }}>
           {isUser ? `👤 ${visitorName}` : '🤖 Web Prism AI'}
         </span>
         <span>·</span>
@@ -195,12 +195,12 @@ function TranscriptTurn({ message, visitorName = 'Visitor' }) {
         {message.detected_intent && (
           <span
             style={{
-              background: '#f1f5f9',
+              background: 'var(--neutral-soft)',
               padding: '1px 6px',
-              borderRadius: '4px',
+              borderRadius: 'var(--radius-xs)',
               fontSize: '10px',
               fontWeight: 600,
-              color: '#475569',
+              color: 'var(--neutral-text)',
             }}
           >
             Intent: {message.detected_intent}
@@ -210,12 +210,12 @@ function TranscriptTurn({ message, visitorName = 'Visitor' }) {
         {message.discussed_service_name && (
           <span
             style={{
-              background: '#e0f2fe',
+              background: 'var(--info-soft)',
               padding: '1px 6px',
-              borderRadius: '4px',
+              borderRadius: 'var(--radius-xs)',
               fontSize: '10px',
               fontWeight: 600,
-              color: '#0284c7',
+              color: 'var(--info-text)',
             }}
           >
             {message.discussed_service_name}
@@ -229,14 +229,14 @@ function TranscriptTurn({ message, visitorName = 'Visitor' }) {
           maxWidth: '82%',
           padding: '0.75rem 1rem',
           borderRadius: isUser ? '16px 4px 16px 16px' : '4px 16px 16px 16px',
-          backgroundColor: isUser ? '#0690fd' : '#f8fafc',
-          color: isUser ? '#ffffff' : '#0f172a',
-          border: isUser ? 'none' : '1px solid #e2e8f0',
+          backgroundColor: isUser ? 'var(--primary)' : 'var(--surface-2)',
+          color: isUser ? 'var(--primary-contrast)' : 'var(--text)',
+          border: isUser ? 'none' : '1px solid var(--border)',
           fontSize: '13px',
           lineHeight: '1.5',
           whiteSpace: 'pre-wrap',
           wordBreak: 'break-word',
-          boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+          boxShadow: 'var(--shadow-xs)',
         }}
       >
         {message.content}
@@ -253,7 +253,7 @@ function TranscriptTurn({ message, visitorName = 'Visitor' }) {
               border: 'none',
               padding: '2px 4px',
               fontSize: '11px',
-              color: '#64748b',
+              color: 'var(--text-3)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -269,28 +269,28 @@ function TranscriptTurn({ message, visitorName = 'Visitor' }) {
               style={{
                 marginTop: '4px',
                 padding: '8px 12px',
-                background: '#f8fafc',
-                border: '1px solid #e2e8f0',
-                borderRadius: '8px',
+                background: 'var(--surface-sunken)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-sm)',
                 fontSize: '11px',
-                color: '#334155',
+                color: 'var(--text-2)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '6px',
               }}
             >
               {message.rag_sources.map((src, i) => (
-                <div key={i} style={{ borderBottom: i < message.rag_sources.length - 1 ? '1px solid #edf2f7' : 'none', paddingBottom: '4px' }}>
-                  <div style={{ fontWeight: 600, color: '#0f172a' }}>
+                <div key={i} style={{ borderBottom: i < message.rag_sources.length - 1 ? '1px solid var(--divider)' : 'none', paddingBottom: '4px' }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text)' }}>
                     {src.section || src.id || 'Document chunk'}
                   </div>
                   {src.rerank_score != null && (
-                    <div style={{ color: '#64748b', fontSize: '10px' }}>
+                    <div style={{ color: 'var(--text-3)', fontSize: '10px' }}>
                       Re-rank relevance score: {Number(src.rerank_score).toFixed(3)}
                     </div>
                   )}
                   {src.text && (
-                    <div style={{ color: '#475569', fontStyle: 'italic', marginTop: '2px' }}>
+                    <div style={{ color: 'var(--text-2)', fontStyle: 'italic', marginTop: '2px' }}>
                       "{src.text.slice(0, 140)}..."
                     </div>
                   )}
@@ -360,16 +360,16 @@ function SessionDrawer({ sessionId, onClose, onEndSession, showToast }) {
   return (
     <div className="sess-drawer rag-card" style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', maxHeight: 'calc(100vh - 260px)' }}>
       {/* Drawer Header */}
-      <div className="sess-drawer-header" style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #e2e8f0' }}>
+      <div className="sess-drawer-header" style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--divider)' }}>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '14px', color: '#0f172a' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '14px', color: 'var(--text)' }}>
               {s.id}
             </span>
             <StatusPill status={s.status} />
             <StageBadge stage={s.visitor_stage} />
           </div>
-          <div style={{ fontSize: '12px', color: '#64748b' }}>
+          <div style={{ fontSize: '12px', color: 'var(--text-3)' }}>
             Started: {fmtDate(s.created_at)}
             {s.ended_at && ` · Ended: ${fmtDate(s.ended_at)}`}
             {` · ${messages.length} total messages`}
@@ -403,9 +403,10 @@ function SessionDrawer({ sessionId, onClose, onEndSession, showToast }) {
           style={{
             margin: '0.75rem 1.25rem 0',
             padding: '0.75rem 1rem',
-            background: '#f0fdf4',
-            border: '1px solid #bbf7d0',
-            borderRadius: '8px',
+            background: 'var(--success-soft)',
+            border: '1px solid color-mix(in srgb, var(--success) 30%, transparent)',
+            borderRadius: 'var(--radius-sm)',
+            color: 'var(--text)',
             fontSize: '12px',
             display: 'flex',
             justifyContent: 'space-between',
@@ -416,17 +417,17 @@ function SessionDrawer({ sessionId, onClose, onEndSession, showToast }) {
         >
           <div>
             <strong>👤 Lead Captured:</strong> {lead.name} {lead.company ? `(${lead.company})` : ''} ·{' '}
-            <a href={`mailto:${lead.email}`} style={{ color: '#0690fd' }}>{lead.email}</a>
+            <a href={`mailto:${lead.email}`} style={{ color: 'var(--primary-text)' }}>{lead.email}</a>
             {lead.phone && ` · ${lead.phone}`}
           </div>
           <span
             style={{
               padding: '2px 8px',
-              borderRadius: '999px',
+              borderRadius: 'var(--radius-full)',
               fontSize: '11px',
               fontWeight: 700,
-              background: '#dcfce7',
-              color: '#15803d',
+              background: 'color-mix(in srgb, var(--success) 20%, transparent)',
+              color: 'var(--success-text)',
             }}
           >
             CRM: {lead.crm_sync_status || 'synced'}
@@ -440,23 +441,24 @@ function SessionDrawer({ sessionId, onClose, onEndSession, showToast }) {
           style={{
             margin: '0.75rem 1.25rem 0',
             padding: '0.75rem 1rem',
-            background: '#f8fafc',
-            border: '1px solid #e2e8f0',
-            borderRadius: '8px',
+            background: 'var(--surface-2)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-sm)',
             fontSize: '12px',
+            color: 'var(--text-2)',
           }}
         >
-          <div style={{ color: '#64748b', marginBottom: '2px' }}>
+          <div style={{ color: 'var(--text-3)', marginBottom: '2px' }}>
             📋 <strong>Greeting Poll Prompt:</strong> {s.initial_question_text || 'Initial Opening Question'}
           </div>
-          <div style={{ fontWeight: 600, color: '#0284c7' }}>
+          <div style={{ fontWeight: 600, color: 'var(--info-text)' }}>
             👉 Visitor Selected: "{s.initial_response}"
           </div>
         </div>
       )}
 
       {/* Tab Switcher */}
-      <div className="sess-drawer-tabs" style={{ padding: '0 1.25rem', marginTop: '0.5rem', borderBottom: '1px solid #e2e8f0' }}>
+      <div className="sess-drawer-tabs" style={{ padding: '0 1.25rem', marginTop: '0.5rem', borderBottom: '1px solid var(--border)' }}>
         <button
           type="button"
           className={`sess-drawer-tab${activeTab === 'transcript' ? ' sess-drawer-tab--active' : ''}`}
@@ -502,7 +504,7 @@ function SessionDrawer({ sessionId, onClose, onEndSession, showToast }) {
               <div><strong>Consent Flags:</strong> {JSON.stringify(s.consent_flags || {})}</div>
               <div style={{ marginTop: '6px' }}>
                 <strong>Analytics Metadata:</strong>
-                <pre style={{ background: '#f8fafc', padding: '8px', borderRadius: '6px', fontSize: '11px', overflowX: 'auto', marginTop: '4px' }}>
+                <pre style={{ background: 'var(--surface-sunken)', border: '1px solid var(--border)', color: 'var(--text)', padding: '8px', borderRadius: 'var(--radius-xs)', fontSize: '11px', overflowX: 'auto', marginTop: '4px' }}>
                   {JSON.stringify(s.analytics_metadata || {}, null, 2)}
                 </pre>
               </div>
@@ -613,7 +615,7 @@ function SessionsTab({ refreshKey, showToast }) {
         {/* Left Panel: Sessions List & Filters */}
         <div className="rag-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {/* Toolbar */}
-          <div style={{ padding: '0.875rem 1rem', borderBottom: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div style={{ padding: '0.875rem 1rem', borderBottom: '1px solid var(--divider)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <input
               type="text"
               className="rag-filter-select"
@@ -662,8 +664,8 @@ function SessionsTab({ refreshKey, showToast }) {
           </div>
 
           {/* List Header */}
-          <div style={{ padding: '0.625rem 1rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>Visitor Sessions</span>
+          <div style={{ padding: '0.625rem 1rem', background: 'var(--surface-2)', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em' }}>Visitor Sessions</span>
             <span className="rag-badge-muted">{totalSessions} total</span>
           </div>
 
@@ -674,7 +676,7 @@ function SessionsTab({ refreshKey, showToast }) {
                 <CommonLoader text="Loading sessions…" />
               </div>
             ) : sessions.length === 0 ? (
-              <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
+              <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-3)' }}>
                 <p>No visitor sessions found.</p>
               </div>
             ) : (
@@ -690,7 +692,7 @@ function SessionsTab({ refreshKey, showToast }) {
           </div>
 
           {/* Pagination */}
-          <div style={{ padding: '0.625rem 1rem', borderTop: '1px solid #e2e8f0' }}>
+          <div style={{ padding: '0.625rem 1rem', borderTop: '1px solid var(--divider)' }}>
             <PaginationBar
               page={page}
               totalPages={totalPages}
@@ -715,7 +717,7 @@ function SessionsTab({ refreshKey, showToast }) {
           ) : (
             <div className="sess-empty-drawer rag-card" style={{ flex: 1, minHeight: '520px' }}>
               <div className="sess-empty-drawer-icon">💬</div>
-              <h3 style={{ margin: '0 0 0.5rem', color: '#1e293b' }}>No Session Selected</h3>
+              <h3 style={{ margin: '0 0 0.5rem', color: 'var(--text)' }}>No Session Selected</h3>
               <p className="rag-muted" style={{ margin: 0, maxWidth: '320px', textAlign: 'center' }}>
                 Select a visitor session from the left to view the complete conversation transcript, RAG sources, and visitor stage progression.
               </p>

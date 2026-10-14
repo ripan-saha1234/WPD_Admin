@@ -41,7 +41,8 @@ function DashboardPage() {
   return (
     <div className="dashboard-starter">
       <section className="dashboard-starter-welcome">
-        <h3>Welcome{user?.name ? `, ${user.name}` : ''}</h3>
+        <span className="dashboard-starter-eyebrow">Overview</span>
+        <h3>Welcome{user?.name ? `, ${user.name}` : ''} 👋</h3>
         <p>
           This is your starter admin shell. The sidebar and header come from
           <code> AppLayout </code>
@@ -51,21 +52,24 @@ function DashboardPage() {
 
       <section className="dashboard-starter-grid">
         <div className="dashboard-starter-card">
-          <h4>1. Register routes</h4>
+          <span className="dashboard-starter-step">1</span>
+          <h4>Register routes</h4>
           <p>
             Add pages in <code>src/pages/</code> and wire them in{' '}
             <code>src/routes/AppRoutes.jsx</code>.
           </p>
         </div>
         <div className="dashboard-starter-card">
-          <h4>2. Set layout metadata</h4>
+          <span className="dashboard-starter-step">2</span>
+          <h4>Set layout metadata</h4>
           <p>
             Use <code>usePageHeader</code> for title, breadcrumbs, and header
             buttons (see this file).
           </p>
         </div>
         <div className="dashboard-starter-card">
-          <h4>3. Reuse components</h4>
+          <span className="dashboard-starter-step">3</span>
+          <h4>Reuse components</h4>
           <p>
             Import shared UI from <code>src/components/</code> — tables, dialogs,
             inputs, loaders, etc.

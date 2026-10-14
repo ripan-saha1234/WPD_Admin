@@ -112,42 +112,42 @@ function LeadDetailPage() {
       </div>
 
       {/* Info Overview Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-        <div className="rag-card" style={{ padding: '1.25rem' }}>
-          <h3 style={{ margin: '0 0 0.75rem', fontSize: '14px', fontWeight: 700 }}>Contact Information</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '13px' }}>
-            <div><span style={{ color: '#64748b' }}>Full Name:</span> <strong>{lead.name}</strong></div>
-            <div><span style={{ color: '#64748b' }}>Email:</span> <a href={`mailto:${lead.email}`} style={{ color: '#0690fd' }}>{lead.email}</a></div>
-            <div><span style={{ color: '#64748b' }}>Phone:</span> {lead.phone || '—'}</div>
-            <div><span style={{ color: '#64748b' }}>Company:</span> <strong>{lead.company || '—'}</strong></div>
+      <div className="leads-info-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+        <div className="rag-card leads-info-card" style={{ padding: '20px 22px' }}>
+          <h3 className="leads-info-title" style={{ margin: '0 0 14px', fontSize: '15px', fontWeight: 650 }}>Contact Information</h3>
+          <div className="leads-info-list" style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13.5px' }}>
+            <div><span style={{ color: 'var(--text-3)' }}>Full Name:</span> <strong>{lead.name}</strong></div>
+            <div><span style={{ color: 'var(--text-3)' }}>Email:</span> <a href={`mailto:${lead.email}`} style={{ color: 'var(--primary-text)' }}>{lead.email}</a></div>
+            <div><span style={{ color: 'var(--text-3)' }}>Phone:</span> {lead.phone || '—'}</div>
+            <div><span style={{ color: 'var(--text-3)' }}>Company:</span> <strong>{lead.company || '—'}</strong></div>
           </div>
         </div>
 
-        <div className="rag-card" style={{ padding: '1.25rem' }}>
-          <h3 style={{ margin: '0 0 0.75rem', fontSize: '14px', fontWeight: 700 }}>Project Requirements</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '13px' }}>
-            <div><span style={{ color: '#64748b' }}>Interested Service:</span> <strong>{lead.interestedServiceName || 'Discovery'}</strong></div>
+        <div className="rag-card leads-info-card" style={{ padding: '20px 22px' }}>
+          <h3 className="leads-info-title" style={{ margin: '0 0 14px', fontSize: '15px', fontWeight: 650 }}>Project Requirements</h3>
+          <div className="leads-info-list" style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13.5px' }}>
+            <div><span style={{ color: 'var(--text-3)' }}>Interested Service:</span> <strong>{lead.interestedServiceName || 'Discovery'}</strong></div>
             <div>
-              <span style={{ color: '#64748b' }}>Description:</span>
-              <p style={{ margin: '4px 0 0', lineHeight: 1.5, color: '#1e293b' }}>
+              <span style={{ color: 'var(--text-3)' }}>Description:</span>
+              <p style={{ margin: '4px 0 0', lineHeight: 1.5, color: 'var(--text)' }}>
                 {lead.projectDescription || 'No detailed requirement provided.'}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="rag-card" style={{ padding: '1.25rem' }}>
-          <h3 style={{ margin: '0 0 0.75rem', fontSize: '14px', fontWeight: 700 }}>Session &amp; CRM Sync</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '13px' }}>
-            <div><span style={{ color: '#64748b' }}>Session ID:</span> <code>{lead.sessionId}</code></div>
+        <div className="rag-card leads-info-card" style={{ padding: '20px 22px' }}>
+          <h3 className="leads-info-title" style={{ margin: '0 0 14px', fontSize: '15px', fontWeight: 650 }}>Session &amp; CRM Sync</h3>
+          <div className="leads-info-list" style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13.5px' }}>
+            <div><span style={{ color: 'var(--text-3)' }}>Session ID:</span> <code>{lead.sessionId}</code></div>
             <div>
-              <span style={{ color: '#64748b' }}>CRM Sync Status:</span>{' '}
+              <span style={{ color: 'var(--text-3)' }}>CRM Sync Status:</span>{' '}
               <span className={`leads-crm-badge leads-crm-badge--${lead.crmSyncStatus}`}>
                 {lead.crmSyncStatus}
               </span>
             </div>
-            <div><span style={{ color: '#64748b' }}>Captured:</span> {new Date(lead.timestamp).toLocaleString()}</div>
-            <div><span style={{ color: '#64748b' }}>Total Turns:</span> {messages.length} messages</div>
+            <div><span style={{ color: 'var(--text-3)' }}>Captured:</span> {new Date(lead.timestamp).toLocaleString()}</div>
+            <div><span style={{ color: 'var(--text-3)' }}>Total Turns:</span> {messages.length} messages</div>
           </div>
         </div>
       </div>
@@ -165,7 +165,7 @@ function LeadDetailPage() {
         </div>
 
         {messages.length === 0 ? (
-          <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
+          <div className="leads-empty" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-3)' }}>
             <p>No messages recorded for this session.</p>
           </div>
         ) : (
@@ -182,7 +182,7 @@ function LeadDetailPage() {
                   <span>{msg.role === 'user' ? lead.name : 'Web Prism AI'}</span>
                   <span>{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   {msg.detected_intent && (
-                    <span style={{ fontSize: '11px', background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px', color: '#475569' }}>
+                    <span style={{ fontSize: '11px', background: 'var(--surface-3)', padding: '1px 8px', borderRadius: 'var(--radius-full)', color: 'var(--text-2)' }}>
                       Intent: {msg.detected_intent}
                     </span>
                   )}
@@ -191,7 +191,7 @@ function LeadDetailPage() {
                   {msg.content}
                 </div>
                 {msg.rag_sources && msg.rag_sources.length > 0 && (
-                  <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', paddingLeft: '8px' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text-3)', marginTop: '4px', paddingLeft: '8px' }}>
                     📚 <em>Sources: {msg.rag_sources.map((s) => s.section || s.id).slice(0, 2).join(', ')}</em>
                   </div>
                 )}

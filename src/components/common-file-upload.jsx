@@ -390,25 +390,25 @@ const CommonFileUpload = ({
 
     if (fileType.startsWith('image/')) {
       return (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#10B981">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--success)', flexShrink: 0 }}>
           <path d="M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z" />
         </svg>
       );
     } else if (fileType.startsWith('video/')) {
       return (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#EF4444">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--danger)', flexShrink: 0 }}>
           <path d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z" />
         </svg>
       );
     } else if (fileType === 'application/pdf') {
       return (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#EF4444">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--danger)', flexShrink: 0 }}>
           <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z" />
         </svg>
       );
     } else {
       return (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#0690fd">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--primary-text)', flexShrink: 0 }}>
           <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
         </svg>
       );
@@ -418,35 +418,36 @@ const CommonFileUpload = ({
   const styles = {
     container: {
       width: '100%',
-      margin: '2% auto',
+      margin: '8px auto 16px',
     },
     uploadArea: {
-      border: `2px dashed ${error ? '#EF4444' : isDragOver ? '#0690fd' : files.length > 0 ? '#10B981' : '#D1D5DB'}`,
-      borderRadius: '12px',
-      padding: '40px 20px',
+      border: `1.5px dashed ${error ? 'var(--danger)' : isDragOver ? 'var(--primary)' : files.length > 0 ? 'var(--success)' : 'var(--border-strong)'}`,
+      borderRadius: 'var(--radius-lg)',
+      padding: '32px 20px',
       textAlign: 'center',
-      backgroundColor: isDragOver ? '#F0F9FF' : files.length > 0 ? 'transparent' : 'transparent',
+      backgroundColor: isDragOver ? 'var(--primary-soft)' : files.length > 0 ? 'var(--surface-2)' : 'var(--surface-2)',
       cursor: disabled ? 'not-allowed' : 'pointer',
-      transition: 'all 0.3s ease',
+      transition: 'border-color var(--transition), background-color var(--transition)',
       opacity: disabled ? 0.6 : 1
     },
     fileIcon: {
-      width: '48px',
-      height: '48px',
-      margin: '0 auto 16px',
-      backgroundColor: 'transparent',
-      borderRadius: '12px',
+      width: '56px',
+      height: '56px',
+      margin: '0 auto 14px',
+      backgroundColor: 'var(--primary-soft)',
+      border: '1px solid color-mix(in srgb, var(--primary) 18%, transparent)',
+      borderRadius: 'var(--radius)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      color: 'white',
+      color: 'var(--primary-text)',
       fontSize: '24px'
     },
     placeholder: {
-      fontSize: '16px',
-      color: '#374151',
-      marginBottom: '8px',
-      fontWeight: '500'
+      fontSize: '14.5px',
+      color: 'var(--text)',
+      marginBottom: '4px',
+      fontWeight: '600'
     },
     orTextContainer: {
       display: 'flex',
@@ -454,11 +455,11 @@ const CommonFileUpload = ({
       justifyContent: 'center',
       position: 'relative',
       width: '200px',
-      height: '40px',
-      margin: '8px auto',
+      height: '32px',
+      margin: '6px auto',
     },
     orLine: {
-      borderBottom: '1px solid #D1D5DB',
+      borderBottom: '1px solid var(--border)',
       width: '100%',
       position: 'absolute',
       top: '50%',
@@ -466,134 +467,152 @@ const CommonFileUpload = ({
       transform: 'translateY(-50%)',
     },
     orText: {
-      fontSize: '14px',
-      color: '#6B7280',
+      fontSize: '11px',
+      fontWeight: '600',
+      letterSpacing: '0.06em',
+      color: 'var(--text-3)',
       position: 'relative',
       zIndex: 1,
-      backgroundColor: 'white',
-      padding: '0 8px',
+      backgroundColor: 'var(--surface-2)',
+      padding: '0 10px',
       margin: 0,
       lineHeight: 1,
     },
     browseButton: {
       backgroundColor: 'transparent',
-      color: '#0690fd',
-      border: '1px solid #0690fd',
-      padding: '10px 24px',
-      borderRadius: '8px',
-      fontSize: '14px',
-      fontWeight: '500',
+      color: 'var(--primary-text)',
+      border: '1px solid color-mix(in srgb, var(--primary) 45%, transparent)',
+      padding: '8px 18px',
+      borderRadius: 'var(--radius-sm)',
+      fontFamily: 'var(--font)',
+      fontSize: '13.5px',
+      fontWeight: '600',
       cursor: disabled ? 'not-allowed' : 'pointer',
-      transition: 'background-color 0.2s ease',
+      transition: 'background-color var(--transition), border-color var(--transition)',
       opacity: disabled ? 0.6 : 1
     },
     supportText: {
       fontSize: '12px',
-      color: '#6B7280',
+      color: 'var(--text-3)',
       marginTop: '12px'
     },
     fileList: {
-      marginTop: '20px'
+      marginTop: '16px'
     },
     fileItem: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '12px 16px',
-      backgroundColor: '#F9FAFB',
-      border: '1px solid #E5E7EB',
-      borderRadius: '8px',
+      padding: '10px 12px 10px 14px',
+      backgroundColor: 'var(--surface)',
+      border: '1px solid var(--border)',
+      borderRadius: 'var(--radius-sm)',
+      boxShadow: 'var(--shadow-xs)',
       marginBottom: '8px'
     },
     preloadedFileItem: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '12px 16px',
-      backgroundColor: '#F0F9FF',
-      border: '1px solid #BFDBFE',
-      borderRadius: '8px',
+      padding: '10px 12px 10px 14px',
+      backgroundColor: 'var(--primary-soft)',
+      border: '1px solid color-mix(in srgb, var(--primary) 25%, transparent)',
+      borderRadius: 'var(--radius-sm)',
       marginBottom: '8px'
     },
     fileInfo: {
       display: 'flex',
       alignItems: 'center',
-      flex: 1
+      flex: 1,
+      minWidth: 0
     },
     fileName: {
-      fontSize: '14px',
-      color: '#374151',
+      fontSize: '13.5px',
+      color: 'var(--text)',
       fontWeight: '500',
-      marginLeft: '12px'
+      marginLeft: '12px',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
     },
     fileSize: {
       fontSize: '12px',
-      color: '#6B7280',
-      marginLeft: '8px'
+      color: 'var(--text-3)',
+      marginLeft: '8px',
+      whiteSpace: 'nowrap'
     },
     preloadedBadge: {
-      fontSize: '10px',
-      color: '#2563EB',
-      backgroundColor: '#DBEAFE',
-      padding: '2px 6px',
-      borderRadius: '12px',
+      fontSize: '11px',
+      fontWeight: '600',
+      color: 'var(--primary-text)',
+      backgroundColor: 'var(--primary-soft-2)',
+      padding: '2px 8px',
+      borderRadius: 'var(--radius-full)',
       marginLeft: '8px'
     },
     removeButton: {
       backgroundColor: 'transparent',
       border: 'none',
-      color: '#EF4444',
+      color: 'var(--danger)',
       cursor: 'pointer',
       fontSize: '18px',
+      lineHeight: 1,
+      width: '28px',
+      height: '28px',
+      borderRadius: 'var(--radius-xs)',
       padding: '4px'
     },
     reuploadButton: {
       backgroundColor: 'transparent',
-      color: '#0690fd',
-      border: '1px solid #0690fd',
-      padding: '10px 24px',
-      borderRadius: '8px',
-      fontSize: '14px',
-      fontWeight: '500',
+      color: 'var(--primary-text)',
+      border: '1px solid color-mix(in srgb, var(--primary) 45%, transparent)',
+      padding: '8px 18px',
+      borderRadius: 'var(--radius-sm)',
+      fontFamily: 'var(--font)',
+      fontSize: '13.5px',
+      fontWeight: '600',
       cursor: 'pointer',
       marginTop: '16px'
     },
     error: {
-      color: '#EF4444',
-      fontSize: '14px',
+      color: 'var(--danger-text)',
+      fontSize: '13px',
+      fontWeight: '500',
       marginTop: '8px',
       padding: '8px 12px',
-      backgroundColor: '#FEF2F2',
-      border: '1px solid #FECACA',
-      borderRadius: '6px'
+      backgroundColor: 'var(--danger-soft)',
+      border: '1px solid color-mix(in srgb, var(--danger) 30%, transparent)',
+      borderRadius: 'var(--radius-sm)'
     },
     validationError: {
-      color: '#EF4444',
+      color: 'var(--danger-text)',
       fontSize: '12px',
-      marginTop: '8px',
-      marginLeft: '4px'
+      fontWeight: '500',
+      marginTop: '6px',
+      marginLeft: '2px'
     },
     hiddenInput: {
       display: 'none'
     },
     title: {
-      color: '#172B4D',
-      fontSize: '18px',
-      fontWeight: '600',
+      color: 'var(--text-2)',
+      fontSize: '13px',
+      fontWeight: '500',
       margin: 0,
-      marginBottom: '12px',
+      marginBottom: '6px',
+      marginLeft: '2px',
       display: 'flex',
       alignItems: 'center',
-      gap: '4px'
+      gap: '3px'
     },
     starMark: {
-      color: '#EF4444',
-      fontSize: '18px',
+      color: 'var(--danger)',
+      fontSize: '13px',
       fontWeight: '600'
     },
     fileIconImage: {
-      width: '40px',
-      height: '40px',
+      width: '30px',
+      height: '30px',
     }
   };
 

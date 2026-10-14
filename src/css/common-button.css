@@ -1,29 +1,112 @@
 .common-button {
-  font-size: 16px;
-  font-weight: 500;
-  padding: 12px 45px;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  border: 2px solid #000000;
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  column-gap: 4%;
+  gap: 8px;
+  min-height: 40px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.005em;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background-color: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
   text-wrap: nowrap;
-  /* width: 100%; */
-  &:hover {
-    scale: 1.05;
-    transition: scale 0.3s ease-in-out;
-  }
+  box-shadow: var(--shadow-xs);
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition),
+    box-shadow var(--transition), transform var(--transition);
+}
+
+.common-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.common-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.common-button:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }
 
 .common-button img {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
-.common-button.disabled {
+/* Variants */
+.common-button--primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-contrast);
+  box-shadow: var(--shadow-primary);
+}
+
+.common-button--primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.common-button--primary img {
+  filter: brightness(0) invert(1);
+}
+
+.common-button--secondary {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.common-button--secondary:hover:not(:disabled) {
+  background: var(--surface-hover);
+}
+
+.common-button--primary-outline {
+  background: var(--primary-soft);
+  border-color: transparent;
+  color: var(--primary-text);
+  box-shadow: none;
+}
+
+.common-button--primary-outline:hover:not(:disabled) {
+  background: var(--primary-soft-2);
+}
+
+.common-button--danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #ffffff;
+}
+
+.common-button--danger:hover:not(:disabled) {
+  background: var(--danger-hover);
+  border-color: var(--danger-hover);
+}
+
+.common-button--danger-soft,
+.common-button--danger-outline {
+  background: var(--danger-soft);
+  border-color: transparent;
+  color: var(--danger-text);
+  box-shadow: none;
+}
+
+.common-button--danger-soft:hover:not(:disabled),
+.common-button--danger-outline:hover:not(:disabled) {
+  background: var(--danger);
+  color: #ffffff;
+}
+
+.common-button.disabled,
+.common-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }

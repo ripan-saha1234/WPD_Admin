@@ -231,7 +231,7 @@ function ServicesCatalogTab({ refreshKey, showToast }) {
                     <td>
                       <strong>{svc.name}</strong>
                       {svc.short_description && (
-                        <p style={{ margin: 0, fontSize: 12, color: '#64748b' }}>
+                        <p style={{ margin: 0, fontSize: 12, color: 'var(--text-3)' }}>
                           {svc.short_description}
                         </p>
                       )}

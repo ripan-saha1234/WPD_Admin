@@ -1,22 +1,39 @@
-.breadcrums-container{
-  /* margin-top: 0.5%;
-  margin-left: 2%; */
-  font-size: 14px;
-  font-weight: 400;
-  color: #343434;
+.breadcrums-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
   background-color: transparent;
 }
-.breadcrums-divider{
-  color:#343434;
-  margin: 0% 0.5% 0% 0.5%;
-}
-.breadcrums{
+
+.breadcrums {
   cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+  transition: background-color var(--transition), color var(--transition);
 }
-.breadcrums:hover{
-  text-decoration: underline;
+
+.breadcrums:hover {
+  background-color: var(--surface-hover);
+  color: var(--text);
 }
-.breadcrums-active{
-  color: #0D0D0D;
-  font-weight: 500;
+
+.breadcrums-divider {
+  color: var(--border-strong);
+  margin: 0;
+  font-weight: 400;
+}
+
+.breadcrums-active {
+  color: var(--text);
+  font-weight: 600;
 }

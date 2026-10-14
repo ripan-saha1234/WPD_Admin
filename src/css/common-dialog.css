@@ -1,6 +1,71 @@
+/* ==========================================================================
+   Shared dialog chrome (CommonDialog + CommonDisplayDialog both use
+   .dialog-container / .dialog-title)
+   ========================================================================== */
+
+.dialog-container .MuiDialog-paper {
+  overflow: hidden;
+}
+
+.dialog-container .MuiDialogTitle-root {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 64px;
+  margin: 0;
+  padding: 20px 104px 18px 24px;
+  border-bottom: 1px solid var(--divider);
+  background-color: var(--surface);
+}
+
+.dialog-container .MuiDialogTitle-root .MuiIconButton-root {
+  width: 34px;
+  height: 34px;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  transition: background-color var(--transition);
+}
+
+.dialog-container .MuiDialogTitle-root .MuiIconButton-root:hover {
+  background-color: var(--surface-hover);
+}
+
+.dialog-container .MuiDialogTitle-root .MuiIconButton-root img {
+  width: 22px;
+  height: 22px;
+}
+
+/* MUI zeroes top padding on content that follows a title; restore it now
+   that the header carries its own divider. */
+.dialog-container .MuiDialogTitle-root + .MuiDialogContent-root {
+  padding-top: 20px !important;
+}
+
+.dialog-container .MuiDialogContent-root {
+  color: var(--text-2);
+}
+
+.dialog-title {
+  font-weight: 650;
+  font-size: 18px;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+/* Footer row with the submit / cancel buttons */
+.common-dialog-footer {
+  border-top: 1px solid var(--divider);
+}
+
+/* ==========================================================================
+   Form field helpers
+   ========================================================================== */
+
 .special-grid2 .add-school-checkbox {
-  border-radius: 0.2rem;
-  color: #000080;
+  border-radius: var(--radius-xs);
+  color: var(--primary);
 }
 
 .full-width-field .MuiOutlinedInput-root {
@@ -11,43 +76,38 @@
   padding: 10px 12px;
 }
 
-.dialog-title {
-  font-weight: 600;
-  font-size: 20px;
-  color:#0D0D0D
-}
-
 .extra-input-css-for-dialog {
-  padding: 1.5% 2.65%;
+  padding: 9px 12px;
 }
 
 .extra-input-css-for-dialog-label {
-  margin-left: 2.5%;
+  margin-left: 2px;
 }
 
 .special-grid .extra-select-css {
-  padding: 3.1% 5.25%;
+  padding: 9px 12px;
 }
 
 .common-dialog-toggle-switch-container {
   display: flex;
   flex-direction: row;
   align-items: center;
-  column-gap: 2%;
+  column-gap: 12px;
+  margin: 4px 0 8px;
 }
 
 .common-dialog-toggle-switch-container p {
   margin: 0;
-  color: #131313;
+  color: var(--text);
   font-weight: 500;
-  font-size: 1vw;
+  font-size: 14px;
   text-wrap: nowrap;
 }
 
 .common-dialog-radio2-section-title {
-  color: #131313;
+  color: var(--text-2);
   font-weight: 500;
-  font-size: 0.9vw;
+  font-size: 13px;
 }
 
 .common-dialog-radio2-container {
@@ -69,19 +129,25 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-
 }
 
 .common-dialog-icon-section-item-image {
   width: 5vw;
   aspect-ratio: 1/1;
-  border-radius: 5rem;
-  background-color: #DED8E63D;
+  border-radius: var(--radius-full);
+  background-color: var(--surface-3);
+  border: 1px solid var(--border);
   padding: 4%;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  transition: background-color var(--transition), border-color var(--transition);
+}
+
+.common-dialog-icon-section-item-image:hover {
+  background-color: var(--primary-soft);
+  border-color: var(--primary);
 }
 
 .common-dialog-icon-section-item-image img {
@@ -89,25 +155,27 @@
 }
 
 .common-dialog-icon-section-item p {
-  font-size: 1vw;
-  color: #131313;
+  font-size: 13px;
+  color: var(--text-2);
 }
 
 .common-dialog-copy-link-container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  background-color: #DED8E63D;
-  border-radius: 5rem;
-  /* width: 100%; */
-  padding: 1.5% 2.1%;
+  background-color: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 8px 8px 8px 16px;
   align-items: center;
   position: relative;
 }
 
 .common-dialog-copy-link-container p {
   margin: 0%;
-  color: #464646;
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 13px;
 }
 
 .common-dialog-copy-link-container img {
@@ -115,15 +183,16 @@
 }
 
 .common-dialog-copy-link-text {
-  font-size: 0.9vw;
+  font-size: 12px;
   font-weight: 500;
-  color: white;
+  color: var(--text-inverse);
   position: absolute;
-  top: 0%;
-  border-radius: 5rem;
-  padding: 0.5% 1%;
+  top: -28px;
+  border-radius: var(--radius-full);
+  padding: 3px 10px;
   right: 5%;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: var(--text);
+  box-shadow: var(--shadow-md);
 }
 
 .common-dialog-download-file-container {
@@ -137,57 +206,39 @@
 
 .common-dialog-download-file-container p {
   text-wrap: nowrap;
-  color: #131313;
+  color: var(--text);
   margin: 0%;
 }
-
-
-/* .common-dialog-checkboc-selector{
-  display: flex;
-  flex-direction: column;
-  border: 2px dashed #0000801F;
-  width: 9vw;
-  height: 18vh;
-  border-radius: 1rem;
-  position: relative;
-  justify-content: center;
-  align-items: center;
-  row-gap: 2vh;
-  cursor: pointer;
-}
-.common-dialog-checkboc-selector img{
-  width: 3vw;
-}
-.common-dialog-checkboc-selector h2{
-  font-size: 1vw;
-  font-weight: 600;
-  color: #000080;
-  margin: 0%;
-  text-align: center;
-} */
 
 .common-dialog-checkboc-selector {
   display: flex;
   flex-direction: column;
-  border: 2px dashed rgba(0, 0, 128, 0.12);
+  border: 1.5px dashed var(--border-strong);
+  background-color: var(--surface-2);
   width: 125px;
   height: 115px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   position: relative;
   justify-content: center;
   align-items: center;
-  row-gap: 20px;
+  row-gap: 16px;
   cursor: pointer;
+  transition: border-color var(--transition), background-color var(--transition);
+}
+
+.common-dialog-checkboc-selector:hover {
+  border-color: var(--primary);
+  background-color: var(--primary-soft);
 }
 
 .common-dialog-checkboc-selector img {
-  width: 48px;
+  width: 44px;
 }
 
 .common-dialog-checkboc-selector h2 {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  color: #000080;
+  color: var(--primary-text);
   margin: 0;
   text-align: center;
 }

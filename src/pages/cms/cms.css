@@ -5,8 +5,9 @@
 }
 
 .cms-section-title {
-  margin: 0.5rem 0 0;
-  font-size: 20px;
+  margin: 0.75rem 0 -0.25rem;
+  font-size: 16px;
   font-weight: 700;
-  color: #0d0d0d;
+  letter-spacing: -0.01em;
+  color: var(--text);
 }

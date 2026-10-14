@@ -12,11 +12,11 @@ function CommonLoader({ text = 'Loading...' ,size = 20}) {
       width: '100%',
     }}>
       <GridLoader
-        color="#0690fd"
+        color="var(--primary)"
         loading={true}
         size={size}
       />
-      <p style={{ fontSize: '24px', fontWeight: '500' }}>{text}</p>
+      <p style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text-2)', margin: '6px 0 0' }}>{text}</p>
     </div>
   );
 }

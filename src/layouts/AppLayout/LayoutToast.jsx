@@ -11,6 +11,7 @@ function LayoutToast() {
       autoHideDuration={3000}
       onClose={hideToast}
       anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      sx={{ top: { xs: 72, sm: 76 } }}
     >
       <Alert
         onClose={hideToast}
