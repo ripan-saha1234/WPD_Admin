@@ -98,7 +98,7 @@ export const getRagLeads = async (queryParams) => {
     queryStr = queryParams;
   } else if (queryParams && typeof queryParams === 'object') {
     queryStr = new URLSearchParams(
-      Object.entries(queryParams).filter(([_, v]) => v != null && v !== '')
+      Object.entries(queryParams).filter(([, v]) => v != null && v !== '')
     ).toString();
   }
 
@@ -380,7 +380,7 @@ export const deleteRagQuestion = (id) =>
     headers: { Accept: 'application/json' },
   });
 
-export const reorderRagQuestions = async (orderedIds) => {
+export const reorderRagQuestions = async (_orderedIds) => {
   return { response: { ok: true }, data: { success: true } };
 };
 
@@ -490,6 +490,12 @@ export const getRagDocumentVersions = async (documentId) => {
   return { response, data: data?.data || data || [] };
 };
 
+export const getRagDocumentContent = async (documentId) => {
+  const { response, data } = await ragFetch(`/admin/documents/${documentId}/content`);
+  if (!response.ok) return { response, data };
+  return { response, data: data?.data || data };
+};
+
 export const rollbackRagDocumentVersion = async (documentId, versionNumber) => {
   const { response, data } = await ragFetch(
     `/admin/documents/${documentId}/versions/${versionNumber}/activate`,
@@ -501,7 +507,7 @@ export const rollbackRagDocumentVersion = async (documentId, versionNumber) => {
   return { response, data: data?.data || data };
 };
 
-export const uploadRagDocument = async (file, changeSummary = '') => {
+export const uploadRagDocument = async (file, options = {}) => {
   if (!file) {
     return {
       response: { ok: false },
@@ -509,62 +515,27 @@ export const uploadRagDocument = async (file, changeSummary = '') => {
     };
   }
 
-  const isDocx = file.name.toLowerCase().endsWith('.docx');
+  // Support both legacy signature (changeSummary as string) and object signature
+  const opts = typeof options === 'string' ? { changeSummary: options } : options;
+  const {
+    changeSummary = '',
+    category = 'general',
+    service_id = '',
+    tags = '',
+    visibility = 'public',
+  } = opts;
 
-  if (isDocx) {
-    const formData = new FormData();
-    formData.append('file', file);
-    if (changeSummary) {
-      formData.append('change_summary', changeSummary);
-    }
+  const formData = new FormData();
+  formData.append('file', file);
+  if (changeSummary) formData.append('change_summary', changeSummary);
+  if (category) formData.append('category', category);
+  if (service_id) formData.append('service_id', service_id);
+  if (tags) formData.append('tags', tags);
+  if (visibility) formData.append('visibility', visibility);
 
-    const { response, data } = await ragFetch('/admin/documents/upload', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      return { response, data };
-    }
-
-    const ingestData = data?.data || data;
-    return {
-      response,
-      data: {
-        fileName: ingestData.title || file.name,
-        chunks: ingestData.total_chunks || 1,
-        version: ingestData.version_number || 1,
-        is_deduplicated: ingestData.is_deduplicated || false,
-      },
-    };
-  }
-
-  let content = '';
-  try {
-    content = await file.text();
-  } catch (err) {
-    return {
-      response: { ok: false },
-      data: { error: `Could not read file text: ${err.message}` },
-    };
-  }
-
-  const payload = {
-    title: file.name,
-    content: content || `# ${file.name}\n\nUploaded document content.`,
-    visibility: 'public',
-    replace_existing: true,
-    change_summary: changeSummary || `Uploaded ${file.name}`,
-    auto_activate: true,
-  };
-
-  const { response, data } = await ragFetch('/admin/documents/ingest', {
+  const { response, data } = await ragFetch('/admin/documents/upload', {
     method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
+    body: formData,
   });
 
   if (!response.ok) {
@@ -671,7 +642,7 @@ export const deleteHookMessage = (id) =>
     headers: { Accept: 'application/json' },
   });
 
-export const reorderHookMessages = async (orderedIds) => {
+export const reorderHookMessages = async (_orderedIds) => {
   return { response: { ok: true }, data: { success: true } };
 };
 
@@ -738,15 +709,15 @@ export const createTrackedPage = async (payload) => {
   return { response: { ok: true }, data: payload };
 };
 
-export const updateTrackedPage = async (id, payload) => {
+export const updateTrackedPage = async (_id, payload) => {
   return { response: { ok: true }, data: payload };
 };
 
-export const deleteTrackedPage = async (id) => {
+export const deleteTrackedPage = async (_id) => {
   return { response: { ok: true }, data: { success: true } };
 };
 
-export const testFetchTrackedPage = async (id) => {
+export const testFetchTrackedPage = async (_id) => {
   return { response: { ok: true }, data: { success: true } };
 };
 
