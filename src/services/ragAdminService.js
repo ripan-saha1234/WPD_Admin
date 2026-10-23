@@ -384,26 +384,17 @@ export const reorderRagQuestions = async (_orderedIds) => {
   return { response: { ok: true }, data: { success: true } };
 };
 
-// ─── Survey Analytics ────────────────────────────────────────────────────────
+// ─── Visitor Demand & Survey Analytics ───────────────────────────────────────
 
-export const getRagSurveyAnalytics = async () => {
-  const { response, data } = await getRagQuestions();
-  if (!response.ok) return { response, data };
-
-  const questions = Array.isArray(data) ? data : [];
-  const analytics = questions.map((q) => ({
-    id: q.id,
-    question_text: q.question_text,
-    total_answers: 0,
-    option_distribution: q.options.map((opt) => ({
-      option: opt,
-      count: 0,
-      percentage: 0,
-    })),
-  }));
-
-  return { response, data: analytics };
+export const getRagVisitorDemandAnalytics = async () => {
+  const { response, data } = await ragFetch('/admin/analytics/visitor-demand');
+  if (response.ok && data?.data) {
+    return { response, data: data.data };
+  }
+  return { response, data };
 };
+
+export const getRagSurveyAnalytics = getRagVisitorDemandAnalytics;
 
 // ─── Knowledge Base Documents ────────────────────────────────────────────────
 
@@ -421,6 +412,8 @@ export const getRagDocuments = async () => {
       current_version: Number(doc.current_version) || 1,
       total_versions: Number(doc.total_versions) || 1,
       status: doc.status || 'active',
+      quality_score: doc.quality_score ?? null,
+      gate_status: doc.gate_status || 'passed',
       category: doc.category || 'general',
       origin: doc.created_by === 'ingest_script' ? 'folder' : 'upload',
       created_at: doc.created_at,
@@ -496,6 +489,46 @@ export const getRagDocumentContent = async (documentId) => {
   return { response, data: data?.data || data };
 };
 
+export const getRagDocumentQualityReport = async (documentId, versionNumber = null) => {
+  const query = versionNumber ? `?version_number=${versionNumber}` : '';
+  const { response, data } = await ragFetch(`/admin/documents/${documentId}/quality-report${query}`);
+  if (!response.ok) return { response, data };
+  return { response, data: data?.data || data };
+};
+
+export const analyzeRagDocument = async (fileOrPayload, options = {}) => {
+  // If file is passed
+  if (fileOrPayload instanceof File || fileOrPayload instanceof Blob) {
+    const formData = new FormData();
+    formData.append('file', fileOrPayload);
+    if (options.category) formData.append('category', options.category);
+    if (options.service_id) formData.append('service_id', options.service_id);
+
+    const { response, data } = await ragFetch('/admin/documents/analyze-file', {
+      method: 'POST',
+      body: formData,
+    });
+    return { response, data: data?.data || data };
+  }
+
+  // If raw content string or JSON payload
+  const body = typeof fileOrPayload === 'string'
+    ? {
+        content: fileOrPayload,
+        title: options.title || 'Draft Document.md',
+        category: options.category || 'general',
+        service_id: options.service_id || null,
+      }
+    : fileOrPayload;
+
+  const { response, data } = await ragFetch('/admin/documents/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  return { response, data: data?.data || data };
+};
+
 export const rollbackRagDocumentVersion = async (documentId, versionNumber) => {
   const { response, data } = await ragFetch(
     `/admin/documents/${documentId}/versions/${versionNumber}/activate`,
@@ -523,6 +556,8 @@ export const uploadRagDocument = async (file, options = {}) => {
     service_id = '',
     tags = '',
     visibility = 'public',
+    force = false,
+    auto_activate = true,
   } = opts;
 
   const formData = new FormData();
@@ -532,6 +567,8 @@ export const uploadRagDocument = async (file, options = {}) => {
   if (service_id) formData.append('service_id', service_id);
   if (tags) formData.append('tags', tags);
   if (visibility) formData.append('visibility', visibility);
+  if (force) formData.append('force', 'true');
+  if (auto_activate === false) formData.append('auto_activate', 'false');
 
   const { response, data } = await ragFetch('/admin/documents/upload', {
     method: 'POST',
@@ -550,6 +587,9 @@ export const uploadRagDocument = async (file, options = {}) => {
       chunks: ingestData.total_chunks || 1,
       version: ingestData.version_number || 1,
       is_deduplicated: ingestData.is_deduplicated || false,
+      quality_score: ingestData.quality_score,
+      gate_status: ingestData.gate_status,
+      quality_report: ingestData.quality_report,
     },
   };
 };

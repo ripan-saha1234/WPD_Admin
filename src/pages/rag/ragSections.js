@@ -33,8 +33,8 @@ export const RAG_SECTIONS = [
   {
     id: 'poll-results',
     path: 'survey-analytics',
-    label: 'Survey Analytics',
-    description: 'See how users responded to onboarding polls and opening question options.',
+    label: 'Visitor Intent & Demand',
+    description: 'Real-time commercial demand, buyer intents, conversion funnels, and onboarding poll responses.',
     icon: '📊',
   },
   {

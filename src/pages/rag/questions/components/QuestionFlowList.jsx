@@ -15,111 +15,148 @@ function parseOptions(question) {
 
 function QuestionFlowList({
   questions,
+  totalCount,
   loading,
   editId,
+  searchQuery,
+  onHoverQuestion,
+  onToggleActive,
   onEdit,
   onDelete,
   onMove,
 }) {
   if (loading) {
-    return <CommonLoader text="Loading question flow..." size={16} />;
+    return (
+      <div className="qs-loading-wrapper">
+        <CommonLoader text="Loading question sequence..." size={18} />
+      </div>
+    );
   }
 
   if (questions.length === 0) {
     return (
-      <EmptyState
-        icon="📋"
-        message="No questions in your flow yet. Create your first question using the form on the left."
-      />
+      <div className="qs-empty-state">
+        <EmptyState
+          icon={searchQuery ? '🔍' : '📋'}
+          message={
+            searchQuery
+              ? `No opening questions match "${searchQuery}".`
+              : totalCount > 0
+              ? 'No questions match the selected filter.'
+              : 'No opening questions configured yet. Create your first question using the form on the left.'
+          }
+        />
+      </div>
     );
   }
 
   return (
-    <div className="qs-flow-timeline">
+    <div className="qs-items-container">
       {questions.map((question, index) => {
         const opts = parseOptions(question);
         const isEditing = String(editId) === String(question.id);
-        const isLast = index === questions.length - 1;
 
         return (
           <div
             key={question.id}
-            className={`qs-flow-item ${isEditing ? 'qs-flow-item--editing' : ''}`}
+            className={`qs-item-card ${isEditing ? 'qs-item-card--editing' : ''} ${
+              !question.is_active ? 'qs-item-card--inactive' : ''
+            }`}
+            onMouseEnter={() => onHoverQuestion?.(question)}
+            onMouseLeave={() => onHoverQuestion?.(null)}
           >
-            <div className="qs-flow-rail">
-              <div className="qs-flow-step">{index + 1}</div>
-              {!isLast && <div className="qs-flow-line" />}
+            {/* Left Column: Reorder and Step indicator */}
+            <div className="qs-item-rank-col">
+              <button
+                type="button"
+                className="qs-reorder-btn"
+                disabled={index === 0}
+                onClick={() => onMove(index, -1)}
+                title="Move up in sequence"
+              >
+                ▲
+              </button>
+              <span className="qs-item-rank">#{index + 1}</span>
+              <button
+                type="button"
+                className="qs-reorder-btn"
+                disabled={index === questions.length - 1}
+                onClick={() => onMove(index, 1)}
+                title="Move down in sequence"
+              >
+                ▼
+              </button>
             </div>
 
-            <div className="qs-flow-card">
-              <div className="qs-flow-card-top">
-                <div className="qs-flow-badges">
-                  <span className={`qs-type-pill qs-type-pill--${question.question_type || 'mcq'}`}>
-                    {question.question_type === 'poll' ? 'Poll' : 'MCQ'}
-                  </span>
-                  <span
-                    className={`qs-status-pill ${
-                      question.is_active ? 'qs-status-pill--active' : 'qs-status-pill--inactive'
-                    }`}
-                  >
-                    {question.is_active ? 'Active' : 'Inactive'}
-                  </span>
-                  <span className="qs-response-count">
-                    {question.response_count || 0} responses
-                  </span>
-                </div>
-                <div className="qs-flow-actions">
-                  <button
-                    type="button"
-                    className="qs-action-btn"
-                    disabled={index === 0}
-                    onClick={() => onMove(index, -1)}
-                    title="Move up"
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    className="qs-action-btn"
-                    disabled={isLast}
-                    onClick={() => onMove(index, 1)}
-                    title="Move down"
-                  >
-                    ↓
-                  </button>
-                  <button
-                    type="button"
-                    className="qs-action-btn qs-action-btn--edit"
-                    onClick={() => onEdit(question)}
-                    title="Edit"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    className="qs-action-btn qs-action-btn--delete"
-                    onClick={() => onDelete(question.id)}
-                    title="Delete"
-                  >
-                    Delete
-                  </button>
-                </div>
+            {/* Middle Column: Question details & Options pills */}
+            <div className="qs-item-content">
+              {/* Badges / Meta row */}
+              <div className="qs-item-meta-row">
+                <span
+                  className={`qs-type-badge qs-type-badge--${
+                    question.question_type || 'mcq'
+                  }`}
+                >
+                  {question.question_type === 'poll' ? '📊 Poll' : '🔘 MCQ'}
+                </span>
+
+                <button
+                  type="button"
+                  className={`qs-status-toggle-btn ${
+                    question.is_active
+                      ? 'qs-status-toggle-btn--active'
+                      : 'qs-status-toggle-btn--inactive'
+                  }`}
+                  onClick={() => onToggleActive?.(question)}
+                  title={
+                    question.is_active
+                      ? 'Click to pause this question'
+                      : 'Click to activate this question'
+                  }
+                >
+                  <span className="qs-status-dot" />
+                  {question.is_active ? 'Active' : 'Paused'}
+                </button>
+
+                <span className="qs-response-meta">
+                  📈 {question.response_count || 0} user responses
+                </span>
               </div>
 
-              <p className="qs-flow-question">{question.question_text}</p>
+              {/* Question Text */}
+              <h4 className="qs-item-question-text">{question.question_text}</h4>
 
-              <div className="qs-flow-options">
+              {/* Option Chips preview */}
+              <div className="qs-item-chips-row">
                 {opts.map((opt, i) => (
-                  <span key={`${opt}-${i}`} className="qs-flow-option-chip">
-                    <span className="qs-flow-option-dot" />
-                    {opt}
+                  <span key={i} className="qs-item-chip">
+                    <span className="qs-chip-letter">
+                      {String.fromCharCode(65 + i)}
+                    </span>
+                    <span className="qs-chip-text">{opt}</span>
                   </span>
                 ))}
               </div>
+            </div>
 
-              {isEditing && (
-                <div className="qs-editing-banner">Currently editing this question</div>
-              )}
+            {/* Right Column: Actions */}
+            <div className="qs-item-actions-col">
+              <button
+                type="button"
+                className="qs-action-icon-btn qs-action-icon-btn--edit"
+                onClick={() => onEdit(question)}
+                title="Edit question & options"
+              >
+                ✏️
+              </button>
+              <button
+                type="button"
+                className="qs-action-icon-btn qs-action-icon-btn--delete"
+                onClick={() => onDelete(question.id)}
+                title="Delete question"
+              >
+                🗑
+              </button>
             </div>
           </div>
         );
@@ -129,3 +166,4 @@ function QuestionFlowList({
 }
 
 export default QuestionFlowList;
+

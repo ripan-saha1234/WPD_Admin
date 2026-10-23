@@ -42,7 +42,7 @@ function DashboardPage() {
     <div className="dashboard-starter">
       <section className="dashboard-starter-welcome">
         <span className="dashboard-starter-eyebrow">Overview</span>
-        <h3>Welcome{user?.name ? `, ${user.name}` : ''} 👋</h3>
+        <h3>Welcome{user?.name ? `, ${user.name}` : ''} </h3>
         <p>
           This is your starter admin shell. The sidebar and header come from
           <code> AppLayout </code>

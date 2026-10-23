@@ -5,12 +5,15 @@ import CommonLoader from "../../../components/common-loader";
 import StatCard from "../components/StatCard";
 import EmptyState from "../components/EmptyState";
 import ConfirmDialog from "../components/ConfirmDialog";
+import DocumentQualityModal from "../components/DocumentQualityModal";
 import { useRagAdmin } from "../context/RagAdminContext";
 import {
   deleteRagDocument,
   getRagDocuments,
   getRagDocumentVersions,
   getRagDocumentContent,
+  getRagDocumentQualityReport,
+  analyzeRagDocument,
   rollbackRagDocumentVersion,
   uploadRagDocument,
 } from "../../../services/ragAdminService";
@@ -143,6 +146,15 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
     setTagsInput(newTags);
     setShowTagSuggestions(false);
   };
+
+  // Quality Analysis State
+  const [qualityModalOpen, setQualityModalOpen] = useState(false);
+  const [qualityReport, setQualityReport] = useState(null);
+  const [qualityDocTitle, setQualityDocTitle] = useState("");
+  const [qualityInitialContent, setQualityInitialContent] = useState("");
+  const [qualityPendingFile, setQualityPendingFile] = useState(null);
+  const [qualityAnalyzing, setQualityAnalyzing] = useState(false);
+  const [qualityReadOnly, setQualityReadOnly] = useState(false);
 
   // Delete State
   const [docToDelete, setDocToDelete] = useState(null);
@@ -313,6 +325,182 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
     }
     return result;
   }, [documents, activeTab, searchQuery, matchesCategoryTab]);
+
+  // Trigger pre-ingestion validation for selected file
+  const handlePreIngestFileSelect = async (file) => {
+    if (!file) return;
+    setQualityPendingFile(file);
+    setQualityDocTitle(file.name);
+    setQualityReadOnly(false);
+    setQualityAnalyzing(true);
+
+    let rawText = "";
+    if (file.name.endsWith(".md") || file.name.endsWith(".txt")) {
+      try {
+        rawText = await file.text();
+        setQualityInitialContent(rawText);
+      } catch (e) {
+        console.error("Error reading file text:", e);
+      }
+    } else {
+      setQualityInitialContent("");
+    }
+
+    setUploadStatus({
+      type: "loading",
+      message: `Analyzing document quality and checking pre-ingestion gate for ${file.name}...`,
+    });
+
+    try {
+      const { response, data } = await analyzeRagDocument(file, {
+        category: selectedCategory,
+        service_id:
+          selectedCategory === "service" || selectedCategory === "projects"
+            ? selectedServiceId
+            : "",
+      });
+
+      if (!response.ok) {
+        throw new Error(data?.error || data?.detail || "Quality analysis failed");
+      }
+
+      setQualityReport(data);
+      setQualityModalOpen(true);
+      setUploadStatus(null);
+    } catch (err) {
+      setUploadStatus({
+        type: "error",
+        message: `Quality analysis failed: ${err.message}`,
+      });
+      showToast?.(err.message, "error");
+    } finally {
+      setQualityAnalyzing(false);
+    }
+  };
+
+  // Re-run quality analysis on edited content
+  const handleReAnalyze = async (newContent) => {
+    setQualityAnalyzing(true);
+    try {
+      const { response, data } = await analyzeRagDocument(newContent, {
+        title: qualityDocTitle,
+        category: selectedCategory,
+        service_id:
+          selectedCategory === "service" || selectedCategory === "projects"
+            ? selectedServiceId
+            : "",
+      });
+
+      if (!response.ok) {
+        throw new Error(data?.error || data?.detail || "Re-analysis failed");
+      }
+
+      setQualityReport(data);
+      showToast?.(`Re-evaluation complete: Score ${data.overall_score}/100`, "info");
+    } catch (err) {
+      showToast?.(`Re-analysis error: ${err.message}`, "error");
+    } finally {
+      setQualityAnalyzing(false);
+    }
+  };
+
+  // Approve & ingest document into Vector DB
+  const handleApproveIngest = async (contentToIngest, isForce = false) => {
+    setUploading(true);
+    setUploadStatus({
+      type: "loading",
+      message: `Embedding and indexing into vector database...`,
+    });
+
+    try {
+      let fileToUpload = qualityPendingFile;
+      if (contentToIngest && contentToIngest.trim() && contentToIngest !== qualityInitialContent) {
+        const blob = new Blob([contentToIngest], { type: "text/markdown;charset=utf-8" });
+        fileToUpload = new File([blob], qualityDocTitle, { type: "text/markdown" });
+      }
+
+      const { response, data } = await uploadRagDocument(fileToUpload, {
+        changeSummary: changeSummary.trim() || `Ingested with quality score ${qualityReport?.overall_score || 0}/100`,
+        category: selectedCategory,
+        service_id:
+          selectedCategory === "service" || selectedCategory === "projects"
+            ? selectedServiceId
+            : "",
+        tags: tagsInput.trim(),
+        visibility: selectedVisibility,
+        force: isForce,
+        auto_activate: true,
+      });
+
+      if (!response.ok) {
+        throw new Error(data?.error || data?.detail || "Ingestion failed");
+      }
+
+      setQualityModalOpen(false);
+      setIsIngestDrawerOpen(false);
+      setChangeSummary("");
+      showToast?.(`Document indexed & activated as v${data.version} (Quality: ${data.quality_score ?? qualityReport?.overall_score ?? 100}/100)`, "success");
+      loadDocuments();
+    } catch (err) {
+      showToast?.(err.message, "error");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Save as staged (pending review) without activating
+  const handleSaveStaged = async (contentToIngest) => {
+    setUploading(true);
+    try {
+      let fileToUpload = qualityPendingFile;
+      if (contentToIngest && contentToIngest.trim() && contentToIngest !== qualityInitialContent) {
+        const blob = new Blob([contentToIngest], { type: "text/markdown;charset=utf-8" });
+        fileToUpload = new File([blob], qualityDocTitle, { type: "text/markdown" });
+      }
+
+      const { response, data } = await uploadRagDocument(fileToUpload, {
+        changeSummary: changeSummary.trim() || `Staged pending review (Quality: ${qualityReport?.overall_score || 0}/100)`,
+        category: selectedCategory,
+        service_id:
+          selectedCategory === "service" || selectedCategory === "projects"
+            ? selectedServiceId
+            : "",
+        tags: tagsInput.trim(),
+        visibility: selectedVisibility,
+        auto_activate: false,
+      });
+
+      if (!response.ok) {
+        throw new Error(data?.error || data?.detail || "Staging failed");
+      }
+
+      setQualityModalOpen(false);
+      setIsIngestDrawerOpen(false);
+      showToast?.(`Document saved as Staged (Pending Review) as v${data.version}`, "info");
+      loadDocuments();
+    } catch (err) {
+      showToast?.(err.message, "error");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // View existing document's quality report
+  const handleViewDocQuality = async (doc) => {
+    try {
+      const { response, data } = await getRagDocumentQualityReport(doc.id || doc.title);
+      if (!response.ok || !data?.quality_report) {
+        showToast?.("No stored quality report found for this document version", "info");
+        return;
+      }
+      setQualityReport(data.quality_report);
+      setQualityDocTitle(doc.title || doc.fileName);
+      setQualityReadOnly(true);
+      setQualityModalOpen(true);
+    } catch (err) {
+      showToast?.(`Failed to load quality report: ${err.message}`, "error");
+    }
+  };
 
   // Upload handler inside drawer
   const handleUpload = async (file) => {
@@ -558,9 +746,10 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
                 <thead>
                   <tr>
                     <th style={{ minWidth: "280px" }}>Document</th>
-                    <th style={{ width: "130px" }}>Version</th>
+                    <th style={{ width: "110px" }}>Version</th>
+                    <th style={{ width: "110px" }}>Quality</th>
                     <th style={{ width: "130px" }}>Category</th>
-                    <th style={{ width: "120px" }}>Chunks</th>
+                    <th style={{ width: "110px" }}>Chunks</th>
                     <th style={{ width: "150px" }}>Origin</th>
                     <th style={{ width: "220px", textAlign: "right" }}>
                       Actions
@@ -614,6 +803,60 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
                             </span>
                           )}
                         </div>
+                      </td>
+
+                      {/* Quality Score */}
+                      <td>
+                        {doc.quality_score !== null && doc.quality_score !== undefined ? (
+                          <button
+                            type="button"
+                            onClick={() => handleViewDocQuality(doc)}
+                            style={{
+                              background: "none",
+                              border: "none",
+                              padding: 0,
+                              cursor: "pointer",
+                              display: "inline-flex",
+                              alignItems: "center",
+                            }}
+                            title="Click to view detailed quality diagnostics"
+                          >
+                            <span
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "4px",
+                                padding: "2px 8px",
+                                borderRadius: "12px",
+                                fontSize: "11.5px",
+                                fontWeight: 700,
+                                backgroundColor:
+                                  doc.quality_score >= 80
+                                    ? "rgba(16, 185, 129, 0.12)"
+                                    : doc.quality_score >= 60
+                                    ? "rgba(245, 158, 11, 0.12)"
+                                    : "rgba(239, 68, 68, 0.12)",
+                                color:
+                                  doc.quality_score >= 80
+                                    ? "#059669"
+                                    : doc.quality_score >= 60
+                                    ? "#d97706"
+                                    : "#dc2626",
+                                border: `1px solid ${
+                                  doc.quality_score >= 80
+                                    ? "rgba(16, 185, 129, 0.25)"
+                                    : doc.quality_score >= 60
+                                    ? "rgba(245, 158, 11, 0.25)"
+                                    : "rgba(239, 68, 68, 0.25)"
+                                }`,
+                              }}
+                            >
+                              🛡️ {doc.quality_score}
+                            </span>
+                          </button>
+                        ) : (
+                          <span style={{ fontSize: "12px", color: "var(--text-3)" }}>—</span>
+                        )}
                       </td>
 
                       {/* Category */}
@@ -913,11 +1156,17 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
                   acceptedTypes=".md,.markdown,.txt,.docx"
                   placeholder="Drop Markdown (.md, .txt) or Word (.docx) here"
                   browseText="Browse Files"
-                  supportText="Markdown (.md, .txt) and Word (.docx)"
-                  disabled={uploading}
-                  onFilesChange={(file) => handleUpload(file)}
+                  supportText="Markdown (.md, .txt) and Word (.docx) • Auto quality scoring before ingestion"
+                  disabled={uploading || qualityAnalyzing}
+                  onFilesChange={(file) => handlePreIngestFileSelect(file)}
                 />
               </div>
+
+              {qualityAnalyzing && (
+                <div style={{ padding: "0.5rem 0", display: "flex", justifyContent: "center" }}>
+                  <CommonLoader text="Running Pre-Ingestion Quality Gate analysis..." size={16} />
+                </div>
+              )}
 
               {/* Upload Status / Progress Feedback */}
               {uploadStatus && (
@@ -1052,6 +1301,7 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
                       }}
                     >
                       <th style={{ padding: "0.5rem 0.6rem" }}>Version</th>
+                      <th style={{ padding: "0.5rem 0.6rem" }}>Quality</th>
                       <th style={{ padding: "0.5rem 0.6rem" }}>Status</th>
                       <th style={{ padding: "0.5rem 0.6rem" }}>Chunks</th>
                       <th style={{ padding: "0.5rem 0.6rem" }}>Changelog</th>
@@ -1083,6 +1333,31 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
                             }}
                           >
                             v{ver.version_number}
+                          </td>
+                          <td style={{ padding: "0.75rem 0.6rem" }}>
+                            {ver.quality_score ? (
+                              <span
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "3px",
+                                  padding: "2px 8px",
+                                  borderRadius: "10px",
+                                  fontSize: "11px",
+                                  fontWeight: 700,
+                                  backgroundColor:
+                                    ver.quality_score >= 80
+                                      ? "rgba(16, 185, 129, 0.12)"
+                                      : "rgba(245, 158, 11, 0.12)",
+                                  color:
+                                    ver.quality_score >= 80 ? "#059669" : "#d97706",
+                                }}
+                              >
+                                🛡️ {ver.quality_score}
+                              </span>
+                            ) : (
+                              <span style={{ color: "var(--text-3)", fontSize: "11px" }}>—</span>
+                            )}
                           </td>
                           <td style={{ padding: "0.75rem 0.6rem" }}>
                             <span
@@ -1461,6 +1736,21 @@ function DocumentIngestionTab({ refreshKey, showToast }) {
         onConfirm={handleDelete}
         onCancel={() => setDocToDelete(null)}
         loading={deleting}
+      />
+
+      {/* 6. Document Quality Analyzer & Pre-Ingestion Gate Modal */}
+      <DocumentQualityModal
+        isOpen={qualityModalOpen}
+        onClose={() => setQualityModalOpen(false)}
+        report={qualityReport}
+        documentTitle={qualityDocTitle}
+        initialContent={qualityInitialContent}
+        isUploading={uploading}
+        isAnalyzing={qualityAnalyzing}
+        onReAnalyze={handleReAnalyze}
+        onApproveIngest={handleApproveIngest}
+        onSaveStaged={handleSaveStaged}
+        isReadOnly={qualityReadOnly}
       />
     </div>
   );

@@ -7,7 +7,7 @@ function RagAdminHub() {
   return (
     <div className="rag-hub">
       <section className="rag-hub-intro">
-        <h2 className="rag-hub-title">Chatbot Management</h2>
+        <h2 className="rag-hub-title">Jerry Management</h2>
         <p className="rag-hub-description">
           Choose a module below to manage conversations, onboarding questions,
           survey data, knowledge documents, and AI-powered lead insights.
