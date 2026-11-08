@@ -106,6 +106,7 @@ function LeadsListPage() {
                   <th>Company</th>
                   <th>Project Description</th>
                   <th>Service</th>
+                  <th>Budget</th>
                   <th>CRM Status</th>
                   <th>Date</th>
                   <th>Action</th>
@@ -138,6 +139,16 @@ function LeadsListPage() {
                       <span style={{ fontSize: '13px', color: 'var(--text)' }}>
                         {lead.interestedServiceName}
                       </span>
+                    </td>
+                    <td>
+                      {lead.dealValue ? (
+                        <span style={{ fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap' }}>
+                          {lead.dealCurrency === 'INR' || lead.dealCurrency === '₹' ? '₹' : '$'}
+                          {Number(lead.dealValue).toLocaleString()}
+                        </span>
+                      ) : (
+                        <span style={{ color: 'var(--text-3)' }}>—</span>
+                      )}
                     </td>
                     <td>
                       <span className={`leads-crm-badge leads-crm-badge--${lead.crmSyncStatus}`}>

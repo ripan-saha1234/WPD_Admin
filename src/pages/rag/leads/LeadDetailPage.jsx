@@ -126,12 +126,67 @@ function LeadDetailPage() {
         <div className="rag-card leads-info-card" style={{ padding: '20px 22px' }}>
           <h3 className="leads-info-title" style={{ margin: '0 0 14px', fontSize: '15px', fontWeight: 650 }}>Project Requirements</h3>
           <div className="leads-info-list" style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13.5px' }}>
-            <div><span style={{ color: 'var(--text-3)' }}>Interested Service:</span> <strong>{lead.interestedServiceName || 'Discovery'}</strong></div>
+            <div><span style={{ color: 'var(--text-3)' }}>Primary Service:</span> <strong>{lead.interestedServiceName || 'Discovery'}</strong></div>
+            {Array.isArray(lead.services) && lead.services.length > 0 && (
+              <div>
+                <span style={{ color: 'var(--text-3)' }}>Services of Interest:</span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px' }}>
+                  {lead.services.map((svc) => (
+                    <span
+                      key={svc.service_id}
+                      className={`rag-origin-badge ${svc.is_primary ? 'rag-origin-badge--folder' : 'rag-badge-muted'}`}
+                      style={{ fontSize: '11.5px', padding: '2px 8px' }}
+                    >
+                      {svc.name} {svc.is_primary ? '★' : ''}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
             <div>
               <span style={{ color: 'var(--text-3)' }}>Description:</span>
               <p style={{ margin: '4px 0 0', lineHeight: 1.5, color: 'var(--text)' }}>
                 {lead.projectDescription || 'No detailed requirement provided.'}
               </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rag-card leads-info-card" style={{ padding: '20px 22px' }}>
+          <h3 className="leads-info-title" style={{ margin: '0 0 14px', fontSize: '15px', fontWeight: 650 }}>Budget &amp; Commercial Scope</h3>
+          <div className="leads-info-list" style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13.5px' }}>
+            <div>
+              <span style={{ color: 'var(--text-3)' }}>Stated Budget:</span>{' '}
+              {lead.dealValue ? (
+                <strong style={{ color: '#10b981', fontSize: '14.5px' }}>
+                  {lead.dealCurrency === 'INR' || lead.dealCurrency === '₹' ? '₹' : '$'}
+                  {Number(lead.dealValue).toLocaleString()}
+                </strong>
+              ) : (
+                <span style={{ color: 'var(--text-3)' }}>Not provided</span>
+              )}
+            </div>
+            <div>
+              <span style={{ color: 'var(--text-3)' }}>Budget Type:</span>{' '}
+              <span className="rag-badge-muted" style={{ textTransform: 'capitalize' }}>
+                {lead.budgetType ? lead.budgetType.replace('_', ' ') : 'One-time'}
+              </span>
+            </div>
+            {lead.budgetMin != null && lead.budgetMax != null && (
+              <div>
+                <span style={{ color: 'var(--text-3)' }}>Budget Range:</span>{' '}
+                <span>
+                  {lead.dealCurrency === 'INR' || lead.dealCurrency === '₹' ? '₹' : '$'}{Number(lead.budgetMin).toLocaleString()} – {lead.dealCurrency === 'INR' || lead.dealCurrency === '₹' ? '₹' : '$'}{Number(lead.budgetMax).toLocaleString()}
+                </span>
+              </div>
+            )}
+            <div>
+              <span style={{ color: 'var(--text-3)' }}>Currency:</span>{' '}
+              <strong>{lead.dealCurrency || 'USD'}</strong>
+            </div>
+            <div>
+              <span style={{ color: 'var(--text-3)' }}>Revision:</span>{' '}
+              <code>v{lead.version || 1}</code>
             </div>
           </div>
         </div>
@@ -151,6 +206,47 @@ function LeadDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Lead Revisions / Audit Trail */}
+      {Array.isArray(lead.fieldChanges) && lead.fieldChanges.length > 0 && (
+        <div className="rag-card" style={{ marginBottom: '1.5rem', padding: '20px 22px' }}>
+          <div className="rag-panel-header" style={{ marginBottom: '12px' }}>
+            <div className="rag-panel-title">
+              <span>Lead Modification Audit Trail</span>
+              <span className="rag-badge-muted">{lead.fieldChanges.length} changes</span>
+            </div>
+            <p className="rag-panel-hint">
+              Chronological record of visitor-stated field updates and revisions during dialogue.
+            </p>
+          </div>
+          <div className="rag-table-wrap">
+            <table className="rag-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Old Value</th>
+                  <th>New Value</th>
+                  <th>Source</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                {lead.fieldChanges.map((ch, idx) => (
+                  <tr key={ch.id || idx}>
+                    <td><code>{ch.field}</code></td>
+                    <td style={{ color: 'var(--text-3)' }}>{ch.old_value || '—'}</td>
+                    <td><strong>{ch.new_value || '—'}</strong></td>
+                    <td><span className="rag-badge-muted">{ch.source}</span></td>
+                    <td style={{ fontSize: '12px', color: 'var(--text-3)' }}>
+                      {ch.changed_at ? new Date(ch.changed_at).toLocaleString() : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Conversation History */}
       <div className="rag-card leads-conversation-card">
