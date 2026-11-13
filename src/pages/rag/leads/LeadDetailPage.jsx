@@ -4,22 +4,18 @@ import CommonButton from '../../../components/common-button';
 import CommonLoader from '../../../components/common-loader';
 import { globalContext } from '../../../context/context';
 import { useLeads } from '../context/LeadsContext';
-import AiAnalysisReportModal from './components/AiAnalysisReportModal';
 import './leads.css';
 
 function LeadDetailPage() {
   const { leadId } = useParams();
   const navigate = useNavigate();
   const { showToast } = useContext(globalContext);
-  const { getLeadById, fetchLeadWithMessages, runAiAnalysis } = useLeads();
+  const { getLeadById, fetchLeadWithMessages, retrySync } = useLeads();
 
   const cachedLead = getLeadById(leadId);
   const [lead, setLead] = useState(cachedLead || null);
   const [loading, setLoading] = useState(!cachedLead || !cachedLead.chats?.length);
-
-  const [reportOpen, setReportOpen] = useState(false);
-  const [analyzing, setAnalyzing] = useState(false);
-  const [reportAnalysis, setReportAnalysis] = useState(null);
+  const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -36,6 +32,25 @@ function LeadDetailPage() {
       mounted = false;
     };
   }, [leadId, fetchLeadWithMessages]);
+
+  const handleRetrySync = async () => {
+    if (!lead?.id) return;
+    setRetrying(true);
+    try {
+      const res = await retrySync(lead.id);
+      if (res.ok) {
+        showToast?.('CRM sync triggered successfully', 'success');
+        const updated = await fetchLeadWithMessages(lead.id);
+        if (updated) setLead(updated);
+      } else {
+        showToast?.(res.error || 'Failed to trigger CRM sync', 'error');
+      }
+    } catch (err) {
+      showToast?.(err.message, 'error');
+    } finally {
+      setRetrying(false);
+    }
+  };
 
   if (loading && !lead) {
     return (
@@ -55,17 +70,6 @@ function LeadDetailPage() {
       </div>
     );
   }
-
-  const handleRunAnalysis = () => {
-    setAnalyzing(true);
-    setTimeout(() => {
-      const analysis = runAiAnalysis(lead.id);
-      setReportAnalysis(analysis);
-      setReportOpen(true);
-      setAnalyzing(false);
-      showToast?.('AI analysis complete', 'success');
-    }, 800);
-  };
 
   const messages = lead.chats || [];
 
@@ -94,25 +98,22 @@ function LeadDetailPage() {
                 Service: {lead.interestedServiceName}
               </span>
             )}
-            {lead.aiAnalysis && (
-              <span className="leads-analyzed-pill">AI Analyzed</span>
-            )}
           </div>
         </div>
         <div className="leads-detail-actions">
           <CommonButton
-            text={analyzing ? 'Analyzing...' : 'Run AI Analysis'}
-            onClick={handleRunAnalysis}
-            disabled={analyzing}
-            backgroundColor="#0690fd"
+            text={retrying ? 'Retrying CRM...' : 'Retry CRM Sync'}
+            onClick={handleRetrySync}
+            disabled={retrying}
+            backgroundColor={lead.crmSyncStatus === 'failed' ? '#ef4444' : '#0690fd'}
             color="#fff"
-            borderColor="#0690fd"
+            borderColor={lead.crmSyncStatus === 'failed' ? '#ef4444' : '#0690fd'}
           />
         </div>
       </div>
 
       {/* Info Overview Cards */}
-      <div className="leads-info-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+      <div className="leads-info-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
         <div className="rag-card leads-info-card" style={{ padding: '20px 22px' }}>
           <h3 className="leads-info-title" style={{ margin: '0 0 14px', fontSize: '15px', fontWeight: 650 }}>Contact Information</h3>
           <div className="leads-info-list" style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13.5px' }}>
@@ -137,7 +138,7 @@ function LeadDetailPage() {
                       className={`rag-origin-badge ${svc.is_primary ? 'rag-origin-badge--folder' : 'rag-badge-muted'}`}
                       style={{ fontSize: '11.5px', padding: '2px 8px' }}
                     >
-                      {svc.name} {svc.is_primary ? '★' : ''}
+                      {svc.name} {svc.is_primary ? '★ Primary' : ''}
                     </span>
                   ))}
                 </div>
@@ -192,17 +193,32 @@ function LeadDetailPage() {
         </div>
 
         <div className="rag-card leads-info-card" style={{ padding: '20px 22px' }}>
-          <h3 className="leads-info-title" style={{ margin: '0 0 14px', fontSize: '15px', fontWeight: 650 }}>Session &amp; CRM Sync</h3>
+          <h3 className="leads-info-title" style={{ margin: '0 0 14px', fontSize: '15px', fontWeight: 650 }}>CRM Webhook Sync Audit</h3>
           <div className="leads-info-list" style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13.5px' }}>
-            <div><span style={{ color: 'var(--text-3)' }}>Session ID:</span> <code>{lead.sessionId}</code></div>
             <div>
-              <span style={{ color: 'var(--text-3)' }}>CRM Sync Status:</span>{' '}
+              <span style={{ color: 'var(--text-3)' }}>Sync Status:</span>{' '}
               <span className={`leads-crm-badge leads-crm-badge--${lead.crmSyncStatus}`}>
                 {lead.crmSyncStatus}
               </span>
             </div>
+            {lead.crmLastError && (
+              <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', borderRadius: '6px', padding: '8px 10px', fontSize: '12px', color: '#dc2626' }}>
+                <strong>Last Sync Error:</strong>
+                <div style={{ marginTop: '3px', wordBreak: 'break-word', fontFamily: 'monospace' }}>{lead.crmLastError}</div>
+              </div>
+            )}
+            <div><span style={{ color: 'var(--text-3)' }}>Attempts:</span> {lead.crmAttempts || 0}</div>
+            {lead.crmNextRetryAt && (
+              <div><span style={{ color: 'var(--text-3)' }}>Next Retry:</span> {new Date(lead.crmNextRetryAt).toLocaleTimeString()}</div>
+            )}
+            {lead.crmContactId && (
+              <div><span style={{ color: 'var(--text-3)' }}>CRM Contact ID:</span> <code>{lead.crmContactId}</code></div>
+            )}
+            {lead.crmDealId && (
+              <div><span style={{ color: 'var(--text-3)' }}>CRM Deal ID:</span> <code>{lead.crmDealId}</code></div>
+            )}
             <div><span style={{ color: 'var(--text-3)' }}>Captured:</span> {new Date(lead.timestamp).toLocaleString()}</div>
-            <div><span style={{ color: 'var(--text-3)' }}>Total Turns:</span> {messages.length} messages</div>
+            <div><span style={{ color: 'var(--text-3)' }}>Session ID:</span> <code>{lead.sessionId}</code></div>
           </div>
         </div>
       </div>
@@ -296,41 +312,6 @@ function LeadDetailPage() {
           </div>
         )}
       </div>
-
-      {lead.aiAnalysis && !reportOpen && (
-        <div className="rag-card leads-quick-report">
-          <div className="rag-panel-title">
-            <span>Latest AI Score</span>
-            <button
-              type="button"
-              className="leads-link-btn"
-              onClick={() => {
-                setReportAnalysis(lead.aiAnalysis);
-                setReportOpen(true);
-              }}
-            >
-              View full report →
-            </button>
-          </div>
-          <div className="leads-quick-scores">
-            <div>
-              <span className="leads-quick-score">{lead.aiAnalysis.leadScore}</span>
-              <span className="rag-muted">Lead Score</span>
-            </div>
-            <div>
-              <span className="leads-quick-score">{lead.aiAnalysis.icpFit}</span>
-              <span className="rag-muted">ICP Fit</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <AiAnalysisReportModal
-        open={reportOpen}
-        lead={lead}
-        analysis={reportAnalysis || lead.aiAnalysis}
-        onClose={() => setReportOpen(false)}
-      />
     </div>
   );
 }

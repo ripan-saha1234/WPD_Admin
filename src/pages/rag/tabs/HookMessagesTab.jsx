@@ -8,11 +8,10 @@ import {
   createHookMessage,
   deleteHookMessage,
   getHookMessages,
-  reorderHookMessages,
   updateHookMessage,
 } from '../../../services/ragAdminService';
 
-const DEFAULT_FORM = { message_text: '', is_active: true };
+const DEFAULT_FORM = { message_text: '', is_active: true, display_frequency: 30 };
 
 const INSPIRATION_PRESETS = [
   "👋 Need help finding the right solution? I'm here!",
@@ -25,7 +24,6 @@ function HookMessagesTab({ refreshKey, showToast }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [reordering, setReordering] = useState(false);
 
   const [editId, setEditId] = useState(null); // null = create
   const [form, setForm] = useState(DEFAULT_FORM);
@@ -68,7 +66,11 @@ function HookMessagesTab({ refreshKey, showToast }) {
 
   const handleEdit = (msg) => {
     setEditId(msg.id);
-    setForm({ message_text: msg.message_text, is_active: msg.is_active });
+    setForm({
+      message_text: msg.message_text,
+      is_active: msg.is_active,
+      display_frequency: msg.display_frequency || 30,
+    });
     // Scroll smoothly to creator form if on mobile/narrow view
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -132,31 +134,6 @@ function HookMessagesTab({ refreshKey, showToast }) {
     } catch (err) {
       showToast?.(err.message, 'error');
       loadMessages(); // Revert on failure
-    }
-  };
-
-  // ── Reorder: move up / down ───────────────────────────────────────────────────
-  const handleMove = async (indexInFiltered, direction) => {
-    // Locate true index in full messages array
-    const targetMsg = filteredMessages[indexInFiltered];
-    if (!targetMsg) return;
-
-    const actualIdx = messages.findIndex((m) => m.id === targetMsg.id);
-    const swapIdx = actualIdx + direction;
-    if (swapIdx < 0 || swapIdx >= messages.length) return;
-
-    const newList = [...messages];
-    [newList[actualIdx], newList[swapIdx]] = [newList[swapIdx], newList[actualIdx]];
-    setMessages(newList);
-    setReordering(true);
-    try {
-      const { response, data } = await reorderHookMessages(newList.map((m) => m.id));
-      if (!response.ok) throw new Error(data.error || 'Reorder failed');
-    } catch (err) {
-      showToast?.(err.message, 'error');
-      loadMessages(); // revert
-    } finally {
-      setReordering(false);
     }
   };
 
@@ -266,6 +243,31 @@ function HookMessagesTab({ refreshKey, showToast }) {
                 value={form.message_text}
                 onChange={(e) => setForm((f) => ({ ...f, message_text: e.target.value }))}
               />
+            </div>
+
+            {/* Display Frequency / Delay */}
+            <div className="hm-input-group" style={{ marginBottom: '1rem' }}>
+              <div className="hm-input-header">
+                <label className="hm-input-label" htmlFor="hm-frequency">
+                  Display Delay (seconds)
+                </label>
+                <span className="hm-char-counter">
+                  {form.display_frequency}s
+                </span>
+              </div>
+              <input
+                id="hm-frequency"
+                type="number"
+                min="5"
+                max="3600"
+                className="rag-filter-select"
+                style={{ width: '100%', padding: '8px 12px' }}
+                value={form.display_frequency}
+                onChange={(e) => setForm((f) => ({ ...f, display_frequency: Math.max(5, Number(e.target.value) || 30) }))}
+              />
+              <span style={{ fontSize: '11.5px', color: 'var(--text-3)', marginTop: '4px', display: 'block' }}>
+                Seconds to wait after landing before showing this popup (minimum 5s, default 30s).
+              </span>
             </div>
 
             {/* Active Toggle Switch */}
@@ -472,32 +474,7 @@ function HookMessagesTab({ refreshKey, showToast }) {
                       onMouseEnter={() => setHoveredPreviewText(msg.message_text)}
                       onMouseLeave={() => setHoveredPreviewText(null)}
                     >
-                      {/* Left: Reorder Arrows & Priority Number */}
-                      <div className="hm-item-reorder-col">
-                        <button
-                          type="button"
-                          className="hm-reorder-btn"
-                          title="Move Up"
-                          disabled={index === 0 || reordering || filterTab !== 'all'}
-                          onClick={() => handleMove(index, -1)}
-                        >
-                          ▲
-                        </button>
-                        <span className="hm-item-rank">#{index + 1}</span>
-                        <button
-                          type="button"
-                          className="hm-reorder-btn"
-                          title="Move Down"
-                          disabled={
-                            index === filteredMessages.length - 1 || reordering || filterTab !== 'all'
-                          }
-                          onClick={() => handleMove(index, 1)}
-                        >
-                          ▼
-                        </button>
-                      </div>
-
-                      {/* Middle: Content */}
+                      {/* Content */}
                       <div className="hm-item-content">
                         <div className="hm-item-meta-row">
                           <span
@@ -507,6 +484,12 @@ function HookMessagesTab({ refreshKey, showToast }) {
                           >
                             <span className="hm-status-dot" />
                             {msg.is_active ? 'Active' : 'Disabled'}
+                          </span>
+                          <span
+                            className="rag-origin-badge rag-origin-badge--folder"
+                            style={{ fontSize: '11px', padding: '2px 8px' }}
+                          >
+                            ⏱ {msg.display_frequency || 30}s delay
                           </span>
                           <span className="hm-item-date">
                             Created {new Date(msg.created_at).toLocaleDateString()} at{' '}

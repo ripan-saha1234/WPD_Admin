@@ -25,10 +25,11 @@ const DEFAULT_SERVICE_FORM = {
   name: '',
   slug: '',
   short_description: '',
+  icon: '💼',
   pricing_model: 'custom_quote',
   price_amount: '',
   price_max: '',
-  price_currency: 'INR',
+  price_currency: 'USD',
   price_unit: '',
   price_note: '',
   enabled: true,
@@ -84,10 +85,11 @@ function ServicesCatalogTab({ refreshKey, showToast }) {
       name: svc.name || '',
       slug: svc.slug || '',
       short_description: svc.short_description || '',
+      icon: svc.icon || '💼',
       pricing_model: svc.pricing_model || 'custom_quote',
       price_amount: svc.price_amount ?? '',
       price_max: svc.price_max ?? '',
-      price_currency: svc.price_currency || 'INR',
+      price_currency: svc.price_currency || 'USD',
       price_unit: svc.price_unit || '',
       price_note: svc.price_note || '',
       enabled: Boolean(svc.enabled),
@@ -341,6 +343,18 @@ function ServicesCatalogTab({ refreshKey, showToast }) {
                     value={form.slug}
                     onChange={(e) => setForm({ ...form, slug: e.target.value })}
                     placeholder="e.g. ai-ml"
+                  />
+                </div>
+              </div>
+
+              <div className="rag-form-row">
+                <div className="rag-form-group" style={{ flex: '1' }}>
+                  <label>Icon (Emoji or SVG)</label>
+                  <input
+                    type="text"
+                    value={form.icon}
+                    onChange={(e) => setForm({ ...form, icon: e.target.value })}
+                    placeholder="e.g. 💼, 🤖, 🌐"
                   />
                 </div>
               </div>

@@ -502,6 +502,11 @@ function SessionDrawer({ sessionId, onClose, onEndSession, showToast }) {
             <div className="rag-card" style={{ padding: '1rem' }}>
               <h4 style={{ margin: '0 0 0.5rem', fontSize: '13px', fontWeight: 700 }}>Consent &amp; Analytics</h4>
               <div><strong>Consent Flags:</strong> {JSON.stringify(s.consent_flags || {})}</div>
+              {s.ip_hash && (
+                <div style={{ marginTop: '4px' }}>
+                  <strong>Visitor IP Hash:</strong> <code>{s.ip_hash}</code>
+                </div>
+              )}
               <div style={{ marginTop: '6px' }}>
                 <strong>Analytics Metadata:</strong>
                 <pre style={{ background: 'var(--surface-sunken)', border: '1px solid var(--border)', color: 'var(--text)', padding: '8px', borderRadius: 'var(--radius-xs)', fontSize: '11px', overflowX: 'auto', marginTop: '4px' }}>

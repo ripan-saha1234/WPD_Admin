@@ -23,12 +23,11 @@ function QuestionFlowList({
   onToggleActive,
   onEdit,
   onDelete,
-  onMove,
 }) {
   if (loading) {
     return (
       <div className="qs-loading-wrapper">
-        <CommonLoader text="Loading question sequence..." size={18} />
+        <CommonLoader text="Loading opening questions..." size={18} />
       </div>
     );
   }
@@ -52,7 +51,7 @@ function QuestionFlowList({
 
   return (
     <div className="qs-items-container">
-      {questions.map((question, index) => {
+      {questions.map((question) => {
         const opts = parseOptions(question);
         const isEditing = String(editId) === String(question.id);
 
@@ -65,41 +64,10 @@ function QuestionFlowList({
             onMouseEnter={() => onHoverQuestion?.(question)}
             onMouseLeave={() => onHoverQuestion?.(null)}
           >
-            {/* Left Column: Reorder and Step indicator */}
-            <div className="qs-item-rank-col">
-              <button
-                type="button"
-                className="qs-reorder-btn"
-                disabled={index === 0}
-                onClick={() => onMove(index, -1)}
-                title="Move up in sequence"
-              >
-                ▲
-              </button>
-              <span className="qs-item-rank">#{index + 1}</span>
-              <button
-                type="button"
-                className="qs-reorder-btn"
-                disabled={index === questions.length - 1}
-                onClick={() => onMove(index, 1)}
-                title="Move down in sequence"
-              >
-                ▼
-              </button>
-            </div>
-
-            {/* Middle Column: Question details & Options pills */}
+            {/* Question details & Options pills */}
             <div className="qs-item-content">
               {/* Badges / Meta row */}
               <div className="qs-item-meta-row">
-                <span
-                  className={`qs-type-badge qs-type-badge--${
-                    question.question_type || 'mcq'
-                  }`}
-                >
-                  {question.question_type === 'poll' ? '📊 Poll' : '🔘 MCQ'}
-                </span>
-
                 <button
                   type="button"
                   className={`qs-status-toggle-btn ${
@@ -129,11 +97,8 @@ function QuestionFlowList({
               {/* Option Chips preview */}
               <div className="qs-item-chips-row">
                 {opts.map((opt, i) => (
-                  <span key={i} className="qs-item-chip">
-                    <span className="qs-chip-letter">
-                      {String.fromCharCode(65 + i)}
-                    </span>
-                    <span className="qs-chip-text">{opt}</span>
+                  <span key={i} className="qs-preview-pill">
+                    {typeof opt === 'object' ? opt.option_text || opt.label : opt}
                   </span>
                 ))}
               </div>
@@ -143,19 +108,19 @@ function QuestionFlowList({
             <div className="qs-item-actions-col">
               <button
                 type="button"
-                className="qs-action-icon-btn qs-action-icon-btn--edit"
-                onClick={() => onEdit(question)}
-                title="Edit question & options"
+                className="qs-edit-btn"
+                onClick={() => onEdit?.(question)}
+                title="Edit question and options"
               >
-                ✏️
+                ✏️ Edit
               </button>
               <button
                 type="button"
-                className="qs-action-icon-btn qs-action-icon-btn--delete"
-                onClick={() => onDelete(question.id)}
+                className="qs-delete-btn"
+                onClick={() => onDelete?.(question.id)}
                 title="Delete question"
               >
-                🗑
+                🗑️
               </button>
             </div>
           </div>
@@ -166,4 +131,3 @@ function QuestionFlowList({
 }
 
 export default QuestionFlowList;
-

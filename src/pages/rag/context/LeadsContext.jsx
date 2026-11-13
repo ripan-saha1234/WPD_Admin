@@ -1,6 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { generateMockAiAnalysis } from '../mock/leadsMockData';
-import { getRagLeads, getRagLead, updateRagLead } from '../../../services/ragAdminService';
+import { getRagLeads, getRagLead, retryRagLeadSync } from '../../../services/ragAdminService';
 
 const LeadsContext = createContext(null);
 
@@ -8,7 +7,6 @@ export function LeadsProvider({ children }) {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
-  const [assignments, setAssignments] = useState({});
 
   const loadLeads = useCallback(async () => {
     setLoading(true);
@@ -30,9 +28,14 @@ export function LeadsProvider({ children }) {
               : 'Discovery conversation'),
           interestedServiceName: item.interested_service_name || '—',
           crmSyncStatus: item.crm_sync_status || 'pending',
-          status: item.crm_sync_status === 'synced' ? 'contacted' : 'new',
+          crmAttempts: item.crm_attempts || 0,
+          crmLastError: item.crm_last_error || null,
+          crmNextRetryAt: item.crm_next_retry_at || null,
+          crmContactId: item.crm_contact_id || null,
+          crmDealId: item.crm_deal_id || null,
+          pendingSince: item.pending_since || null,
+          status: item.crm_sync_status === 'synced' ? 'synced' : item.crm_sync_status === 'failed' ? 'failed' : 'pending',
           leadType: item.visitor_stage === 'CONTACT_COLLECTED' ? 'hot' : 'warm',
-          assignedTo: assignments[item.id] || null,
           dealValue: item.deal_value,
           dealCurrency: item.deal_currency || 'USD',
           budgetType: item.budget_type || 'one_time',
@@ -55,7 +58,7 @@ export function LeadsProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, [assignments]);
+  }, []);
 
   useEffect(() => {
     loadLeads();
@@ -97,9 +100,14 @@ export function LeadsProvider({ children }) {
               : 'Discovery conversation'),
           interestedServiceName: l.interested_service_name || '—',
           crmSyncStatus: l.crm_sync_status || 'pending',
-          status: l.crm_sync_status === 'synced' ? 'contacted' : 'new',
+          crmAttempts: l.crm_attempts || 0,
+          crmLastError: l.crm_last_error || null,
+          crmNextRetryAt: l.crm_next_retry_at || null,
+          crmContactId: l.crm_contact_id || null,
+          crmDealId: l.crm_deal_id || null,
+          pendingSince: l.pending_since || null,
+          status: l.crm_sync_status === 'synced' ? 'synced' : l.crm_sync_status === 'failed' ? 'failed' : 'pending',
           leadType: l.visitor_stage === 'CONTACT_COLLECTED' ? 'hot' : 'warm',
-          assignedTo: assignments[l.id] || null,
           dealValue: l.deal_value,
           dealCurrency: l.deal_currency || 'USD',
           budgetType: l.budget_type || 'one_time',
@@ -128,30 +136,22 @@ export function LeadsProvider({ children }) {
       console.error(`Failed to fetch lead ${leadId} detail:`, err);
     }
     return null;
-  }, [assignments]);
-
-  const assignLead = useCallback((leadId, bdmId) => {
-    setAssignments((prev) => ({ ...prev, [leadId]: bdmId }));
-    setLeads((prev) =>
-      prev.map((lead) =>
-        lead.id === leadId
-          ? { ...lead, assignedTo: bdmId, status: 'assigned' }
-          : lead
-      )
-    );
   }, []);
 
-  const runAiAnalysis = useCallback((leadId) => {
-    let analysis = null;
-    setLeads((prev) =>
-      prev.map((lead) => {
-        if (lead.id !== leadId) return lead;
-        analysis = lead.aiAnalysis || generateMockAiAnalysis(lead);
-        return { ...lead, aiAnalysis: analysis };
-      })
-    );
-    return analysis;
-  }, []);
+  const retrySync = useCallback(async (leadId) => {
+    try {
+      const { response, data } = await retryRagLeadSync(leadId);
+      if (response?.ok) {
+        // Refetch lead details
+        await fetchLeadWithMessages(leadId);
+        await loadLeads();
+        return { ok: true, data };
+      }
+      return { ok: false, error: data?.error || data?.detail || 'CRM retry failed' };
+    } catch (err) {
+      return { ok: false, error: err.message };
+    }
+  }, [fetchLeadWithMessages, loadLeads]);
 
   const value = useMemo(
     () => ({
@@ -161,10 +161,9 @@ export function LeadsProvider({ children }) {
       refreshLeads: loadLeads,
       getLeadById,
       fetchLeadWithMessages,
-      assignLead,
-      runAiAnalysis,
+      retrySync,
     }),
-    [leads, loading, total, loadLeads, getLeadById, fetchLeadWithMessages, assignLead, runAiAnalysis]
+    [leads, loading, total, loadLeads, getLeadById, fetchLeadWithMessages, retrySync]
   );
 
   return <LeadsContext.Provider value={value}>{children}</LeadsContext.Provider>;

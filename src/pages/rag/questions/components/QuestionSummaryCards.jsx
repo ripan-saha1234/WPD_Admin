@@ -5,13 +5,11 @@ function QuestionSummaryCards({ questions }) {
     (sum, q) => sum + (q.response_count || 0),
     0
   );
-  const mcqCount = questions.filter((q) => q.question_type === 'mcq').length;
-  const pollCount = questions.filter((q) => q.question_type === 'poll').length;
 
   const cards = [
     { label: 'Total Questions', value: questions.length, icon: '📋', color: 'var(--primary-text)' },
-    { label: 'Active in Flow', value: active, icon: '✅', color: 'var(--success-text)' },
-    { label: 'Inactive', value: inactive, icon: '⏸️', color: 'var(--text-2)' },
+    { label: 'Active Prompts', value: active, icon: '✅', color: 'var(--success-text)' },
+    { label: 'Paused', value: inactive, icon: '⏸️', color: 'var(--text-2)' },
     { label: 'Total Responses', value: totalResponses, icon: '📊', color: 'var(--info-text)' },
   ];
 
@@ -31,38 +29,11 @@ function QuestionSummaryCards({ questions }) {
         ))}
       </div>
 
-      <div className="qs-type-breakdown">
-        <h3>Question types</h3>
-        <div className="qs-type-bars">
-          <div className="qs-type-bar-row">
-            <span>MCQ</span>
-            <div className="qs-type-track">
-              <div
-                className="qs-type-fill qs-type-fill--mcq"
-                style={{
-                  width: questions.length
-                    ? `${(mcqCount / questions.length) * 100}%`
-                    : '0%',
-                }}
-              />
-            </div>
-            <span>{mcqCount}</span>
-          </div>
-          <div className="qs-type-bar-row">
-            <span>Poll</span>
-            <div className="qs-type-track">
-              <div
-                className="qs-type-fill qs-type-fill--poll"
-                style={{
-                  width: questions.length
-                    ? `${(pollCount / questions.length) * 100}%`
-                    : '0%',
-                }}
-              />
-            </div>
-            <span>{pollCount}</span>
-          </div>
-        </div>
+      <div className="qs-type-breakdown" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <h3 style={{ margin: '0 0 6px', fontSize: '13.5px', fontWeight: 600 }}>Greeting Prompt Rotation</h3>
+        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-2)', lineHeight: 1.45 }}>
+          Jerry randomly picks one active opening prompt for each new visitor. Option chips appear as clickable starting prompts in the chat widget.
+        </p>
       </div>
     </section>
   );

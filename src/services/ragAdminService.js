@@ -140,6 +140,16 @@ export const updateRagLead = async (leadId, payload) => {
   return { response, data: data?.data || data };
 };
 
+export const retryRagLeadSync = async (leadId) => {
+  const { response, data } = await ragFetch(`/admin/leads/${leadId}/retry-sync`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+  return { response, data: data?.data || data };
+};
+
 // ─── Sessions & Conversation History ─────────────────────────────────────────
 
 
@@ -623,7 +633,7 @@ export const getHookMessages = async () => {
     id: item.id,
     message_text: item.text || item.message_text,
     is_active: Boolean(item.enabled ?? item.is_active ?? true),
-    display_frequency: item.display_frequency || 1,
+    display_frequency: item.display_frequency ?? 30,
     order: idx + 1,
     created_at: item.created_at,
   }));

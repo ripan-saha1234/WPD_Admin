@@ -1,33 +1,16 @@
 import CommonButton from '../../../../components/common-button';
 
-const TYPE_CARDS = [
-  {
-    id: 'mcq',
-    label: 'Multiple Choice (MCQ)',
-    description: 'Presents interactive chips; user picks one option to start conversation.',
-    icon: '🔘',
-  },
-  {
-    id: 'poll',
-    label: 'Survey / Poll',
-    description: 'Collects visitor opinions & votes for survey analytics.',
-    icon: '📊',
-  },
-];
-
 const OPTION_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 function QuestionFormPanel({
   editId,
   questionText,
-  questionType,
   options,
   isActive,
   saving,
   templates = [],
   onApplyTemplate,
   onQuestionTextChange,
-  onQuestionTypeChange,
   onOptionChange,
   onAddOption,
   onRemoveOption,
@@ -100,35 +83,11 @@ function QuestionFormPanel({
         />
       </div>
 
-      {/* Section 2: Question Type selection */}
-      <div className="qs-form-section">
-        <span className="qs-section-label">2. Interaction Mode</span>
-        <div className="qs-type-cards">
-          {TYPE_CARDS.map((type) => {
-            const isSelected = questionType === type.id;
-            return (
-              <button
-                key={type.id}
-                type="button"
-                className={`qs-type-card ${isSelected ? 'active' : ''}`}
-                onClick={() => onQuestionTypeChange(type.id)}
-              >
-                <div className="qs-type-card-top">
-                  <span className="qs-type-card-icon">{type.icon}</span>
-                  <span className="qs-type-card-label">{type.label}</span>
-                </div>
-                <span className="qs-type-card-desc">{type.description}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Section 3: Answer Options */}
+      {/* Section 2: Answer Options / Suggestion Chips */}
       <div className="qs-form-section">
         <div className="qs-options-header">
           <span className="qs-section-label">
-            3. Answer Options ({options.length})
+            2. Suggestion Chips ({options.length})
           </span>
           <button
             type="button"
@@ -174,7 +133,7 @@ function QuestionFormPanel({
         </p>
       </div>
 
-      {/* Section 4: Status Switch */}
+      {/* Section 3: Status Switch */}
       <div className="qs-switch-row">
         <label className="qs-switch-container" htmlFor="qs-active-toggle">
           <input
@@ -187,9 +146,9 @@ function QuestionFormPanel({
           <span className="qs-switch-slider" />
         </label>
         <div className="qs-switch-meta">
-          <span className="qs-switch-title">Active in Onboarding Sequence</span>
+          <span className="qs-switch-title">Active Opening Prompt</span>
           <span className="qs-switch-desc">
-            When enabled, visitors will receive this question when opening the chatbot.
+            When enabled, Jerry can randomly pick this opening prompt to greet visitors.
           </span>
         </div>
       </div>
@@ -215,4 +174,3 @@ function QuestionFormPanel({
 }
 
 export default QuestionFormPanel;
-

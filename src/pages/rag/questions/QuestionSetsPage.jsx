@@ -7,7 +7,6 @@ import {
   createRagQuestion,
   deleteRagQuestion,
   getRagQuestions,
-  reorderRagQuestions,
   updateRagQuestion,
 } from '../../../services/ragAdminService';
 import './questions.css';
@@ -22,7 +21,6 @@ const DEFAULT_OPTIONS = [
 const QUESTION_TEMPLATES = [
   {
     text: 'What brings you here today?',
-    type: 'mcq',
     options: [
       'I need a website or web app',
       'I need a mobile app',
@@ -32,7 +30,6 @@ const QUESTION_TEMPLATES = [
   },
   {
     text: 'What is your planned timeline for this project?',
-    type: 'poll',
     options: [
       'Immediately (< 1 month)',
       '1 to 3 months',
@@ -42,7 +39,6 @@ const QUESTION_TEMPLATES = [
   },
   {
     text: 'What is your estimated budget range?',
-    type: 'mcq',
     options: [
       'Under $5,000',
       '$5,000 - $15,000',
@@ -58,7 +54,6 @@ function QuestionSetsPage({ refreshKey, showToast }) {
   const [saving, setSaving] = useState(false);
   const [editId, setEditId] = useState('');
   const [questionText, setQuestionText] = useState('');
-  const [questionType, setQuestionType] = useState('mcq');
   const [options, setOptions] = useState([...DEFAULT_OPTIONS]);
   const [isActive, setIsActive] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -66,7 +61,7 @@ function QuestionSetsPage({ refreshKey, showToast }) {
 
   // Search and filter tab
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterTab, setFilterTab] = useState('all'); // 'all' | 'active' | 'inactive' | 'mcq' | 'poll'
+  const [filterTab, setFilterTab] = useState('all'); // 'all' | 'active' | 'inactive'
 
   // Interactive Simulator hovered state
   const [hoveredQuestion, setHoveredQuestion] = useState(null);
@@ -92,7 +87,6 @@ function QuestionSetsPage({ refreshKey, showToast }) {
   const resetForm = () => {
     setEditId('');
     setQuestionText('');
-    setQuestionType('mcq');
     setOptions([...DEFAULT_OPTIONS]);
     setIsActive(true);
     setHoveredQuestion(null);
@@ -100,7 +94,6 @@ function QuestionSetsPage({ refreshKey, showToast }) {
 
   const applyTemplate = (tpl) => {
     setQuestionText(tpl.text);
-    setQuestionType(tpl.type);
     setOptions([...tpl.options]);
     setIsActive(true);
   };
@@ -118,7 +111,6 @@ function QuestionSetsPage({ refreshKey, showToast }) {
 
     const payload = {
       question_text: questionText.trim(),
-      question_type: questionType,
       options: trimmedOptions,
       is_active: isActive,
     };
@@ -131,7 +123,7 @@ function QuestionSetsPage({ refreshKey, showToast }) {
 
       if (!response.ok) throw new Error(data.error || 'Failed to save question');
 
-      showToast?.(editId ? 'Question updated' : 'Question added to sequence', 'success');
+      showToast?.(editId ? 'Question updated' : 'Opening question published', 'success');
       resetForm();
       loadQuestions();
     } catch (err) {
@@ -150,8 +142,7 @@ function QuestionSetsPage({ refreshKey, showToast }) {
 
     setEditId(String(question.id));
     setQuestionText(question.question_text);
-    setQuestionType(question.question_type || 'mcq');
-    setOptions(parsedOptions.length ? parsedOptions : ['', '']);
+    setOptions(parsedOptions.length ? parsedOptions.map(o => typeof o === 'object' ? (o.option_text || o.label || '') : String(o)) : ['', '']);
     setIsActive(Boolean(question.is_active));
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -163,7 +154,7 @@ function QuestionSetsPage({ refreshKey, showToast }) {
     try {
       const { response } = await deleteRagQuestion(deleteTarget);
       if (!response.ok) throw new Error('Failed to delete question');
-      showToast?.('Question removed from flow', 'success');
+      showToast?.('Question deleted', 'success');
       setDeleteTarget(null);
       if (String(editId) === String(deleteTarget)) resetForm();
       loadQuestions();
@@ -174,318 +165,199 @@ function QuestionSetsPage({ refreshKey, showToast }) {
     }
   };
 
-  const handleMove = async (indexInFiltered, direction) => {
-    const targetQ = filteredQuestions[indexInFiltered];
-    if (!targetQ) return;
-
-    const actualIdx = questions.findIndex((q) => q.id === targetQ.id);
-    const swapIdx = actualIdx + direction;
-    if (swapIdx < 0 || swapIdx >= questions.length) return;
-
-    const reordered = [...questions];
-    [reordered[actualIdx], reordered[swapIdx]] = [reordered[swapIdx], reordered[actualIdx]];
-    setQuestions(reordered);
-
-    try {
-      const { response } = await reorderRagQuestions(reordered.map((q) => q.id));
-      if (!response.ok) throw new Error('Reorder failed');
-      showToast?.('Sequence order updated', 'success');
-    } catch (err) {
-      showToast?.(err.message, 'error');
-      loadQuestions(); // revert
-    }
-  };
-
   const handleToggleActive = async (question) => {
-    const nextState = !question.is_active;
-    setQuestions((prev) =>
-      prev.map((q) => (q.id === question.id ? { ...q, is_active: nextState } : q))
-    );
     try {
-      const parsedOptions = Array.isArray(question.options)
-        ? question.options
-        : typeof question.options === 'string'
-          ? JSON.parse(question.options)
-          : [];
-
+      const newStatus = !question.is_active;
       const { response } = await updateRagQuestion(question.id, {
-        question_text: question.question_text,
-        question_type: question.question_type || 'mcq',
-        options: parsedOptions,
-        is_active: nextState,
+        is_active: newStatus,
       });
-      if (!response.ok) throw new Error('Update failed');
-      showToast?.(`Question marked as ${nextState ? 'Active' : 'Inactive'}`, 'success');
+      if (!response.ok) throw new Error('Failed to update status');
+      showToast?.(
+        newStatus ? 'Question activated' : 'Question paused',
+        'success'
+      );
+      loadQuestions();
     } catch (err) {
       showToast?.(err.message, 'error');
-      loadQuestions();
     }
   };
 
-  // Filtered list
+  // Option actions
+  const handleOptionChange = (idx, value) => {
+    setOptions((prev) => {
+      const updated = [...prev];
+      updated[idx] = value;
+      return updated;
+    });
+  };
+
+  const handleAddOption = () => {
+    if (options.length < 6) {
+      setOptions((prev) => [...prev, '']);
+    }
+  };
+
+  const handleRemoveOption = (idx) => {
+    if (options.length > 2) {
+      setOptions((prev) => prev.filter((_, i) => i !== idx));
+    }
+  };
+
+  // Filter and search computation
   const filteredQuestions = useMemo(() => {
     return questions.filter((q) => {
-      if (filterTab === 'active' && !q.is_active) return false;
-      if (filterTab === 'inactive' && q.is_active) return false;
-      if (filterTab === 'mcq' && q.question_type !== 'mcq') return false;
-      if (filterTab === 'poll' && q.question_type !== 'poll') return false;
-
+      // 1. Search filter
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
-        const matchesText = q.question_text.toLowerCase().includes(query);
-        const optionsList = Array.isArray(q.options)
+        const matchesText = q.question_text?.toLowerCase().includes(query);
+        const parsedOpts = Array.isArray(q.options)
           ? q.options
           : typeof q.options === 'string'
             ? JSON.parse(q.options || '[]')
             : [];
-        const matchesOption = optionsList.some((opt) =>
-          String(opt).toLowerCase().includes(query)
-        );
-        return matchesText || matchesOption;
+        const matchesOpts = parsedOpts.some((opt) => {
+          const str = typeof opt === 'object' ? (opt.option_text || opt.label || '') : String(opt);
+          return str.toLowerCase().includes(query);
+        });
+        if (!matchesText && !matchesOpts) return false;
       }
+
+      // 2. Tab filter
+      if (filterTab === 'active' && !q.is_active) return false;
+      if (filterTab === 'inactive' && q.is_active) return false;
+
       return true;
     });
-  }, [questions, filterTab, searchQuery]);
-
-  // Preview simulator data
-  const previewData = useMemo(() => {
-    if (hoveredQuestion) {
-      const opts = Array.isArray(hoveredQuestion.options)
-        ? hoveredQuestion.options
-        : typeof hoveredQuestion.options === 'string'
-          ? JSON.parse(hoveredQuestion.options || '[]')
-          : [];
-      return {
-        text: hoveredQuestion.question_text,
-        type: hoveredQuestion.question_type || 'mcq',
-        options: opts,
-      };
-    }
-    if (questionText.trim()) {
-      return {
-        text: questionText.trim(),
-        type: questionType,
-        options: options.filter((o) => o.trim()),
-      };
-    }
-    const firstActive = questions.find((q) => q.is_active);
-    if (firstActive) {
-      const opts = Array.isArray(firstActive.options)
-        ? firstActive.options
-        : typeof firstActive.options === 'string'
-          ? JSON.parse(firstActive.options || '[]')
-          : [];
-      return {
-        text: firstActive.question_text,
-        type: firstActive.question_type || 'mcq',
-        options: opts,
-      };
-    }
-    return {
-      text: 'How can we help your team succeed today?',
-      type: 'mcq',
-      options: ['Custom Web App', 'Mobile Development', 'AI Integration', 'Pricing Consultation'],
-    };
-  }, [hoveredQuestion, questionText, questionType, options, questions]);
+  }, [questions, searchQuery, filterTab]);
 
   return (
     <div className="qs-page">
-      {/* ── Summary Cards Strip ── */}
+      {/* Intro section */}
+      <section className="qs-intro">
+        <h2>Opening Questions &amp; Suggestion Chips</h2>
+        <p>
+          Configure the interactive opening icebreakers presented to new visitors when launching Jerry AI.
+          Jerry randomly selects one active opening question to start the conversation, presenting its options as clickable chips.
+        </p>
+      </section>
+
+      {/* Summary KPI Cards */}
       <QuestionSummaryCards questions={questions} />
 
-      <div className="qs-main-layout">
-        {/* ── LEFT COLUMN: Form + Widget Interactive Simulator ── */}
-        <div className="qs-left-column">
+      {/* Main 2-Column Workspace */}
+      <div className="qs-workspace-grid">
+        {/* Left Column: Form & Simulator */}
+        <div className="qs-left-col">
           <QuestionFormPanel
             editId={editId}
             questionText={questionText}
-            questionType={questionType}
             options={options}
             isActive={isActive}
             saving={saving}
             templates={QUESTION_TEMPLATES}
             onApplyTemplate={applyTemplate}
             onQuestionTextChange={setQuestionText}
-            onQuestionTypeChange={setQuestionType}
-            onOptionChange={(index, value) =>
-              setOptions((prev) => prev.map((opt, i) => (i === index ? value : opt)))
-            }
-            onAddOption={() => setOptions((prev) => [...prev, ''])}
-            onRemoveOption={(index) =>
-              setOptions((prev) => prev.filter((_, i) => i !== index))
-            }
+            onOptionChange={handleOptionChange}
+            onAddOption={handleAddOption}
+            onRemoveOption={handleRemoveOption}
             onActiveChange={setIsActive}
             onSave={handleSave}
             onCancel={resetForm}
           />
-
-          {/* ── Real-Time Chat Widget Onboarding Simulator ── */}
-          <div className="rag-card qs-sim-card">
-            <div className="qs-sim-header">
-              <div className="qs-sim-badge">
-                <span className="qs-pulse-dot" />
-                Live Chat Simulator
-              </div>
-              <span className="qs-sim-type-badge">
-                {previewData.type === 'poll' ? '📊 Poll Mode' : '🔘 MCQ Chips'}
-              </span>
-            </div>
-
-            <div className="qs-sim-window">
-              {/* Window Header */}
-              <div className="qs-sim-window-header">
-                <div className="qs-sim-avatar">
-                  <span className="qs-sim-avatar-orb" />
-                  <div>
-                    <span className="qs-sim-name">Jerry</span>
-                    <span className="qs-sim-sub">AI Consultant</span>
-                  </div>
-                </div>
-                <div className="qs-sim-window-dots">
-                  <span />
-                  <span />
-                  <span />
-                </div>
-              </div>
-
-              {/* Bot Message Bubble */}
-              <div className="qs-sim-body">
-                <div className="qs-sim-msg-row">
-                  <div className="qs-sim-bubble">
-                    <p className="qs-sim-msg-text">{previewData.text}</p>
-                  </div>
-                </div>
-
-                {/* Option Chips */}
-                <div className="qs-sim-chips-container">
-                  {previewData.options.map((opt, i) => (
-                    <div key={i} className="qs-sim-chip">
-                      <span className="qs-sim-chip-dot" />
-                      <span>{opt || `Option ${i + 1}`}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="qs-sim-footer">
-              💡 New visitors see this onboarding prompt when they open Jerry AI.
-            </div>
-          </div>
         </div>
 
-        {/* ── RIGHT COLUMN: Sequence / Flow Management ── */}
-        <div className="qs-right-column">
-          <div className="qs-flow-panel rag-card">
-            {/* Header with Search and Filter Tabs */}
-            <div className="qs-flow-panel-header">
-              <div className="qs-flow-title-row">
-                <div>
-                  <h3 className="qs-flow-title">
-                    Chatbot Onboarding Flow
-                    <span className="qs-flow-count">{filteredQuestions.length}</span>
-                  </h3>
-                  <p className="rag-muted">
-                    Questions are triggered sequentially or picked to initiate visitor dialog.
-                  </p>
-                </div>
+        {/* Right Column: List of Questions */}
+        <div className="qs-right-col rag-card">
+          {/* Header Toolbar */}
+          <div className="qs-list-toolbar">
+            <div className="qs-toolbar-title-row">
+              <span className="qs-list-title">
+                Configured Opening Prompts ({filteredQuestions.length})
+              </span>
+              <button
+                type="button"
+                className="qs-refresh-btn"
+                onClick={loadQuestions}
+                title="Refresh question pool"
+              >
+                ↻ Refresh
+              </button>
+            </div>
 
-                {/* Controls Bar */}
-                <div className="qs-controls-bar">
-                  <div className="qs-search-box">
-                    <span className="qs-search-icon">🔍</span>
-                    <input
-                      type="text"
-                      className="qs-search-input"
-                      placeholder="Search questions or options..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    {searchQuery && (
-                      <button
-                        type="button"
-                        className="qs-search-clear"
-                        onClick={() => setSearchQuery('')}
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
+            {/* Filter Tabs & Search Row */}
+            <div className="qs-filter-search-row">
+              <div className="qs-filter-tabs">
+                <button
+                  type="button"
+                  className={`qs-filter-tab ${filterTab === 'all' ? 'active' : ''}`}
+                  onClick={() => setFilterTab('all')}
+                >
+                  All ({questions.length})
+                </button>
+                <button
+                  type="button"
+                  className={`qs-filter-tab ${filterTab === 'active' ? 'active' : ''}`}
+                  onClick={() => setFilterTab('active')}
+                >
+                  Active ({questions.filter((q) => q.is_active).length})
+                </button>
+                <button
+                  type="button"
+                  className={`qs-filter-tab ${filterTab === 'inactive' ? 'active' : ''}`}
+                  onClick={() => setFilterTab('inactive')}
+                >
+                  Paused ({questions.filter((q) => !q.is_active).length})
+                </button>
+              </div>
 
-                  <div className="qs-filter-pills">
-                    <button
-                      type="button"
-                      className={`qs-filter-pill ${filterTab === 'all' ? 'active' : ''}`}
-                      onClick={() => setFilterTab('all')}
-                    >
-                      All ({questions.length})
-                    </button>
-                    <button
-                      type="button"
-                      className={`qs-filter-pill ${filterTab === 'active' ? 'active' : ''}`}
-                      onClick={() => setFilterTab('active')}
-                    >
-                      Active
-                    </button>
-                    <button
-                      type="button"
-                      className={`qs-filter-pill ${filterTab === 'inactive' ? 'active' : ''}`}
-                      onClick={() => setFilterTab('inactive')}
-                    >
-                      Inactive
-                    </button>
-                    <button
-                      type="button"
-                      className={`qs-filter-pill ${filterTab === 'mcq' ? 'active' : ''}`}
-                      onClick={() => setFilterTab('mcq')}
-                    >
-                      MCQ
-                    </button>
-                    <button
-                      type="button"
-                      className={`qs-filter-pill ${filterTab === 'poll' ? 'active' : ''}`}
-                      onClick={() => setFilterTab('poll')}
-                    >
-                      Poll
-                    </button>
-                  </div>
-                </div>
+              <div className="qs-search-box">
+                <input
+                  type="text"
+                  className="qs-search-input"
+                  placeholder="Search questions &amp; chips..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    className="qs-search-clear"
+                    onClick={() => setSearchQuery('')}
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
             </div>
-
-            <QuestionFlowList
-              questions={filteredQuestions}
-              totalCount={questions.length}
-              loading={loading}
-              editId={editId}
-              searchQuery={searchQuery}
-              onHoverQuestion={setHoveredQuestion}
-              onToggleActive={handleToggleActive}
-              onEdit={handleEdit}
-              onDelete={setDeleteTarget}
-              onMove={handleMove}
-            />
-
-            <div className="qs-flow-footer">
-              <span className="qs-flow-footer-hint">
-                💡 <strong>Tip:</strong> Use the ▲ and ▼ buttons to order the onboarding priority. Visitors pick one option to immediately branch their chat topic.
-              </span>
-            </div>
           </div>
+
+          {/* List Component */}
+          <QuestionFlowList
+            questions={filteredQuestions}
+            totalCount={questions.length}
+            loading={loading}
+            editId={editId}
+            searchQuery={searchQuery}
+            onHoverQuestion={setHoveredQuestion}
+            onToggleActive={handleToggleActive}
+            onEdit={handleEdit}
+            onDelete={(id) => setDeleteTarget(id)}
+          />
         </div>
       </div>
 
+      {/* Delete Confirmation Dialog */}
       <ConfirmDialog
-        open={Boolean(deleteTarget)}
-        title="Remove Question"
-        message="This question will be removed from the chatbot flow. Existing user analytics will be preserved."
-        confirmText="Remove"
+        isOpen={Boolean(deleteTarget)}
+        title="Delete Opening Question"
+        message="Are you sure you want to delete this opening question? Visitors will no longer see it."
+        confirmText={deleting ? 'Deleting...' : 'Delete'}
+        confirmColor="#ef4444"
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}
-        loading={deleting}
       />
     </div>
   );
 }
 
 export default QuestionSetsPage;
-
