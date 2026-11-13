@@ -2659,7 +2659,7 @@ a.rag-accent-text:hover {
 
 .hm-item-card {
   display: grid;
-  grid-template-columns: 46px 1fr auto;
+  grid-template-columns: 1fr auto;
   gap: 1rem;
   align-items: center;
   padding: 1rem 1.125rem;

@@ -2,10 +2,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useRagAdmin } from './context/RagAdminContext';
 import { getSectionByPath } from './ragSections';
 import QuestionSetsPage from './questions/QuestionSetsPage';
+import HookMessagesPage from './hooks/HookMessagesPage';
 import SurveyAnalyticsTab from './tabs/SurveyAnalyticsTab';
 import DocumentIngestionTab from './tabs/DocumentIngestionTab';
 import TrackedPagesTab from './tabs/TrackedPagesTab';
-import HookMessagesTab from './tabs/HookMessagesTab';
 import SessionsTab from './tabs/SessionsTab';
 import ServicesCatalogTab from './tabs/ServicesCatalogTab';
 
@@ -45,7 +45,7 @@ function RagSectionView() {
     case 'tracked-pages':
       return <TrackedPagesTab {...commonProps} />;
     case 'hook-messages':
-      return <HookMessagesTab {...commonProps} />;
+      return <HookMessagesPage {...commonProps} />;
     default:
       return null;
   }
