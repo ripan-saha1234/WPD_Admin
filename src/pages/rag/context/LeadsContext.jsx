@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { getRagLeads, getRagLead, retryRagLeadSync } from '../../../services/ragAdminService';
+import { getRagLeads, getRagLead, retryRagLeadSync, syncAllPendingRagLeads } from '../../../services/ragAdminService';
 
 const LeadsContext = createContext(null);
 
@@ -153,6 +153,19 @@ export function LeadsProvider({ children }) {
     }
   }, [fetchLeadWithMessages, loadLeads]);
 
+  const syncAllPending = useCallback(async () => {
+    try {
+      const { response, data } = await syncAllPendingRagLeads();
+      if (response?.ok) {
+        await loadLeads();
+        return { ok: true, data };
+      }
+      return { ok: false, error: data?.error || data?.detail || 'Batch CRM sync failed' };
+    } catch (err) {
+      return { ok: false, error: err.message };
+    }
+  }, [loadLeads]);
+
   const value = useMemo(
     () => ({
       leads,
@@ -162,8 +175,9 @@ export function LeadsProvider({ children }) {
       getLeadById,
       fetchLeadWithMessages,
       retrySync,
+      syncAllPending,
     }),
-    [leads, loading, total, loadLeads, getLeadById, fetchLeadWithMessages, retrySync]
+    [leads, loading, total, loadLeads, getLeadById, fetchLeadWithMessages, retrySync, syncAllPending]
   );
 
   return <LeadsContext.Provider value={value}>{children}</LeadsContext.Provider>;

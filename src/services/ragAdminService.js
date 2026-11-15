@@ -150,6 +150,16 @@ export const retryRagLeadSync = async (leadId) => {
   return { response, data: data?.data || data };
 };
 
+export const syncAllPendingRagLeads = async () => {
+  const { response, data } = await ragFetch('/admin/leads/sync-pending', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+  return { response, data: data?.data || data };
+};
+
 // ─── Sessions & Conversation History ─────────────────────────────────────────
 
 

@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CommonButton from '../../../components/common-button';
 import CommonLoader from '../../../components/common-loader';
+import { globalContext } from '../../../context/context';
 import { useLeads } from '../context/LeadsContext';
 import LeadInsightCards from './components/LeadInsightCards';
 import './leads.css';
@@ -14,9 +15,51 @@ function formatId(id) {
 
 function LeadsListPage() {
   const navigate = useNavigate();
-  const { leads, loading, refreshLeads } = useLeads();
+  const { showToast } = useContext(globalContext);
+  const { leads, loading, refreshLeads, retrySync, syncAllPending } = useLeads();
   const [searchTerm, setSearchTerm] = useState('');
   const [crmFilter, setCrmFilter] = useState('all');
+  const [syncingId, setSyncingId] = useState(null);
+  const [syncingAll, setSyncingAll] = useState(false);
+
+  const pendingCount = useMemo(() => {
+    return leads.filter((l) => l.crmSyncStatus !== 'synced').length;
+  }, [leads]);
+
+  const handleRowSync = async (leadId) => {
+    setSyncingId(leadId);
+    try {
+      const res = await retrySync(leadId);
+      if (res.ok) {
+        showToast?.('CRM sync triggered successfully', 'success');
+      } else {
+        showToast?.(res.error || 'Failed to sync lead to CRM', 'error');
+      }
+    } catch (err) {
+      showToast?.(err.message, 'error');
+    } finally {
+      setSyncingId(null);
+    }
+  };
+
+  const handleSyncAllPending = async () => {
+    setSyncingAll(true);
+    try {
+      const res = await syncAllPending();
+      if (res.ok) {
+        showToast?.(
+          `Batch sync complete: ${res.data?.synced ?? 0} synced, ${res.data?.failed ?? 0} failed`,
+          'success'
+        );
+      } else {
+        showToast?.(res.error || 'Batch CRM sync failed', 'error');
+      }
+    } catch (err) {
+      showToast?.(err.message, 'error');
+    } finally {
+      setSyncingAll(false);
+    }
+  };
 
   const filteredLeads = useMemo(() => {
     return leads.filter((lead) => {
@@ -78,6 +121,17 @@ function LeadsListPage() {
               <option value="pending">Pending</option>
               <option value="failed">Failed</option>
             </select>
+
+            {pendingCount > 0 && (
+              <CommonButton
+                text={syncingAll ? 'Syncing...' : `Sync Pending (${pendingCount})`}
+                onClick={handleSyncAllPending}
+                disabled={syncingAll}
+                backgroundColor="#f59e0b"
+                color="#fff"
+                borderColor="#f59e0b"
+              />
+            )}
 
             <CommonButton
               text="Refresh"
@@ -162,13 +216,35 @@ function LeadsListPage() {
                       {lead.timestamp ? new Date(lead.timestamp).toLocaleDateString() : '—'}
                     </td>
                     <td>
-                      <CommonButton
-                        text="View"
-                        onClick={() => navigate(`/rag/conversations/${lead.id}`)}
-                        backgroundColor="#0690fd"
-                        color="#fff"
-                        borderColor="#0690fd"
-                      />
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <CommonButton
+                          text="View"
+                          onClick={() => navigate(`/rag/conversations/${lead.id}`)}
+                          backgroundColor="#0690fd"
+                          color="#fff"
+                          borderColor="#0690fd"
+                        />
+                        <CommonButton
+                          text={syncingId === lead.id ? '...' : (lead.crmSyncStatus === 'synced' ? 'Re-sync' : 'Sync')}
+                          onClick={() => handleRowSync(lead.id)}
+                          disabled={syncingId === lead.id}
+                          backgroundColor={
+                            lead.crmSyncStatus === 'synced'
+                              ? '#fff'
+                              : lead.crmSyncStatus === 'failed'
+                              ? '#ef4444'
+                              : '#f59e0b'
+                          }
+                          color={lead.crmSyncStatus === 'synced' ? '#64748b' : '#fff'}
+                          borderColor={
+                            lead.crmSyncStatus === 'synced'
+                              ? '#cbd5e1'
+                              : lead.crmSyncStatus === 'failed'
+                              ? '#ef4444'
+                              : '#f59e0b'
+                          }
+                        />
+                      </div>
                     </td>
                   </tr>
                 ))}
